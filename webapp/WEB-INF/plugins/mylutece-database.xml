@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><plug-in>
+   <name>mylutece-database</name>
+   <class>fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin</class>
+   <version>2.3.1</version>
+   <description>module.mylutece.database.module.description</description>
+   <documentation/>
+   <installation/>
+   <changes/>
+   <user-guide/>
+   <provider>module.mylutece.database.module.provider</provider>
+   <provider-url>http://lutece.paris.fr</provider-url>
+   <icon-url>images/admin/skin/plugins/mylutece/mylutece.png</icon-url>
+   <copyright>Copyright 2001-2009 Mairie de Paris</copyright>
+   <core-version-dependency>
+		<min-core-version>2.4.1</min-core-version>
+		<max-core-version/>	
+   </core-version-dependency>
+	
+	<!-- if the plugin must have a connection pool with parameter : 1 - yes, 0 - no -->   
+   <db-pool-required>1</db-pool-required>
+   
+   <!-- Applications -->
+   <applications>
+       <application>
+           <application-id>mylutecedatabase</application-id>
+           <application-class>fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp</application-class>
+       </application>
+   </applications>
+    
+   <!-- Administration interface parameters -->
+   <admin-features>
+     <admin-feature>
+       <feature-id>DATABASE_MANAGEMENT_USERS</feature-id>
+       <feature-title>module.mylutece.database.adminFeature.database_management_user.name</feature-title>
+       <feature-description>module.mylutece.database.adminFeature.database_management_user.description</feature-description>
+       <feature-level>3</feature-level>
+       <feature-url>jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp</feature-url>
+     </admin-feature>
+     <admin-feature>
+       <feature-id>DATABASE_GROUPS_MANAGEMENT</feature-id>
+       <feature-title>module.mylutece.database.adminFeature.groups_management.name</feature-title>
+       <feature-description>module.mylutece.database.adminFeature.groups_management.description</feature-description>
+       <feature-level>3</feature-level>
+       <feature-url>jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp</feature-url>
+     </admin-feature>
+   </admin-features>
+   
+   	<!-- RBAC Resources -->
+	<rbac-resource-types>
+		<rbac-resource-type>
+			<rbac-resource-type-class>
+				fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseResourceIdService
+			</rbac-resource-type-class>
+		</rbac-resource-type>
+	</rbac-resource-types>
+	
+	<!-- Admin Dashboard  components -->
+    <admindashboard-components>
+    	<admindashboard-component>
+            <dashboard-component-name>databaseAdminDashboardComponent</dashboard-component-name>
+            <dashboard-component-class>fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.DatabaseAdminDashboardComponent</dashboard-component-class>
+        </admindashboard-component>
+    </admindashboard-components>
+    
+</plug-in>

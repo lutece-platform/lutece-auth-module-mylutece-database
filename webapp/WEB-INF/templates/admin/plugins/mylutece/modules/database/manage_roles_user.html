@@ -1,0 +1,75 @@
+<div id="left">
+    <div class="content-box" >
+	    <h2>#i18n{module.mylutece.database.manage_roles_user.titleUser}</h2>
+	    <p class="title">
+	     #i18n{module.mylutece.database.manage_roles_user.lastName} - #i18n{module.mylutece.database.manage_roles_user.firstName}
+	    </p>
+	    <p>${user.lastName} ${user.firstName}</p>
+	    <p class="title">#i18n{module.mylutece.database.manage_roles_user.login}</p>
+		<p>
+			<#assign userLogin = user.login>
+			<#if userLogin?length <= 20 >
+				${userLogin?right_pad(20, " ")}
+			<#else>
+				${userLogin[0..17]}...
+			</#if>
+	    </p>
+	    <p class="title">#i18n{module.mylutece.database.manage_roles_user.actions}</p>
+	    <@item_navigation item_navigator=item_navigator />
+	    <p>
+	    	<a href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}" >
+                <img src="images/admin/skin/actions/modify.png" alt="#i18n{module.mylutece.database.manage_roles_user.linkModifyUser}" title="#i18n{module.mylutece.database.manage_roles_user.linkModifyUser}" />
+            </a>
+	    	<#if external_application_exist >
+	        	<a href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}">
+	                <img src="images/admin/skin/actions/publish.png" class="icon" alt="#i18n{module.mylutece.database.manage_roles_user.linkManageExternalApplication}" title="#i18n{module.mylutece.database.manage_roles_user.linkManageExternalApplication}" />
+	            </a>
+	        </#if>
+			<a href="jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">
+                <img src="images/admin/skin/actions/group.png" class="icon" alt="#i18n{module.mylutece.database.manage_roles_user.linkManageGroups}" title="#i18n{module.mylutece.database.manage_roles_user.linkManageGroups}" />
+            </a>
+	    </p>
+	</div>
+</div>
+
+<div id="right">
+	<div class="content-box" >
+	    <h2>#i18n{module.mylutece.database.manage_roles_user.tableTitle}</h2>
+	    
+	    <form method="post" action="jsp/admin/plugins/mylutece/modules/database/DoAssignRoleUser.jsp">
+	        <input type="hidden" name="mylutece_database_user_id" value="${user.userId}" />
+	        <table>
+	            <tr>
+	                <th>#i18n{module.mylutece.database.manage_roles_user.colName}</th>
+	                <th>#i18n{module.mylutece.database.manage_roles_user.colLabel}</th>
+	                <th></th>
+	            </tr>
+	            <#list role_list as role >
+	            <#if role.role != "none">
+	            <tr>
+	                <td>${role.role}</td>
+	                <td>${role.roleDescription}</td>
+	                <td>
+	                    <#assign checkedString = '' > 
+	                    <#list user_role_list as user_role >
+	                    <#if user_role.role = role.role >
+	                    <#assign checkedString >
+	                    checked="checked"
+	                    </#assign>
+	                    <#break>
+	                    </#if>
+	                    </#list>
+	                    <input type="checkbox" class="checkbox" name="mylutece_database_role_id" value="${role.role}" ${checkedString} />
+	                </td>
+	            </tr>
+	            </#if>
+	            </#list>
+	        </table>
+	        <p>
+	            <input type="hidden" name="plugin_name" value="${plugin_name}" />
+	            <input type="submit" class="button" value="#i18n{module.mylutece.database.manage_roles_user.btnAssign}" />
+	            <input type="submit" value="#i18n{portal.admin.message.buttonCancel}" class="button" name="cancel" />
+	        </p>
+	    </form>
+	</div>
+</div>

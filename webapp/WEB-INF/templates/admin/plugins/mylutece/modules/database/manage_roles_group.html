@@ -1,0 +1,64 @@
+<div id="left">
+    <div class="content-box" >
+	    <h2>#i18n{module.mylutece.database.manage_roles_group.titleGroup} : ${group.groupKey}</h2>
+	    <p class="title">
+			#i18n{module.mylutece.database.manage_roles_group.labelDescription}
+	    </p>
+	    <p>${group.groupDescription}</p>
+	    <p class="title">
+	    	#i18n{module.mylutece.database.manage_roles_group.labelAssignedUsersNumber}
+	    </p>
+	    <p>${assigned_users_number}</p>
+	    <p class="title">#i18n{module.mylutece.database.manage_roles_group.actions}</p>
+	    <@item_navigation item_navigator=item_navigator />
+	    <p>
+	    	<a href="jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}">
+                <img src="images/admin/skin/actions/modify.png" class="icon" alt="#i18n{module.mylutece.database.manage_roles_group.linkModifyGroup}" title="#i18n{module.mylutece.database.manage_roles_group.linkModifyGroup}" />
+            </a>
+            <a href="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp?group_key=${group.groupKey}">
+                <img src="images/admin/skin/actions/group.png" class="icon" alt="#i18n{module.mylutece.database.manage_roles_group.linkLabelManageUsers}" title="#i18n{module.mylutece.database.manage_roles_group.linkLabelManageUsers}" />
+            </a>
+	    </p>
+	</div>
+</div>
+
+<div id="right">
+	<div class="content-box" >
+	    <h2>#i18n{module.mylutece.database.manage_roles_group.boxTitle}</h2>
+	    
+	    <form action="jsp/admin/plugins/mylutece/modules/database/DoAssignRoleGroup.jsp">
+	        <input type="hidden" name="group_key" value="${group.groupKey}" />
+	        <table>
+	            <tr>
+	                <th>#i18n{module.mylutece.database.manage_roles_group.colName}</th>
+	                <th>#i18n{module.mylutece.database.manage_roles_group.colLabel}</th>
+	                <th></th>
+	            </tr>
+	            <#list role_list as role >
+	            <#if role.role != "none">
+	            <tr>
+	                <td>${role.role}</td>
+	                <td>${role.roleDescription}</td>
+	                <td>
+	                    <#assign checkedString = '' > 
+	                    <#list group_role_list as group_role >
+	                    <#if group_role.role = role.role >
+	                    <#assign checkedString >
+	                    checked="checked"
+	                    </#assign>
+	                    <#break>
+	                    </#if>
+	                    </#list>
+	                    <input class="checkbox" type="checkbox" name="role_key" value="${role.role}" ${checkedString} />
+	                       </td>
+	            </tr>
+	            </#if>
+	            </#list>
+	        </table>
+	        <p>
+	            <input type="submit" class="button" value="#i18n{module.mylutece.database.manage_roles_group.btnAssign}" />
+	            <input type="submit" value="#i18n{portal.admin.message.buttonCancel}" class="button" name="cancel" />
+	        </p>
+	    </form>
+	</div>
+</div>

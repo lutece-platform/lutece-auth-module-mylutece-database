@@ -1,0 +1,42 @@
+<div id="left">
+    <div class="content-box" >
+	    <h2>#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey}</h2>
+	    <p class="title">
+			#i18n{module.mylutece.database.modify_group.labelDescription}
+	    </p>
+	    <p>${group.groupDescription}</p>
+	    <p class="title">
+	    	#i18n{module.mylutece.database.modify_group.labelAssignedUsersNumber}
+	    </p>
+	    <p>${assigned_users_number}</p>
+	    <p class="title">#i18n{module.mylutece.database.modify_group.actions}</p>
+	    <@item_navigation item_navigator=item_navigator />
+	    <p>
+	    	<a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesGroup.jsp?group_key=${group.groupKey}">
+                <img src="images/admin/skin/actions/roles.png" class="icon" alt="#i18n{module.mylutece.database.modify_group.linkManageRoles}" title="#i18n{module.mylutece.database.modify_group.linkManageRoles}" />
+            </a>
+            <a href="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp?group_key=${group.groupKey}">
+                <img src="images/admin/skin/actions/group.png" class="icon" alt="#i18n{module.mylutece.database.modify_group.linkLabelManageUsers}" title="#i18n{module.mylutece.database.modify_group.linkLabelManageUsers}" />
+            </a>
+	    </p>
+	</div>
+</div>
+
+<div id="right">
+	<div class="content-box">
+	
+		<h2>#i18n{module.mylutece.database.modify_group.boxTitle} ${group.groupKey}</h2>
+	
+		<form method="post" action="jsp/admin/plugins/mylutece/modules/database/DoModifyGroup.jsp" name="modify_group">
+			<p>
+				<label for="group_description">#i18n{module.mylutece.database.modify_group.labelDescription} :</label>
+				<input type="text" id="group_description" name="group_description" value="${group.groupDescription}" size="70" maxlength="200" tabindex="2" />
+			</p>
+	        <p>
+	        	<input type="submit" value="#i18n{module.mylutece.database.modify_group.buttonLabelValidate}" class="button" tabindex="3" />
+			    <input type="submit" value="#i18n{portal.admin.message.buttonCancel}" class="button" name="cancel" />
+	       	</p>
+		<input type="hidden" name="group_key" value="${group.groupKey}" />
+		</form>
+	</div>
+</div>

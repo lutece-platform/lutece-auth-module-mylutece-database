@@ -1,0 +1,38 @@
+<!-- PASSWORD ENCRYPTION -->
+<div class="highlight-box">
+	<div id="password-encryption">
+		<form method="post" name="password_encryption" action="jsp/admin/plugins/mylutece/modules/database/ModifyPasswordEncryption.jsp">
+			<p>
+				<label for="enable_password_encryption">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnablePasswordEncryption}</label>
+				<#if enable_password_encryption = "false">
+					<input type="radio" name="enable_password_encryption" value="false" checked="checked" /> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOff}
+					<input type="radio" name="enable_password_encryption" value="true" /> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOn}
+				<#else>
+					<input type="radio" name="enable_password_encryption" value="false" /> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOff}
+					<input type="radio" name="enable_password_encryption" value="true" checked="checked"/> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOn}
+				</#if>
+				<br />
+				<br />
+				<span id="password-encryption-algorithm">
+					<label for="encryption_algorithm">#i18n{module.mylutece.database.manage_advanced_parameters.labelEncryptionAlgorithm}</label>
+					<select name="encryption_algorithm">
+						<#if !encryption_algorithm?has_content>
+							<option value="noValue" selected="selected">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
+						<#else>
+							<option value="noValue">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
+						</#if>
+ 					<#list encryption_algorithms_list as algorithm>
+ 						<#if algorithm = encryption_algorithm>
+ 							<option value="${algorithm}" selected="selected">${algorithm}</option>
+ 						<#else>
+ 							<option value=${algorithm}>${algorithm}</option>
+ 						</#if>
+ 					</#list>
+					</select>
+				</span>
+				<br />
+				<input type="submit" class="button" value="#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}" />
+			</p>
+		</form>
+	</div>
+</div>

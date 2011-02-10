@@ -1,0 +1,58 @@
+<div class="content-box" >
+    
+    <h2>#i18n{module.mylutece.database.create_user.tableTitle}</h2>
+    
+    <form method="post" name="create_user" action="jsp/admin/plugins/mylutece/modules/database/DoCreateUser.jsp">
+    	<div class="highlight-box">
+			<div class="highlight-box-content">
+				<p>
+					#i18n{module.mylutece.database.create_user.labelIdentity}
+				</p>
+		        <p>
+		            <label for="login">#i18n{module.mylutece.database.create_user.login} * : </label>
+		            <input type="text"  name="login" maxlength="100" size="35" tabindex="1" value="" />
+		        </p>
+		
+		        <p>
+		            <label for="first_password">#i18n{module.mylutece.database.create_user.firstPassword} * : </label>
+		            <input type="password"  name="first_password" maxlength="100" size="35" tabindex="2" value="" />
+		        </p>
+		        <p>
+		            <label for="second_password">#i18n{module.mylutece.database.create_user.secondPassword} * : </label>
+		            <input type="password"  name="second_password" maxlength="100" size="35" tabindex="2" value="" />
+		        </p>
+		        <p>
+		            <label for="last_name">#i18n{module.mylutece.database.create_user.lastName} * : </label>
+		            <input type="text" name="last_name" maxlength="100" size="35" tabindex="3"  value="" />
+		        </p>
+		        
+		        <p>
+		            <label for="first_name">#i18n{module.mylutece.database.create_user.firstName} * : </label>
+		            <input type="text"  name="first_name" maxlength="100" size="35" tabindex="4" value="" />
+		        </p>
+		
+		        <p>
+		            <label for="email">#i18n{module.mylutece.database.create_user.eMail} * : </label>
+		            <input type="text"  name="email" maxlength="100" size="35" tabindex="5" value="" />
+		        </p>
+	        </div>
+		</div>
+		        
+        <#if attributes_list?has_content>
+			<div class="highlight-box">
+				<div class="highlight-box-content">
+					<p>
+						#i18n{module.mylutece.database.create_user.labelComplementaryAttributes}
+					</p>
+					<#list attributes_list as attribute>
+						${attribute.getHtmlFormAttribute( locale )}
+					</#list>
+				</div>
+			</div>
+		</#if>
+        <p>
+            <input type="hidden" name="plugin_name" value="${plugin_name}" />
+            <input type="submit" class="button" value="#i18n{module.mylutece.database.create_user.btnCreate}" tabindex="6" />
+        </p>
+    </form>
+</div>

@@ -1,0 +1,68 @@
+<div id="content-box-actions">
+	<form method="post" action="jsp/admin/plugins/mylutece/modules/database/CreateGroup.jsp">
+		<input type="submit" tabindex="1" value="#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}" class="button bt-toolbar" />
+    </form>
+</div>
+<div class="content-box" >
+
+    <h2>#i18n{module.mylutece.database.manage_groups.boxTitle}</h2>
+    <div class="highlight-box">
+		<div id="search-groups">
+			<form method="post" name="search_groups" action="jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp"  >
+				<p>
+					<label for="key" >#i18n{module.mylutece.database.group_filter.labelKey} :</label>
+					<input type="text" id="key" name="search_key" value="${search_group_filter.key}" maxlength="50" size="20" />
+				</p>
+				<p>
+					<label for="description" >#i18n{module.mylutece.database.group_filter.labelDescription} :</label>
+					<input type="text" id="description" name="search_description" value="${search_group_filter.description}" maxlength="250" size="50" tabindex="2" />
+				</p>
+				<p>
+		           	<input type="submit" value="#i18n{module.mylutece.database.group_filter.buttonSearch}" tabindex="6" class="button" name="search_is_search"/>   
+		        </p>
+			</form>
+    	</div>
+    </div>
+	<form method="post" action="jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp">
+        <@paginationAdmin paginator=paginator combo=1 form=0 />
+        <#if search_is_search >
+   			<input type="hidden" name="search_is_search" value="true"/>
+   			<input type="hidden" name="search_key" value="${search_group_filter.key}"/>
+   			<input type="hidden" name="search_description" value="${search_group_filter.description}"/>
+        </#if>
+    </form>
+    <table>
+        <tr>
+            <th>
+            	#i18n{module.mylutece.database.manage_groups.columnTitleId}
+            	<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp" attribute="groupKey${sort_search_attribute}" />
+            </th>
+            <th>
+            	#i18n{module.mylutece.database.manage_groups.columnTitleDescription}
+            	<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp" attribute="groupDescription${sort_search_attribute}" />
+            </th>
+            <th>#i18n{module.mylutece.database.manage_groups.columnTitleActions}</th>
+        </tr>
+
+        <#list groups_list as group >
+	        <tr>
+	            <td>
+	                <a href="jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}" class="bullet-link">${group.groupKey}</a>
+	            </td>
+	            <td>${group.groupDescription}</td>
+	            <td>
+	            	<a href="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp?group_key=${group.groupKey}">
+		                <img src="images/admin/skin/actions/group.png" class="icon" alt="#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers}" title="#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers}" />
+		            </a>
+	            	<a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesGroup.jsp?group_key=${group.groupKey}">
+		                <img src="images/admin/skin/actions/roles.png" class="icon" alt="#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles}" title="#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles}" />
+		            </a>
+		            <a href="jsp/admin/plugins/mylutece/modules/database/RemoveGroup.jsp?group_key=${group.groupKey}">
+		                <img src="images/admin/skin/actions/delete.png" class="icon" alt="#i18n{module.mylutece.database.manage_groups.linkLabelRemove}" title="#i18n{module.mylutece.database.manage_groups.linkLabelRemove}" />
+		            </a>
+		        </td>
+	        </tr>
+        </#list>
+    </table>
+    <@paginationAdmin paginator=paginator />
+</div>
