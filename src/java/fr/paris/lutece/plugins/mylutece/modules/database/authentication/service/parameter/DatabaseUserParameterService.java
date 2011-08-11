@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
@@ -51,9 +52,12 @@ import org.apache.commons.lang.StringUtils;
 public final class DatabaseUserParameterService
 {
     private static final String BEAN_DATABASE_USER_PARAMETER_SERVICE = "mylutece-database.databaseUserParameterService";
+
+    // PARAMETERS
     private static final String PARAMETER_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
     private static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
     private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
+    private static final String PARAMETER_ENABLE_JCAPTCHA = "enable_jcaptcha";
 
     /**
      * Private constructor
@@ -158,5 +162,24 @@ public final class DatabaseUserParameterService
         }
 
         return bIsValidationEmail;
+    }
+
+    /**
+     * Check if the jcaptcha is enable or not
+     * @param plugin the plugin
+     * @return true if it is enable, false otherwise
+     */
+    public boolean isJcaptchaEnable( Plugin plugin )
+    {
+        boolean bIsEnable = false;
+        ReferenceItem userParam = findByKey( PARAMETER_ENABLE_JCAPTCHA, plugin );
+
+        if ( ( userParam != null ) && userParam.isChecked(  ) &&
+                DatabaseService.getService(  ).isPluginJcaptchaEnable(  ) )
+        {
+            bIsEnable = true;
+        }
+
+        return bIsEnable;
     }
 }

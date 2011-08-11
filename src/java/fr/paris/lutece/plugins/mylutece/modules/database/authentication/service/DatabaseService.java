@@ -90,6 +90,7 @@ public class DatabaseService
     private static final String COMMA = ",";
     private static final String EMPTY_STRING = "";
     private static final String AMPERSAND = "&";
+    private static final String PLUGIN_JCAPTCHA = "jcaptcha";
 
     // MARKS
     private static final String MARK_LIST_USER_PARAM_DEFAULT_VALUES = "list_user_param_default_values";
@@ -99,6 +100,7 @@ public class DatabaseService
     private static final String MARK_SEARCH_USER_FILTER = "search_user_filter";
     private static final String MARK_SEARCH_MYLUTECE_USER_FIELD_FILTER = "search_mylutece_user_field_filter";
     private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
+    private static final String MARK_IS_PLUGIN_JCAPTCHA_ENABLE = "is_plugin_jcatpcha_enable";
 
     // PROPERTIES
     private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
@@ -157,6 +159,7 @@ public class DatabaseService
                 model.put( MARK_LIST_USER_PARAM_DEFAULT_VALUES,
                     DatabaseUserParameterService.getService(  ).findAll( plugin ) );
                 model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
+                model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable(  ) );
             }
         }
 
@@ -374,5 +377,14 @@ public class DatabaseService
         }
 
         return bIsActive;
+    }
+
+    /**
+     * Check if the plugin jcaptcha is activated or not
+     * @return true if it is activated, false otherwise
+     */
+    public boolean isPluginJcaptchaEnable(  )
+    {
+        return PluginService.isPluginEnable( PLUGIN_JCAPTCHA );
     }
 }

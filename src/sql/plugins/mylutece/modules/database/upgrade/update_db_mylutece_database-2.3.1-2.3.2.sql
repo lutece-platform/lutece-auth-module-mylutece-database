@@ -7,6 +7,7 @@ ALTER TABLE mylutece_database_user ADD COLUMN is_active SMALLINT DEFAULT 0 NOT N
 -- Dump data in tabel mylutece_database_user_parameter
 --
 INSERT INTO mylutece_database_user_parameter VALUES ('account_creation_validation_email', 'false');
+INSERT INTO mylutece_database_user_parameter VALUES ('enable_jcaptcha', 'false');
 
 --
 -- Table structure for table mylutece_database_key

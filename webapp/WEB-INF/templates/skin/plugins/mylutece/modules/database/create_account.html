@@ -43,6 +43,9 @@
 			<#if error_code = "error_sending_email">
 				<div class="alert">#i18n{module.mylutece.database.message.create_account.errorSendingEmail}</div>
 			</#if>
+			<#if error_code = "error_captcha">
+				<div class="alert">#i18n{module.mylutece.database.message.create_account.errorCaptcha}</div>
+			</#if>
 		</#if>
 		
 		<#if action_successful?has_content>
@@ -82,7 +85,6 @@
 	        <form class="default-form" id="createAccount" name="createAccount" action="jsp/site/plugins/mylutece/modules/database/DoCreateAccount.jsp" method="post">
 			<input type="hidden" name="plugin_name" value="${plugin_name}" />
 	        <fieldset>
-				
 		        <p>
 		            <label class="text-label" for="login">#i18n{module.mylutece.database.xpage.create_account.login} * : </label>
 		            <input type="text" ${classLogin?if_exists} name="login" maxlength="100" size="35" tabindex="1" value="${(user.login)?if_exists}" />
@@ -101,7 +103,10 @@
 		            <br />
 		            <label class="text-label" for="email">#i18n{module.mylutece.database.xpage.create_account.eMail} * : </label>
 		            <input type="text" ${classEmail?if_exists} name="email" maxlength="100" size="35" tabindex="4" value="${(user.email)?if_exists}" />
-				</p>					
+				</p>
+				<#if jcaptcha?exists>
+					<p>${jcaptcha}</p>
+				</#if>				
                 <table align="center">
                    	<tr>
                        	<td>

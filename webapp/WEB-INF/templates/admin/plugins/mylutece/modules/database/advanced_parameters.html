@@ -63,6 +63,15 @@
 			<label>&nbsp;</label>
 			#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmailComment}
 		</p>
+		<#if is_plugin_jcatpcha_enable>
+			<p>
+				<label for="enable_captcha">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnableCaptcha} : </label>
+				<input type="checkbox" name="enable_captcha" value="true" ${getChecked('enable_captcha',list_user_param_default_values)} />
+				<br />
+				<label>&nbsp;</label>
+				#i18n{module.mylutece.database.manage_advanced_parameters.labelEnableCaptchaComment}
+			</p>
+		</#if>
 		<p>
 			<input type="submit" class="button" value="#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}" />
 		</p>

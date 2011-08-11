@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.message.SiteMessage;
@@ -86,6 +87,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_ACTION_VALIDATION_EMAIL = "action_validation_email";
     private static final String MARK_ACTION_VALIDATION_SUCCESS = "action_validation_success";
     private static final String MARK_VALIDATION_URL = "validation_url";
+    private static final String MARK_JCAPTCHA = "jcaptcha";
 
     // Parameters
     private static final String PARAMETER_ACTION = "action";
@@ -120,6 +122,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String ERROR_UNKNOWN_EMAIL = "error_unknown_email";
     private static final String ERROR_MANDATORY_FIELDS = "error_mandatory_fields";
     private static final String ERROR_LOGIN_ALREADY_EXISTS = "error_login_already_exists";
+    private static final String ERROR_CAPTCHA = "error_captcha";
 
     // Templates
     private static final String TEMPLATE_LOST_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/lost_password.html";
@@ -162,6 +165,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private Locale _locale;
     private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
     private DatabaseUserKeyService _userKeyService = DatabaseUserKeyService.getService(  );
+    private CaptchaSecurityService _captchaService = new CaptchaSecurityService(  );
 
     /**
      *
@@ -373,6 +377,11 @@ public class MyLuteceDatabaseApp implements XPageApplication
         model.put( MARK_ACTION_VALIDATION_EMAIL, strValidationEmail );
         model.put( MARK_ACTION_VALIDATION_SUCCESS, strValidationSuccess );
 
+        if ( _userParamService.isJcaptchaEnable( _plugin ) )
+        {
+            model.put( MARK_JCAPTCHA, _captchaService.getHtmlCode(  ) );
+        }
+
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_CREATE_ACCOUNT_PAGE, _locale, model );
         page.setContent( t.getHtml(  ) );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_CREATE_ACCOUNT_LABEL, _locale ) );
@@ -426,9 +435,15 @@ public class MyLuteceDatabaseApp implements XPageApplication
         }
 
         // Check email attributes
-        if ( !checkSendingEmailValidation(  ) )
+        if ( StringUtils.isBlank( strError ) && !checkSendingEmailValidation(  ) )
         {
             strError = ERROR_SENDING_EMAIL;
+        }
+
+        if ( StringUtils.isBlank( strError ) && _userParamService.isJcaptchaEnable( _plugin ) &&
+                !_captchaService.validate( request ) )
+        {
+            strError = ERROR_CAPTCHA;
         }
 
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
