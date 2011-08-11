@@ -64,8 +64,8 @@ public class DatabaseDAO implements IDatabaseDAO
     private static final String SQL_QUERY_INSERT_GROUP_FOR_USER = "INSERT INTO mylutece_database_user_group ( mylutece_database_user_id, group_key ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user ";
     private static final String SQL_QUERY_FIND_USERS_FROM_GROUP_KEY = "SELECT a.mylutece_database_user_id, a.login, a.name_family, a.name_given, a.email FROM mylutece_database_user a " +
-    		" INNER JOIN mylutece_database_user_group b ON a.mylutece_database_user_id = b.mylutece_database_user_id WHERE b.group_key = ? ";
-    
+        " INNER JOIN mylutece_database_user_group b ON a.mylutece_database_user_id = b.mylutece_database_user_id WHERE b.group_key = ? ";
+
     /** This class implements the Singleton design pattern. */
     private static DatabaseDAO _dao = new DatabaseDAO(  );
 
@@ -117,6 +117,7 @@ public class DatabaseDAO implements IDatabaseDAO
     /**
      * Load the list of {@link BaseUser}
      * @param plugin The Plugin using this data access service
+     * @param authenticationService the authentication service
      * @return The Collection of the {@link BaseUser}
      */
     public Collection<BaseUser> selectLuteceUserList( Plugin plugin, LuteceAuthentication authenticationService )
@@ -269,7 +270,7 @@ public class DatabaseDAO implements IDatabaseDAO
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }
-    
+
     /**
      * Find assigned users to the given group
      * @param strGroupKey The group key
@@ -278,23 +279,24 @@ public class DatabaseDAO implements IDatabaseDAO
      */
     public List<DatabaseUser> selectGroupUsersFromGroupKey( String strGroupKey, Plugin plugin )
     {
-    	List<DatabaseUser> listUsers = new ArrayList<DatabaseUser>(  );
-    	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_USERS_FROM_GROUP_KEY, plugin );
+        List<DatabaseUser> listUsers = new ArrayList<DatabaseUser>(  );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_USERS_FROM_GROUP_KEY, plugin );
         daoUtil.setString( 1, strGroupKey );
         daoUtil.executeQuery(  );
 
         while ( daoUtil.next(  ) )
         {
-        	DatabaseUser user = new DatabaseUser(  );
-        	user.setUserId( daoUtil.getInt( 1 ) );
-        	user.setLogin( daoUtil.getString( 2 ) );
-        	user.setLastName( daoUtil.getString( 3 ) );
-        	user.setFirstName( daoUtil.getString( 4 ) );
-        	user.setEmail( daoUtil.getString( 5 ) );
-        	listUsers.add( user );
+            DatabaseUser user = new DatabaseUser(  );
+            user.setUserId( daoUtil.getInt( 1 ) );
+            user.setLogin( daoUtil.getString( 2 ) );
+            user.setLastName( daoUtil.getString( 3 ) );
+            user.setFirstName( daoUtil.getString( 4 ) );
+            user.setEmail( daoUtil.getString( 5 ) );
+            listUsers.add( user );
         }
+
         daoUtil.free(  );
-        
+
         return listUsers;
     }
 }

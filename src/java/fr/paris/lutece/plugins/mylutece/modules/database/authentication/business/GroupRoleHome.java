@@ -45,8 +45,8 @@ import java.util.List;
 public final class GroupRoleHome
 {
     // Static variable pointed at the DAO instance
-    private static IGroupRoleDAO _dao = (IGroupRoleDAO) SpringContextService.getPluginBean( "mylutece-database", 
-    		"mylutece-database.databaseGroupRoleDAO" );
+    private static IGroupRoleDAO _dao = (IGroupRoleDAO) SpringContextService.getPluginBean( "mylutece-database",
+            "mylutece-database.databaseGroupRoleDAO" );
 
     /**
      * Creates a new GroupHome object.

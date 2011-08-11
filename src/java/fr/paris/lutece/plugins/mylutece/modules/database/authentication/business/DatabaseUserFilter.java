@@ -33,13 +33,15 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.url.UrlItem;
+
 import java.io.UnsupportedEncodingException;
+
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
-
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.url.UrlItem;
 
 
 /**
@@ -47,20 +49,19 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 public class DatabaseUserFilter
 {
-	// Constants
+    // Constants
     private static final String EQUAL = "=";
     private static final String AMPERSAND = "&";
-    
+
     // Parameteres
     private static final String PARAMETER_SEARCH_LOGIN = "search_login";
     private static final String PARAMETER_SEARCH_LAST_NAME = "search_last_name";
     private static final String PARAMETER_SEARCH_FIRST_NAME = "search_first_name";
     private static final String PARAMETER_SEARCH_EMAIL = "search_email";
     private static final String PARAMETER_SEARCH_IS_SEARCH = "search_is_search";
-    
+
     // Properties
     private static final String PROPERTY_ENCODING_URL = "lutece.encoding.url";
-    
     private String _strLogin;
     private String _strLastName;
     private String _strFirstName;
@@ -155,7 +156,7 @@ public class DatabaseUserFilter
     {
         _strEmail = strEmail;
     }
-    
+
     /**
      * Set the value of the AdminUserFilter
      * @param request HttpServletRequest
@@ -163,75 +164,75 @@ public class DatabaseUserFilter
      */
     public boolean setDatabaseUserFilter( HttpServletRequest request )
     {
-    	boolean bIsSearch = false;
-    	String strIsSearch = request.getParameter( PARAMETER_SEARCH_IS_SEARCH );
-        
-    	if ( strIsSearch != null )
+        boolean bIsSearch = false;
+        String strIsSearch = request.getParameter( PARAMETER_SEARCH_IS_SEARCH );
+
+        if ( strIsSearch != null )
         {
-        	bIsSearch = true;
-        	_strLogin = request.getParameter( PARAMETER_SEARCH_LOGIN );
-        	_strLastName = request.getParameter( PARAMETER_SEARCH_LAST_NAME );
-        	_strFirstName = request.getParameter( PARAMETER_SEARCH_FIRST_NAME );
-        	_strEmail = request.getParameter( PARAMETER_SEARCH_EMAIL );
+            bIsSearch = true;
+            _strLogin = request.getParameter( PARAMETER_SEARCH_LOGIN );
+            _strLastName = request.getParameter( PARAMETER_SEARCH_LAST_NAME );
+            _strFirstName = request.getParameter( PARAMETER_SEARCH_FIRST_NAME );
+            _strEmail = request.getParameter( PARAMETER_SEARCH_EMAIL );
         }
         else
         {
             init(  );
         }
-    	
-    	return bIsSearch;
+
+        return bIsSearch;
     }
-    
+
     /**
      * Build url attributes
-     * @param the url
+     * @param url the url
      */
     public void setUrlAttributes( UrlItem url )
     {
-    	url.addParameter( PARAMETER_SEARCH_IS_SEARCH, Boolean.TRUE.toString(  ) );
-    	
-    	try
-    	{
-    		url.addParameter( PARAMETER_SEARCH_LOGIN, 
-    				URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		url.addParameter( PARAMETER_SEARCH_LAST_NAME, 
-    				URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		url.addParameter( PARAMETER_SEARCH_FIRST_NAME,  
-        			URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		url.addParameter( PARAMETER_SEARCH_EMAIL,  
-        			URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    	}
-    	catch( UnsupportedEncodingException e )
-    	{
-    		e.printStackTrace(  );
-    	}
+        url.addParameter( PARAMETER_SEARCH_IS_SEARCH, Boolean.TRUE.toString(  ) );
+
+        try
+        {
+            url.addParameter( PARAMETER_SEARCH_LOGIN,
+                URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_LAST_NAME,
+                URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_FIRST_NAME,
+                URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_EMAIL,
+                URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            AppLogService.error( e );
+        }
     }
-    
+
     /**
      * Build url attributes
      * @return the url attributes
      */
     public String getUrlAttributes(  )
     {
-    	StringBuilder sbUrlAttributes = new StringBuilder(  );
-    	sbUrlAttributes.append( PARAMETER_SEARCH_IS_SEARCH + EQUAL + Boolean.TRUE );
-    	
-    	try
-    	{
-    		sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_LOGIN + EQUAL +
-    				URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_LAST_NAME + EQUAL +
-    				URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_FIRST_NAME + EQUAL +
-    				URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_EMAIL + EQUAL +
-    				URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    	}
-    	catch( UnsupportedEncodingException e )
-    	{
-    		e.printStackTrace(  );
-    	}
-    	
-    	return sbUrlAttributes.toString(  );
+        StringBuilder sbUrlAttributes = new StringBuilder(  );
+        sbUrlAttributes.append( PARAMETER_SEARCH_IS_SEARCH + EQUAL + Boolean.TRUE );
+
+        try
+        {
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_LOGIN + EQUAL +
+                URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_LAST_NAME + EQUAL +
+                URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_FIRST_NAME + EQUAL +
+                URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_EMAIL + EQUAL +
+                URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            AppLogService.error( e );
+        }
+
+        return sbUrlAttributes.toString(  );
     }
 }

@@ -57,9 +57,9 @@ public class GroupRoleRemovalListener implements RemovalListener
     */
     public boolean canBeRemoved( String strId )
     {
-    	Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        
-    	if ( strId == null )
+        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+
+        if ( strId == null )
         {
             return true;
         }

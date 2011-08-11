@@ -35,39 +35,40 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
+
 /**
- * 
+ *
  * IDatabaseUserKey
  *
  */
 public interface IDatabaseUserKeyDAO
 {
-	/**
-	 * Load an instance of {@link DatabaseUserKey}
-	 * @param strKey the key
-	 * @param plugin the plugin
-	 * @return an instance of {@link DatabaseUserKey}
-	 */
-	DatabaseUserKey load( String strKey, Plugin plugin );
+    /**
+     * Load an instance of {@link DatabaseUserKey}
+     * @param strKey the key
+     * @param plugin the plugin
+     * @return an instance of {@link DatabaseUserKey}
+     */
+    DatabaseUserKey load( String strKey, Plugin plugin );
 
-	/**
-	 * Insert a new {@link DatabaseUserKey}
-	 * @param userKey the {@link DatabaseUserKey}
-	 * @param plugin the plugin
-	 */
-	void insert( DatabaseUserKey userKey, Plugin plugin );
+    /**
+     * Insert a new {@link DatabaseUserKey}
+     * @param userKey the {@link DatabaseUserKey}
+     * @param plugin the plugin
+     */
+    void insert( DatabaseUserKey userKey, Plugin plugin );
 
-	/**
-	 * Delete a {@link DatabaseUserKey}
-	 * @param strKey the key
-	 * @param plugin the plugin
-	 */
-	void delete( String strKey, Plugin plugin );
+    /**
+     * Delete a {@link DatabaseUserKey}
+     * @param strKey the key
+     * @param plugin the plugin
+     */
+    void delete( String strKey, Plugin plugin );
 
-	/**
-	 * Delete by id user
-	 * @param nUserId the id user
-	 * @param plugin the plugin
-	 */
-	void deleteByIdUser( int nUserId, Plugin plugin );
+    /**
+     * Delete by id user
+     * @param nUserId the id user
+     * @param plugin the plugin
+     */
+    void deleteByIdUser( int nUserId, Plugin plugin );
 }

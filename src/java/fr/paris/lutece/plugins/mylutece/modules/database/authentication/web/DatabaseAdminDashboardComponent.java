@@ -33,10 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseResourceIdService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.portal.business.rbac.RBAC;
@@ -46,36 +42,39 @@ import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+
 /**
- * 
+ *
  * DatabaseAdminDashboardComponent
  *
  */
 public class DatabaseAdminDashboardComponent extends AdminDashboardComponent
 {
-	// CONSTANTS
-	private static final String EMPTY_STRING = "";
-	
-	// TEMPLATES
-	private static final String TEMPLATE_ADMIN_DASHBOARD = "admin/plugins/mylutece/modules/database/database_admindashboard.html";
-	
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getDashboardData( AdminUser user, HttpServletRequest request )
-	{
-		if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, 
-				DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
-    	{
-			Map<String, Object> model = DatabaseService.getService(  ).getManageAdvancedParameters( user );
-			HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ADMIN_DASHBOARD, user.getLocale(  ), model );
-			
-			return template.getHtml(  );
-    	}
-		
-		return EMPTY_STRING;
-	}
+    // TEMPLATES
+    private static final String TEMPLATE_ADMIN_DASHBOARD = "admin/plugins/mylutece/modules/database/database_admindashboard.html";
 
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDashboardData( AdminUser user, HttpServletRequest request )
+    {
+        if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
+                    DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
+        {
+            Map<String, Object> model = DatabaseService.getService(  ).getManageAdvancedParameters( user );
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ADMIN_DASHBOARD, user.getLocale(  ), model );
+
+            return template.getHtml(  );
+        }
+
+        return StringUtils.EMPTY;
+    }
 }

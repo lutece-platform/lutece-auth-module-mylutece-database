@@ -47,8 +47,8 @@ import java.util.List;
 public final class GroupHome
 {
     // Static variable pointed at the DAO instance
-    private static IGroupDAO _dao = (IGroupDAO) SpringContextService.getPluginBean( "mylutece-database", 
-    		"mylutece-database.databaseGroupDAO" );
+    private static IGroupDAO _dao = (IGroupDAO) SpringContextService.getPluginBean( "mylutece-database",
+            "mylutece-database.databaseGroupDAO" );
 
     /**
      * Creates a new GroupHome object.
@@ -136,17 +136,16 @@ public final class GroupHome
 
         return groupList;
     }
-    
+
     /**
      * Return the filtered groups list
-     * 
+     *
      * @param gFilter filter
      * @param plugin Plugin
      * @return List of Group
      */
     public static List<Group> findByFilter( GroupFilter gFilter, Plugin plugin )
     {
-    	return _dao.selectByFilter( gFilter, plugin );
+        return _dao.selectByFilter( gFilter, plugin );
     }
-    
 }

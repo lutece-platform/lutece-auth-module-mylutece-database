@@ -39,40 +39,48 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
+
 /**
- * 
+ *
  * DatabaseUserParameterHome
  *
  */
-public final class DatabaseUserParameterHome 
+public final class DatabaseUserParameterHome
 {
-	private static final String BEAN_DATABASE_USER_PARAMETER_DAO = "mylutece-database.databaseUserParameterDAO";
-	// Static variable pointed at the DAO instance
-    private static IDatabaseUserParameterDAO _dao = ( IDatabaseUserParameterDAO ) SpringContextService.getPluginBean( 
-    		DatabasePlugin.PLUGIN_NAME, BEAN_DATABASE_USER_PARAMETER_DAO );
+    private static final String BEAN_DATABASE_USER_PARAMETER_DAO = "mylutece-database.databaseUserParameterDAO";
 
-	/**
-     * Load the parameter value
-     * @param strParameterKey the parameter key
-     * @param plugin the plugin
-     * @return The parameter value
+    // Static variable pointed at the DAO instance
+    private static IDatabaseUserParameterDAO _dao = (IDatabaseUserParameterDAO) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
+            BEAN_DATABASE_USER_PARAMETER_DAO );
+
+    /**
+     * Private constructor
      */
+    private DatabaseUserParameterHome(  )
+    {
+    }
+
+    /**
+    * Load the parameter value
+    * @param strParameterKey the parameter key
+    * @param plugin the plugin
+    * @return The parameter value
+    */
     public static ReferenceItem findByKey( String strParameterKey, Plugin plugin )
     {
-    	return _dao.load( strParameterKey, plugin );
+        return _dao.load( strParameterKey, plugin );
     }
-    
+
     /**
      * Update the parameter value
-     * @param strParameterKey The parameter key
-     * @param strParameterValue The parameter value 
+     * @param userParam The parameter
      * @param plugin the plugin
      */
     public static void update( ReferenceItem userParam, Plugin plugin )
     {
-    	_dao.store( userParam, plugin );
+        _dao.store( userParam, plugin );
     }
-    
+
     /**
      * Find all parameters
      * @param plugin the plugin
@@ -80,6 +88,6 @@ public final class DatabaseUserParameterHome
      */
     public static ReferenceList findAll( Plugin plugin )
     {
-    	return _dao.selectAll( plugin );
+        return _dao.selectAll( plugin );
     }
 }

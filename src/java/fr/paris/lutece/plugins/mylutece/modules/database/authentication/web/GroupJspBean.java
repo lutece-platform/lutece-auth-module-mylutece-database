@@ -33,15 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
@@ -70,23 +61,34 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.sort.AttributeComparator;
 import fr.paris.lutece.util.url.UrlItem;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * This class provides the user interface to manage Lutece group features ( manage, create, modify, remove )
  */
 public class GroupJspBean extends PluginAdminPageJspBean
 {
-	// Constants
-	private static final String QUESTION_MARK = "?";
-	private static final String EQUAL = "=";
-	private static final String AMPERSAND = "&";
-	private static final String SPACE = " ";
-	private static final String OPEN_BRACKET = "(";
-	private static final String CLOSED_BRACKET = ")";
-	private static final String SHARP = "#";
-	
     // Right
     public static final String RIGHT_GROUPS_MANAGEMENT = "DATABASE_GROUPS_MANAGEMENT";
+
+    // Constants
+    private static final String QUESTION_MARK = "?";
+    private static final String EQUAL = "=";
+    private static final String AMPERSAND = "&";
+    private static final String SPACE = " ";
+    private static final String OPEN_BRACKET = "(";
+    private static final String CLOSED_BRACKET = ")";
+    private static final String SHARP = "#";
 
     // JSP
     private static final String JSP_URL_DO_REMOVE_GROUP = "jsp/admin/plugins/mylutece/modules/database/DoRemoveGroup.jsp";
@@ -143,12 +145,11 @@ public class GroupJspBean extends PluginAdminPageJspBean
     private static final String MESSAGE_ERROR_MODIFY = "module.mylutece.database.message.errorModifyGroup";
     private static final String MESSAGE_ERROR_REMOVE = "module.mylutece.database.message.errorRemoveGroup";
     private static final String MESSAGE_ERROR_MANAGE_GROUPS = "module.mylutece.database.message.errorManageGroups";
-
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private DatabaseService _databaseService = DatabaseService.getService(  );
-    
+
     /**
      * Creates a new GroupJspBean object.
      */
@@ -164,25 +165,26 @@ public class GroupJspBean extends PluginAdminPageJspBean
     public String getManageGroups( HttpServletRequest request )
     {
         setPageTitleProperty( null );
-        
+
         List<Group> listGroups = getAuthorizedGroups(  );
-        
+
         // FILTER
         GroupFilter gFilter = new GroupFilter(  );
         boolean bIsSearch = gFilter.setGroupFilter( request );
         List<Group> listFilteredGroups = GroupHome.findByFilter( gFilter, getPlugin(  ) );
         List<Group> listAvailableGroups = new ArrayList<Group>(  );
+
         for ( Group filteredGroup : listFilteredGroups )
         {
-        	for ( Group group : listGroups )
-        	{
-        		if ( filteredGroup.getGroupKey(  ).equals( group.getGroupKey(  ) ) )
-        		{
-        			listAvailableGroups.add( group );
-        		}
-        	}
+            for ( Group group : listGroups )
+            {
+                if ( filteredGroup.getGroupKey(  ).equals( group.getGroupKey(  ) ) )
+                {
+                    listAvailableGroups.add( group );
+                }
+            }
         }
-        
+
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_GROUPS_PER_PAGE, 50 );
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
@@ -191,7 +193,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         // SORT
         String strSortedAttributeName = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
         String strAscSort = null;
-        
+
         if ( strSortedAttributeName != null )
         {
             strAscSort = request.getParameter( Parameters.SORTED_ASC );
@@ -200,32 +202,36 @@ public class GroupJspBean extends PluginAdminPageJspBean
 
             Collections.sort( listAvailableGroups, new AttributeComparator( strSortedAttributeName, bIsAscSort ) );
         }
-        
+
         String strURL = getHomeUrl( request );
         UrlItem url = new UrlItem( strURL );
+
         if ( strSortedAttributeName != null )
         {
-        	url.addParameter( Parameters.SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
+            url.addParameter( Parameters.SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
         }
-        
+
         if ( strAscSort != null )
         {
-        	url.addParameter( Parameters.SORTED_ASC, strAscSort );
+            url.addParameter( Parameters.SORTED_ASC, strAscSort );
         }
-        String strSortSearchAttribute = "";
-        if( bIsSearch )
+
+        String strSortSearchAttribute = StringUtils.EMPTY;
+
+        if ( bIsSearch )
         {
-        	gFilter.setUrlAttributes( url );
-        	if ( gFilter.getUrlAttributes(  ) != "" )
-        	{
-        		strSortSearchAttribute = AMPERSAND + gFilter.getUrlAttributes(  );
-        	}
+            gFilter.setUrlAttributes( url );
+
+            if ( StringUtils.isNotBlank( gFilter.getUrlAttributes(  ) ) )
+            {
+                strSortSearchAttribute = AMPERSAND + gFilter.getUrlAttributes(  );
+            }
         }
-        
-        LocalizedPaginator paginator = new LocalizedPaginator( (List) listAvailableGroups, _nItemsPerPage, url.getUrl(  ),
-                Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
-        
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
+
+        LocalizedPaginator<Group> paginator = new LocalizedPaginator<Group>( (List<Group>) listAvailableGroups,
+                _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
+
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_GROUPS_LIST, paginator.getPageItems(  ) );
@@ -297,30 +303,35 @@ public class GroupJspBean extends PluginAdminPageJspBean
         {
             return getCreateGroup( request );
         }
-        
+
         // ASSIGNED USERS NUMBER
-        List<DatabaseUser> listAllAssignedUsers = DatabaseHome.findGroupUsersFromGroupKey( selectedGroup.getGroupKey(  ), getPlugin(  ) );
+        List<DatabaseUser> listAllAssignedUsers = DatabaseHome.findGroupUsersFromGroupKey( selectedGroup.getGroupKey(  ),
+                getPlugin(  ) );
         int nAssignedUsersNumber = listAllAssignedUsers.size(  );
-        
+
         // ITEM NAVIGATION
         Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<Group> listGroups= getAuthorizedGroups(  );
+        List<Group> listGroups = getAuthorizedGroups(  );
         int nMapKey = 1;
         int nCurrentItemId = 1;
-        for( Group group : listGroups )
+
+        for ( Group group : listGroups )
         {
-        	listItem.put( nMapKey, group.getGroupKey(  ) );
-        	if( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
-        	{
-        		nCurrentItemId = nMapKey;
-        	}
-        	nMapKey++;
+            listItem.put( nMapKey, group.getGroupKey(  ) );
+
+            if ( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
+            {
+                nCurrentItemId = nMapKey;
+            }
+
+            nMapKey++;
         }
+
         String strBaseUrl = AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_GROUP;
         UrlItem url = new UrlItem( strBaseUrl );
         ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ), PARAMETER_GROUP_KEY );
 
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_GROUP, selectedGroup );
         model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
         model.put( MARK_ASSIGNED_USERS_NUMBER, nAssignedUsersNumber );
@@ -337,7 +348,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     public String doModifyGroup( HttpServletRequest request )
     {
-    	String strReturn;
+        String strReturn;
 
         String strActionCancel = request.getParameter( PARAMETER_CANCEL );
 
@@ -347,7 +358,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         }
         else
         {
-        	String strGroupKey = request.getParameter( PARAMETER_GROUP_KEY );
+            String strGroupKey = request.getParameter( PARAMETER_GROUP_KEY );
             String strGroupDescription = request.getParameter( PARAMETER_GROUP_DESCRIPTION );
 
             Group group = getGroupFromRequest( request );
@@ -421,13 +432,15 @@ public class GroupJspBean extends PluginAdminPageJspBean
         {
             return getManageGroups( request );
         }
-        
+
         // ASSIGNED USERS NUMBER
-        List<DatabaseUser> listAllAssignedUsers = DatabaseHome.findGroupUsersFromGroupKey( selectedGroup.getGroupKey(  ), getPlugin(  ) );
+        List<DatabaseUser> listAllAssignedUsers = DatabaseHome.findGroupUsersFromGroupKey( selectedGroup.getGroupKey(  ),
+                getPlugin(  ) );
         int nAssignedUsersNumber = listAllAssignedUsers.size(  );
 
         Collection<Role> allRoleList = RoleHome.findAll(  );
         allRoleList = AdminWorkgroupService.getAuthorizedCollection( allRoleList, getUser(  ) );
+
         List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( selectedGroup.getGroupKey(  ), getPlugin(  ) );
         Collection<Role> groupRoleList = new ArrayList<Role>(  );
 
@@ -441,26 +454,30 @@ public class GroupJspBean extends PluginAdminPageJspBean
                 }
             }
         }
-        
+
         // ITEM NAVIGATION
         Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<Group> listGroups= getAuthorizedGroups(  );
+        List<Group> listGroups = getAuthorizedGroups(  );
         int nMapKey = 1;
         int nCurrentItemId = 1;
-        for( Group group : listGroups )
+
+        for ( Group group : listGroups )
         {
-        	listItem.put( nMapKey, group.getGroupKey(  ) );
-        	if( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
-        	{
-        		nCurrentItemId = nMapKey;
-        	}
-        	nMapKey++;
+            listItem.put( nMapKey, group.getGroupKey(  ) );
+
+            if ( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
+            {
+                nCurrentItemId = nMapKey;
+            }
+
+            nMapKey++;
         }
+
         String strBaseUrl = AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_GROUP;
         UrlItem url = new UrlItem( strBaseUrl );
         ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ), PARAMETER_GROUP_KEY );
 
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_ROLES_LIST, allRoleList );
         model.put( MARK_ROLES_LIST_FOR_GROUP, groupRoleList );
         model.put( MARK_GROUP, selectedGroup );
@@ -480,7 +497,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     public String doAssignRoleGroup( HttpServletRequest request )
     {
-    	String strReturn;
+        String strReturn;
 
         String strActionCancel = request.getParameter( PARAMETER_CANCEL );
 
@@ -490,7 +507,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         }
         else
         {
-        	//get group
+            //get group
             Group group = getGroupFromRequest( request );
 
             if ( group == null )
@@ -509,10 +526,11 @@ public class GroupJspBean extends PluginAdminPageJspBean
                     GroupRoleHome.addRole( group.getGroupKey(  ), roleArray[i], getPlugin(  ) );
                 }
             }
-            strReturn = JSP_MANAGE_ROLES_GROUP + QUESTION_MARK + PARAMETER_GROUP_KEY + EQUAL + group.getGroupKey(  ); 
+
+            strReturn = JSP_MANAGE_ROLES_GROUP + QUESTION_MARK + PARAMETER_GROUP_KEY + EQUAL + group.getGroupKey(  );
         }
 
-        return strReturn; 
+        return strReturn;
     }
 
     /**
@@ -540,27 +558,33 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     private List<Group> getAuthorizedGroups(  )
     {
-    	Collection<Group> allGroupList = GroupHome.findAll( getPlugin(  ) );
+        Collection<Group> allGroupList = GroupHome.findAll( getPlugin(  ) );
         List<Group> groupList = new ArrayList<Group>(  );
+
         for ( Group group : allGroupList )
         {
-        	List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( group.getGroupKey(  ), getPlugin(  ) );
-        	if ( groupRoleKeyList.size(  ) == 0 )
-        	{
-        		groupList.add( group );
-        		continue;
-        	}
-    		for ( String groupRoleKey : groupRoleKeyList )
-    		{
-    			Role role = RoleHome.findByPrimaryKey( groupRoleKey );
-        		if ( AdminWorkgroupService.isAuthorized( role, getUser(  ) ) )
-        		{
-        			groupList.add( group );
-        			break;
-        		}
-    		}
+            List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( group.getGroupKey(  ), getPlugin(  ) );
+
+            if ( groupRoleKeyList.size(  ) == 0 )
+            {
+                groupList.add( group );
+
+                continue;
+            }
+
+            for ( String groupRoleKey : groupRoleKeyList )
+            {
+                Role role = RoleHome.findByPrimaryKey( groupRoleKey );
+
+                if ( AdminWorkgroupService.isAuthorized( role, getUser(  ) ) )
+                {
+                    groupList.add( group );
+
+                    break;
+                }
+            }
         }
-        
+
         return groupList;
     }
 
@@ -571,57 +595,31 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     public String getManageUsersGroup( HttpServletRequest request )
     {
-    	setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_USERS_GROUP );
-    	HashMap<String, Object> model = new HashMap<String, Object>(  );
-    	String strURL = AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_USERS_GROUP;
+        setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_USERS_GROUP );
+
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        String strURL = AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_USERS_GROUP;
         UrlItem url = new UrlItem( strURL );
 
-    	// SELECTED GROUP
+        // SELECTED GROUP
         Group selectedGroup = getGroupFromRequest( request );
 
         if ( selectedGroup == null )
         {
             return getManageGroups( request );
         }
-        
+
         // ASSIGNED USERS
-        List<DatabaseUser> listAssignedUsers = new ArrayList<DatabaseUser>(  );
-        List<DatabaseUser> listAllAssignedUsers = DatabaseHome.findGroupUsersFromGroupKey( selectedGroup.getGroupKey(  ), getPlugin(  ) );
-        for ( DatabaseUser user : listAllAssignedUsers )
-        {
-        	if ( _databaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) )
-        	{
-        		listAssignedUsers.add( user );
-        	}
-        }
-        
-        List<DatabaseUser> listFilteredUsers = _databaseService.getFilteredUsersInterface( listAssignedUsers, request, model, url );
-        
+        List<DatabaseUser> listAllAssignedUsers = DatabaseHome.findGroupUsersFromGroupKey( selectedGroup.getGroupKey(  ),
+                getPlugin(  ) );
+        List<DatabaseUser> listAssignedUsers = getListAssignedUsers( listAllAssignedUsers );
+
+        List<DatabaseUser> listFilteredUsers = _databaseService.getFilteredUsersInterface( listAssignedUsers, request,
+                model, url );
+
         // AVAILABLE USERS
-        ReferenceList listAvailableUsers = new ReferenceList(  );
-        for ( DatabaseUser user : DatabaseUserHome.findDatabaseUsersList( getPlugin(  ) ) )
-        {
-        	boolean bIsAvailable = Boolean.TRUE;
-        	for ( DatabaseUser assignedUser : listAssignedUsers )
-        	{
-        		if ( !_databaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) || 
-        				user.getUserId(  ) == assignedUser.getUserId(  ) )
-        		{
-        			bIsAvailable = Boolean.FALSE;
-        			break;
-        		}
-        	}
-        	
-        	if ( bIsAvailable )
-        	{
-        		ReferenceItem userItem = new ReferenceItem(  );
-        		userItem.setCode( String.valueOf( user.getUserId(  ) ) );
-        		userItem.setName( user.getLastName(  ) + SPACE + user.getFirstName(  ) + SPACE + 
-        				OPEN_BRACKET + user.getLogin(  ) + CLOSED_BRACKET );
-        		listAvailableUsers.add( userItem );
-        	}
-        }
-        
+        ReferenceList listAvailableUsers = getAvailableUsers( listAssignedUsers );
+
         // SORT
         String strSortedAttributeName = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
         String strAscSort = null;
@@ -634,49 +632,36 @@ public class GroupJspBean extends PluginAdminPageJspBean
 
             Collections.sort( listFilteredUsers, new AttributeComparator( strSortedAttributeName, bIsAscSort ) );
         }
-        
+
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_USERS_PER_PAGE, 50 );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
-        
+
         if ( strSortedAttributeName != null )
         {
-        	url.addParameter( Parameters.SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
+            url.addParameter( Parameters.SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
         }
 
         if ( strAscSort != null )
         {
-        	url.addParameter( Parameters.SORTED_ASC, strAscSort );
+            url.addParameter( Parameters.SORTED_ASC, strAscSort );
         }
-        
+
         // ITEM NAVIGATION
-        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<Group> listGroups= getAuthorizedGroups(  );
-        int nMapKey = 1;
-        int nCurrentItemId = 1;
-        for( Group group : listGroups )
-        {
-        	listItem.put( nMapKey, group.getGroupKey(  ) );
-        	if( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
-        	{
-        		nCurrentItemId = nMapKey;
-        	}
-        	nMapKey++;
-        }
-        ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ), PARAMETER_GROUP_KEY );
-        
-        LocalizedPaginator paginator = new LocalizedPaginator( (List) listFilteredUsers, _nItemsPerPage, url.getUrl(  ),
-                Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
-        
+        ItemNavigator itemNavigator = getItemNavigator( selectedGroup, url );
+
+        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( (List<DatabaseUser>) listFilteredUsers,
+                _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
+
         model.put( MARK_GROUP, selectedGroup );
         model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
         model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
+        model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_AVAILABLE_USERS, listAvailableUsers );
         model.put( MARK_ASSIGNED_USERS, paginator.getPageItems(  ) );
         model.put( MARK_ASSIGNED_USERS_NUMBER, listAllAssignedUsers.size(  ) );
-        
+
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_USERS_GROUP, getLocale(  ), model );
 
         return getAdminPage( template.getHtml(  ) );
@@ -689,42 +674,43 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     public String doAssignUsersGroup( HttpServletRequest request )
     {
-    	 String strReturn;
+        String strReturn;
 
-         String strActionCancel = request.getParameter( PARAMETER_CANCEL );
+        String strActionCancel = request.getParameter( PARAMETER_CANCEL );
 
-         if ( strActionCancel != null )
-         {
-             strReturn = JSP_MANAGE_GROUPS;
-         }
-         else
-         {
-        	 Group selectedGroup = getGroupFromRequest( request );
+        if ( strActionCancel != null )
+        {
+            strReturn = JSP_MANAGE_GROUPS;
+        }
+        else
+        {
+            Group selectedGroup = getGroupFromRequest( request );
 
-             if ( selectedGroup == null )
-             {
-                 return getCreateGroup( request );
-             }
+            if ( selectedGroup == null )
+            {
+                return getCreateGroup( request );
+            }
 
-             //retrieve the selected portlets ids
-             String[] arrayUsersIds = request.getParameterValues( PARAMETER_AVAILABLE_USERS );
+            //retrieve the selected portlets ids
+            String[] arrayUsersIds = request.getParameterValues( PARAMETER_AVAILABLE_USERS );
 
-             if ( ( arrayUsersIds != null ) )
-             {
-                 for ( int i = 0; i < arrayUsersIds.length; i++ )
-                 {
-                     int nUserId = Integer.parseInt( arrayUsersIds[i] );
-                     DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nUserId, getPlugin(  ) );
-                     DatabaseHome.addGroupForUser( user.getUserId(  ), selectedGroup.getGroupKey(  ), getPlugin(  ) );
-                 }
-             }
+            if ( ( arrayUsersIds != null ) )
+            {
+                for ( int i = 0; i < arrayUsersIds.length; i++ )
+                {
+                    int nUserId = Integer.parseInt( arrayUsersIds[i] );
+                    DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nUserId, getPlugin(  ) );
+                    DatabaseHome.addGroupForUser( user.getUserId(  ), selectedGroup.getGroupKey(  ), getPlugin(  ) );
+                }
+            }
 
-             strReturn = JSP_MANAGE_USERS_GROUP + QUESTION_MARK + PARAMETER_GROUP_KEY + EQUAL + selectedGroup.getGroupKey(  );
-         }
+            strReturn = JSP_MANAGE_USERS_GROUP + QUESTION_MARK + PARAMETER_GROUP_KEY + EQUAL +
+                selectedGroup.getGroupKey(  );
+        }
 
-         return strReturn;
+        return strReturn;
     }
-    
+
     /**
      * Unassign user from a given group
      * @param request HttpServletRequest
@@ -732,23 +718,109 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     public String doUnAssignUserGroup( HttpServletRequest request )
     {
-    	Group selectedGroup = getGroupFromRequest( request );
+        Group selectedGroup = getGroupFromRequest( request );
 
         if ( selectedGroup == null )
         {
             return getCreateGroup( request );
         }
-        
+
         int nIdUser = Integer.parseInt( request.getParameter( PARAMETER_MYLUTECE_DATABASE_USER_ID ) );
         String strAnchor = request.getParameter( PARAMETER_ANCHOR );
-        
+
         DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nIdUser, getPlugin(  ) );
+
         if ( user != null )
         {
-        	DatabaseHome.removeGroupsForUser( user.getUserId(  ), getPlugin(  ) );
+            DatabaseHome.removeGroupsForUser( user.getUserId(  ), getPlugin(  ) );
         }
-        
+
         return JSP_MANAGE_USERS_GROUP + QUESTION_MARK + PARAMETER_GROUP_KEY + EQUAL + selectedGroup.getGroupKey(  ) +
-        		SHARP + strAnchor;
+        SHARP + strAnchor;
+    }
+
+    /**
+     * Get the list of assigned user to the given group
+     * @param listAllAssignedUsers the list of all assigned userse
+     * @return a list of {@link DatabaseUser}
+     */
+    private List<DatabaseUser> getListAssignedUsers( List<DatabaseUser> listAllAssignedUsers )
+    {
+        List<DatabaseUser> listAssignedUsers = new ArrayList<DatabaseUser>(  );
+
+        for ( DatabaseUser user : listAllAssignedUsers )
+        {
+            if ( _databaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) )
+            {
+                listAssignedUsers.add( user );
+            }
+        }
+
+        return listAssignedUsers;
+    }
+
+    /**
+     * Get the list of avaivable users
+     * @param listAssignedUsers the list of assigned users
+     * @return a {@link ReferenceList}
+     */
+    private ReferenceList getAvailableUsers( List<DatabaseUser> listAssignedUsers )
+    {
+        ReferenceList listAvailableUsers = new ReferenceList(  );
+
+        for ( DatabaseUser user : DatabaseUserHome.findDatabaseUsersList( getPlugin(  ) ) )
+        {
+            boolean bIsAvailable = Boolean.TRUE;
+
+            for ( DatabaseUser assignedUser : listAssignedUsers )
+            {
+                if ( !_databaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) ||
+                        ( user.getUserId(  ) == assignedUser.getUserId(  ) ) )
+                {
+                    bIsAvailable = Boolean.FALSE;
+
+                    break;
+                }
+            }
+
+            if ( bIsAvailable )
+            {
+                ReferenceItem userItem = new ReferenceItem(  );
+                userItem.setCode( String.valueOf( user.getUserId(  ) ) );
+                userItem.setName( user.getLastName(  ) + SPACE + user.getFirstName(  ) + SPACE + OPEN_BRACKET +
+                    user.getLogin(  ) + CLOSED_BRACKET );
+                listAvailableUsers.add( userItem );
+            }
+        }
+
+        return listAvailableUsers;
+    }
+
+    /**
+     * Get the item navigator
+     * @param selectedGroup the selected group
+     * @param url the url
+     * @return the {@link ItemNavigator}
+     */
+    private ItemNavigator getItemNavigator( Group selectedGroup, UrlItem url )
+    {
+        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
+        List<Group> listGroups = getAuthorizedGroups(  );
+        int nMapKey = 1;
+        int nCurrentItemId = 1;
+
+        for ( Group group : listGroups )
+        {
+            listItem.put( nMapKey, group.getGroupKey(  ) );
+
+            if ( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
+            {
+                nCurrentItemId = nMapKey;
+            }
+
+            nMapKey++;
+        }
+
+        return new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ), PARAMETER_GROUP_KEY );
     }
 }

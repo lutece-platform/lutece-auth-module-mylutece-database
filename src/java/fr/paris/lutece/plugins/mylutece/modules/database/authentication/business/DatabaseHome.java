@@ -48,7 +48,8 @@ import java.util.List;
 public final class DatabaseHome
 {
     // Static variable pointed at the DAO instance
-    private static IDatabaseDAO _dao = (IDatabaseDAO) SpringContextService.getPluginBean( "mylutece-database", "mylutece-database.databaseDAO" );
+    private static IDatabaseDAO _dao = (IDatabaseDAO) SpringContextService.getPluginBean( "mylutece-database",
+            "mylutece-database.databaseDAO" );
 
     /**
      * Private constructor - this class need not be instantiated
@@ -74,6 +75,7 @@ public final class DatabaseHome
     /**
      * Load the list of {@link BaseUser}
      * @param plugin The Plugin using this data access service
+     * @param authenticationService the authentication service
      * @return The Collection of the {@link BaseUser}
      */
     public static Collection<BaseUser> findDatabaseUsersList( Plugin plugin, LuteceAuthentication authenticationService )
@@ -158,7 +160,7 @@ public final class DatabaseHome
     {
         return _dao.selectLoginListForRoleKey( strRoleKey, plugin );
     }
-    
+
     /**
      * Find assigned users to the given group
      * @param strGroupKey The group key
@@ -167,6 +169,6 @@ public final class DatabaseHome
      */
     public static List<DatabaseUser> findGroupUsersFromGroupKey( String strGroupKey, Plugin plugin )
     {
-    	return _dao.selectGroupUsersFromGroupKey( strGroupKey, plugin );
+        return _dao.selectGroupUsersFromGroupKey( strGroupKey, plugin );
     }
 }

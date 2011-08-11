@@ -33,11 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
@@ -49,83 +44,93 @@ import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 
+import java.util.List;
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
+
+
 /**
- * 
+ *
  * DatabaseUserFieldListener
  *
  */
 public class DatabaseUserFieldListener implements MyLuteceUserFieldListener
 {
-	// Constantes
-	private static final String EMPTY_STRING = "";
-	
-	// Properties
-		
-	/**
-	 * Create user fields
-	 * @param user AdminUser
-	 * @param request HttpServletRequest
-	 * @param locale Locale
-	 */
-	public void doCreateUserFields( int nIdUser, HttpServletRequest request, Locale locale )
-	{
-		Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-		List<IAttribute> listAttributes = AttributeHome.findPluginAttributes( DatabasePlugin.PLUGIN_NAME, locale, myLutecePlugin );
-		
-		for ( IAttribute attribute : listAttributes )
-		{
-			List<MyLuteceUserField> userFields = attribute.getUserFieldsData( request, nIdUser );
-			for ( MyLuteceUserField userField : userFields )
-			{
-				if ( userField != null && !userField.getValue(  ).equals( EMPTY_STRING ) )
-	        	{
-	        		// Change the value of the user field
-	        		// Instead of having the ID of the attribute field, we put the attribute field title
-	        		// which represents the locale
-	        		userField.setValue( userField.getAttributeField(  ).getTitle(  ) );
-	        		MyLuteceUserFieldHome.create( userField, myLutecePlugin );
-	        	}
-			}
-		}
-	}
-	
-	/**
-	 * Modify user fields
-	 * @param user AdminUser
-	 * @param request HttpServletRequest
-	 * @param locale Locale
-	 * @param currentUser current user
-	 */
-	public void doModifyUserFields( int nIdUser, HttpServletRequest request, Locale locale, AdminUser currentUser )
-	{
-		Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-		List<IAttribute> listAttributes = AttributeHome.findPluginAttributes( DatabasePlugin.PLUGIN_NAME, locale, myLutecePlugin );
-		
-		for ( IAttribute attribute : listAttributes )
-		{
-			List<MyLuteceUserField> userFields = attribute.getUserFieldsData( request, nIdUser );
-			for ( MyLuteceUserField userField : userFields )
-			{
-				if ( userField != null && !userField.getValue(  ).equals( EMPTY_STRING ) )
-	        	{
-	        		// Change the value of the user field
-	        		// Instead of having the ID of the attribute field, we put the attribute field title
-	        		// which represents the locale
-	        		userField.setValue( userField.getAttributeField(  ).getTitle(  ) );
-	        		MyLuteceUserFieldHome.create( userField, myLutecePlugin );
-	        	}
-			}
-		}
-	}
+    // Constantes
+    private static final String EMPTY_STRING = "";
 
-	/**
-	 * Remove user fields
-	 * @param user Adminuser
-	 * @param request HttpServletRequest
-	 * @param locale locale
-	 */
-	public void doRemoveUserFields( int nIdUser, HttpServletRequest request, Locale locale )
-	{
-		// No action
-	}
+    // Properties
+
+    /**
+     * Create user fields
+     * @param nIdUser the id user
+     * @param request HttpServletRequest
+     * @param locale Locale
+     */
+    public void doCreateUserFields( int nIdUser, HttpServletRequest request, Locale locale )
+    {
+        Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+        List<IAttribute> listAttributes = AttributeHome.findPluginAttributes( DatabasePlugin.PLUGIN_NAME, locale,
+                myLutecePlugin );
+
+        for ( IAttribute attribute : listAttributes )
+        {
+            List<MyLuteceUserField> userFields = attribute.getUserFieldsData( request, nIdUser );
+
+            for ( MyLuteceUserField userField : userFields )
+            {
+                if ( ( userField != null ) && !userField.getValue(  ).equals( EMPTY_STRING ) )
+                {
+                    // Change the value of the user field
+                    // Instead of having the ID of the attribute field, we put the attribute field title
+                    // which represents the locale
+                    userField.setValue( userField.getAttributeField(  ).getTitle(  ) );
+                    MyLuteceUserFieldHome.create( userField, myLutecePlugin );
+                }
+            }
+        }
+    }
+
+    /**
+     * Modify user fields
+     * @param nIdUser the id suer
+     * @param request HttpServletRequest
+     * @param locale Locale
+     * @param currentUser current user
+     */
+    public void doModifyUserFields( int nIdUser, HttpServletRequest request, Locale locale, AdminUser currentUser )
+    {
+        Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+        List<IAttribute> listAttributes = AttributeHome.findPluginAttributes( DatabasePlugin.PLUGIN_NAME, locale,
+                myLutecePlugin );
+
+        for ( IAttribute attribute : listAttributes )
+        {
+            List<MyLuteceUserField> userFields = attribute.getUserFieldsData( request, nIdUser );
+
+            for ( MyLuteceUserField userField : userFields )
+            {
+                if ( ( userField != null ) && !userField.getValue(  ).equals( EMPTY_STRING ) )
+                {
+                    // Change the value of the user field
+                    // Instead of having the ID of the attribute field, we put the attribute field title
+                    // which represents the locale
+                    userField.setValue( userField.getAttributeField(  ).getTitle(  ) );
+                    MyLuteceUserFieldHome.create( userField, myLutecePlugin );
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove user fields
+     * @param nIdUser the id user
+     * @param request HttpServletRequest
+     * @param locale locale
+     */
+    public void doRemoveUserFields( int nIdUser, HttpServletRequest request, Locale locale )
+    {
+        // No action
+    }
 }

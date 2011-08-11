@@ -33,16 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
@@ -53,8 +43,10 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFieldListener;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFilter;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserRoleRemovalListener;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
@@ -65,12 +57,23 @@ import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
+import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.service.workgroup.AdminWorkgroupService;
 import fr.paris.lutece.util.url.UrlItem;
+
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -80,10 +83,10 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 public class DatabaseService
 {
-    private static final String BEAN_DATABASE_SERVICE = "mylutece-database.databaseService"; 
+    private static final String BEAN_DATABASE_SERVICE = "mylutece-database.databaseService";
     private static final String AUTHENTICATION_BEAN_NAME = "mylutece-database.authentication";
 
-	// CONSTANTS
+    // CONSTANTS
     private static final String COMMA = ",";
     private static final String EMPTY_STRING = "";
     private static final String AMPERSAND = "&";
@@ -96,13 +99,9 @@ public class DatabaseService
     private static final String MARK_SEARCH_USER_FILTER = "search_user_filter";
     private static final String MARK_SEARCH_MYLUTECE_USER_FIELD_FILTER = "search_mylutece_user_field_filter";
     private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
-    
+
     // PROPERTIES
     private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
-    
-    // PARAMETERS
-    public static final String PARAMETER_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
-    public static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
 
     /**
     * Initialize the Database service
@@ -110,202 +109,220 @@ public class DatabaseService
     */
     public void init(  )
     {
-        DatabaseUser.init(  );
-        BaseAuthentication baseAuthentication = ( BaseAuthentication ) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME, AUTHENTICATION_BEAN_NAME );
+        RoleRemovalListenerService.getService(  ).registerListener( new DatabaseUserRoleRemovalListener(  ) );
+        DatabaseMyLuteceUserFieldListenerService.getService(  ).registerListener( new DatabaseUserFieldListener(  ) );
+
+        BaseAuthentication baseAuthentication = (BaseAuthentication) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
+                AUTHENTICATION_BEAN_NAME );
+
         if ( baseAuthentication != null )
         {
-        	MultiLuteceAuthentication.registerAuthentication( baseAuthentication );
+            MultiLuteceAuthentication.registerAuthentication( baseAuthentication );
         }
         else
         {
-        	AppLogService.error( "BaseAuthentication not found, please check your database_context.xml configuration" );
+            AppLogService.error( "BaseAuthentication not found, please check your database_context.xml configuration" );
         }
     }
 
     /**
      * Returns the instance of the singleton
-     *
      * @return The instance of the singleton
      */
     public static DatabaseService getService(  )
     {
         return (DatabaseService) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME, BEAN_DATABASE_SERVICE );
     }
-    
+
     /**
      * Build the advanced parameters management
-     * @param request HttpServletRequest
+     * @param user the admin user
      * @return The model for the advanced parameters
      */
     public Map<String, Object> getManageAdvancedParameters( AdminUser user )
     {
-    	Map<String, Object> model = new HashMap<String, Object>(  );
-    	Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-    	
-    	// Encryption Password
-    	if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, 
-    			DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
-    	{
-    		String[] listAlgorithms = AppPropertiesService.getProperty( PROPERTY_ENCRYPTION_ALGORITHMS_LIST ).split( COMMA );
-        	for ( String strAlgorithm : listAlgorithms )
-        	{
-        		strAlgorithm.trim(  );
-        	}
-        	
-    		model.put( MARK_LIST_USER_PARAM_DEFAULT_VALUES, DatabaseUserParameterService.getService(  ).findAll( plugin ) );
-        	model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
-    	}
-    	
-    	return model;
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+
+        // Encryption Password
+        if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
+                    DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
+        {
+            String strAlgorithms = AppPropertiesService.getProperty( PROPERTY_ENCRYPTION_ALGORITHMS_LIST );
+
+            if ( StringUtils.isNotBlank( strAlgorithms ) )
+            {
+                String[] listAlgorithms = strAlgorithms.split( COMMA );
+
+                model.put( MARK_LIST_USER_PARAM_DEFAULT_VALUES,
+                    DatabaseUserParameterService.getService(  ).findAll( plugin ) );
+                model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
+            }
+        }
+
+        return model;
     }
-    
+
     /**
      * Check if an Lutece user should be visible to the user according its workgroup
      * @param user the Lutece user
+     * @param adminUser the admin user
+     * @param plugin the plugin
      * @return true if the Lutece user should be visible, false otherwise
      */
     public boolean isAuthorized( DatabaseUser user, AdminUser adminUser, Plugin plugin )
     {
-    	boolean bHasRole = false;
-    	List<String> userRoleKeyList = DatabaseHome.findUserRolesFromLogin( user.getLogin(  ), plugin );
-    	for ( String userRoleKey : userRoleKeyList )
-    	{
-    		bHasRole = true;
-    		Role role = RoleHome.findByPrimaryKey( userRoleKey );
-    		if ( AdminWorkgroupService.isAuthorized( role, adminUser ) )
-    		{
-    			return true;
-    		}
-    	}
-    	
-    	List<String> userGroupKeyList = DatabaseHome.findUserGroupsFromLogin( user.getLogin(  ), plugin );
-    	for ( String userGroupKey : userGroupKeyList )
-    	{
-    		List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( userGroupKey, plugin );
-    		for ( String groupRoleKey : groupRoleKeyList )
-    		{
-    			bHasRole = true;
-    			Role role = RoleHome.findByPrimaryKey( groupRoleKey );
-        		if ( AdminWorkgroupService.isAuthorized( role, adminUser ) )
-        		{
-        			return true;
-        		}
-    		}
-    	}
-    	
-    	if ( bHasRole )
-    	{
-    		return false;
-    	}
-    	else
-    	{
-    		return true;
-    	}
+        boolean bHasRole = false;
+        List<String> userRoleKeyList = DatabaseHome.findUserRolesFromLogin( user.getLogin(  ), plugin );
+
+        for ( String userRoleKey : userRoleKeyList )
+        {
+            bHasRole = true;
+
+            Role role = RoleHome.findByPrimaryKey( userRoleKey );
+
+            if ( AdminWorkgroupService.isAuthorized( role, adminUser ) )
+            {
+                return true;
+            }
+        }
+
+        List<String> userGroupKeyList = DatabaseHome.findUserGroupsFromLogin( user.getLogin(  ), plugin );
+
+        for ( String userGroupKey : userGroupKeyList )
+        {
+            List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( userGroupKey, plugin );
+
+            for ( String groupRoleKey : groupRoleKeyList )
+            {
+                bHasRole = true;
+
+                Role role = RoleHome.findByPrimaryKey( groupRoleKey );
+
+                if ( AdminWorkgroupService.isAuthorized( role, adminUser ) )
+                {
+                    return true;
+                }
+            }
+        }
+
+        return !bHasRole;
     }
-    
+
     /**
      * Get authorized users list
+     * @param adminUser the admin user
+     * @param plugin the plugin
      * @return a list of users
      */
     public List<DatabaseUser> getAuthorizedUsers( AdminUser adminUser, Plugin plugin )
     {
         Collection<DatabaseUser> userList = DatabaseUserHome.findDatabaseUsersList( plugin );
         List<DatabaseUser> authorizedUserList = new ArrayList<DatabaseUser>(  );
+
         for ( DatabaseUser user : userList )
         {
-        	if ( isAuthorized( user, adminUser, plugin ) )
-        	{
-        		authorizedUserList.add( user );
-        	}
+            if ( isAuthorized( user, adminUser, plugin ) )
+            {
+                authorizedUserList.add( user );
+            }
         }
-        
+
         return authorizedUserList;
     }
-    
+
     /**
      * Get the filtered list of database users
      * @param listUsers the initial list to filter
      * @param request HttpServletRequest
-     * @param model Map 
+     * @param model Map
      * @param url UrlItem
      * @return the filtered list
      */
-    public List<DatabaseUser> getFilteredUsersInterface
-    	( List<DatabaseUser> listUsers, HttpServletRequest request, Map<String, Object> model, UrlItem url )
+    public List<DatabaseUser> getFilteredUsersInterface( List<DatabaseUser> listUsers, HttpServletRequest request,
+        Map<String, Object> model, UrlItem url )
     {
-    	Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-    	
-    	// FILTER
+        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+
+        // FILTER
         DatabaseUserFilter duFilter = new DatabaseUserFilter(  );
         boolean bIsSearch = duFilter.setDatabaseUserFilter( request );
         List<DatabaseUser> listFilteredUsers = DatabaseUserHome.findDatabaseUsersListByFilter( duFilter, plugin );
         List<DatabaseUser> listAvailableUsers = new ArrayList<DatabaseUser>(  );
+
         for ( DatabaseUser filteredUser : listFilteredUsers )
         {
-        	for ( DatabaseUser user : listUsers )
-        	{
-        		if ( filteredUser.getUserId(  ) == user.getUserId(  ) )
-        		{
-        			listAvailableUsers.add( user );
-        		}
-        	}
+            for ( DatabaseUser user : listUsers )
+            {
+                if ( filteredUser.getUserId(  ) == user.getUserId(  ) )
+                {
+                    listAvailableUsers.add( user );
+                }
+            }
         }
-        
+
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         List<DatabaseUser> filteredUsers = new ArrayList<DatabaseUser>(  );
-        
-    	MyLuteceUserFieldFilter mlFieldFilter= new MyLuteceUserFieldFilter(  );
-    	mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale(  ) );
-        List<Integer> listFilteredUserIdsByUserFields = MyLuteceUserFieldHome.findUsersByFilter( mlFieldFilter, myLutecePlugin );
-        
+
+        MyLuteceUserFieldFilter mlFieldFilter = new MyLuteceUserFieldFilter(  );
+        mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale(  ) );
+
+        List<Integer> listFilteredUserIdsByUserFields = MyLuteceUserFieldHome.findUsersByFilter( mlFieldFilter,
+                myLutecePlugin );
+
         if ( listFilteredUserIdsByUserFields != null )
         {
-        	for ( DatabaseUser filteredUser : listAvailableUsers )
+            for ( DatabaseUser filteredUser : listAvailableUsers )
             {
-            	for ( Integer nFilteredUserIdByUserField : listFilteredUserIdsByUserFields )
-            	{
-            		if ( filteredUser.getUserId(  ) == nFilteredUserIdByUserField )
-            		{
-            			filteredUsers.add( filteredUser );
-            		}
-            	}
+                for ( Integer nFilteredUserIdByUserField : listFilteredUserIdsByUserFields )
+                {
+                    if ( filteredUser.getUserId(  ) == nFilteredUserIdByUserField )
+                    {
+                        filteredUsers.add( filteredUser );
+                    }
+                }
             }
         }
         else
         {
-        	filteredUsers = listAvailableUsers;
+            filteredUsers = listAvailableUsers;
         }
-        
+
         List<IAttribute> listAttributes = AttributeHome.findAll( request.getLocale(  ), myLutecePlugin );
+
         for ( IAttribute attribute : listAttributes )
         {
-        	List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( 
-        			attribute.getIdAttribute(  ), myLutecePlugin );
-        	attribute.setListAttributeFields( listAttributeFields );
+            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
+                    myLutecePlugin );
+            attribute.setListAttributeFields( listAttributeFields );
         }
-        
+
         String strSortSearchAttribute = EMPTY_STRING;
-        if( bIsSearch )
+
+        if ( bIsSearch )
         {
-        	duFilter.setUrlAttributes( url );
-        	if ( duFilter.getUrlAttributes(  ) != EMPTY_STRING )
-        	{
-        		strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes(  );
-        	}
-        	mlFieldFilter.setUrlAttributes( url );
-        	if ( mlFieldFilter.getUrlAttributes(  ) != EMPTY_STRING )
-        	{
-        		strSortSearchAttribute += AMPERSAND + mlFieldFilter.getUrlAttributes(  );
-        	}
+            duFilter.setUrlAttributes( url );
+
+            if ( duFilter.getUrlAttributes(  ) != EMPTY_STRING )
+            {
+                strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes(  );
+            }
+
+            mlFieldFilter.setUrlAttributes( url );
+
+            if ( mlFieldFilter.getUrlAttributes(  ) != EMPTY_STRING )
+            {
+                strSortSearchAttribute += ( AMPERSAND + mlFieldFilter.getUrlAttributes(  ) );
+            }
         }
-        
+
         model.put( MARK_SEARCH_IS_SEARCH, bIsSearch );
         model.put( MARK_SEARCH_USER_FILTER, duFilter );
         model.put( MARK_SORT_SEARCH_ATTRIBUTE, strSortSearchAttribute );
         model.put( MARK_SEARCH_MYLUTECE_USER_FIELD_FILTER, mlFieldFilter );
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
-    	
-    	return filteredUsers;
+
+        return filteredUsers;
     }
 
     /**
@@ -319,18 +336,21 @@ public class DatabaseService
         // Updates password
         if ( StringUtils.isNotBlank( strPassword ) )
         {
-        	// Encrypts password or not
-        	String strEncryptedPassword = strPassword;
-        	if ( DatabaseUserParameterService.getService(  ).isPasswordEncrypted( plugin ) )
-        	{
-        		String strAlgorithm = DatabaseUserParameterService.getService(  ).getEncryptionAlgorithm( plugin );
-            	strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
-        	}
-        	DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId(  ), plugin );
-        	if ( userStored != null )
-        	{
-        		DatabaseUserHome.updatePassword( userStored, strEncryptedPassword, plugin );
-        	}
+            // Encrypts password or not
+            String strEncryptedPassword = strPassword;
+
+            if ( DatabaseUserParameterService.getService(  ).isPasswordEncrypted( plugin ) )
+            {
+                String strAlgorithm = DatabaseUserParameterService.getService(  ).getEncryptionAlgorithm( plugin );
+                strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
+            }
+
+            DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId(  ), plugin );
+
+            if ( userStored != null )
+            {
+                DatabaseUserHome.updatePassword( userStored, strEncryptedPassword, plugin );
+            }
         }
     }
 
@@ -342,15 +362,17 @@ public class DatabaseService
      */
     public boolean isUserActive( String strUserName, Plugin plugin )
     {
-    	boolean bIsActive = false;
-    	
-    	List<DatabaseUser> listUsers = (List<DatabaseUser>) DatabaseUserHome.findDatabaseUsersListForLogin( strUserName, plugin );
-    	if ( listUsers != null && !listUsers.isEmpty(  ) )
-    	{
-    		DatabaseUser user = listUsers.get( 0 );
-    		bIsActive = user.isActive(  );
-    	}
-    	
-    	return bIsActive;
+        boolean bIsActive = false;
+
+        List<DatabaseUser> listUsers = (List<DatabaseUser>) DatabaseUserHome.findDatabaseUsersListForLogin( strUserName,
+                plugin );
+
+        if ( ( listUsers != null ) && !listUsers.isEmpty(  ) )
+        {
+            DatabaseUser user = listUsers.get( 0 );
+            bIsActive = user.isActive(  );
+        }
+
+        return bIsActive;
     }
 }

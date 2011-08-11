@@ -33,8 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key;
 
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKey;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKeyHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
@@ -43,94 +41,100 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.url.UrlItem;
 
+import javax.servlet.http.HttpServletRequest;
+
+
 /**
- * 
+ *
  * DatabaseUserKeyService
  *
  */
 public final class DatabaseUserKeyService
 {
-	private static final String BEAN_DATABASE_USER_KEY_SERVICE = "mylutece-database.databaseUserKeyService";
-	
-	// CONSTANTS
-	private static final String SLASH = "/";
-	
-	// PARAMETERS
-	private static final String PARAMETER_KEY = "key";
-	
-	// JSP
-	private static final String JSP_VALIDATE_ACCOUNT = "jsp/site/plugins/mylutece/modules/database/DoValidateAccount.jsp";
+    private static final String BEAN_DATABASE_USER_KEY_SERVICE = "mylutece-database.databaseUserKeyService";
 
-	/**
-	 * Private constructor
-	 */
-	private DatabaseUserKeyService(  )
-	{
-	}
+    // CONSTANTS
+    private static final String SLASH = "/";
 
-	/**
-	 * Get the instance of the service
-	 * @return the instance of the service
-	 */
-	public static DatabaseUserKeyService getService(  )
-	{
-		return (DatabaseUserKeyService) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME, 
-				BEAN_DATABASE_USER_KEY_SERVICE );
-	}
+    // PARAMETERS
+    private static final String PARAMETER_KEY = "key";
 
-	// CRUD
-	
-	/**
-	 * Create a new user key from a given user id
-	 * @param nUserId the id user
-	 */
-	public DatabaseUserKey create( int nUserId )
-	{
-		DatabaseUserKey userKey = new DatabaseUserKey(  );
-		userKey.setUserId( nUserId );
-		userKey.setKey( DatabaseUtils.generateNewKey(  ) );
-		DatabaseUserKeyHome.create( userKey );
-		return userKey;
-	}
+    // JSP
+    private static final String JSP_VALIDATE_ACCOUNT = "jsp/site/plugins/mylutece/modules/database/DoValidateAccount.jsp";
 
-	/**
-	 * Find the key
-	 * @param strKey the key
-	 * @return the key
-	 */
-	public DatabaseUserKey findByPrimaryKey( String strKey )
-	{
-		return DatabaseUserKeyHome.findByPrimaryKey( strKey );
-	}
+    /**
+     * Private constructor
+     */
+    private DatabaseUserKeyService(  )
+    {
+    }
 
-	/**
-	 * Remove a key
-	 * @param strKey the key
-	 */
-	public void remove( String strKey )
-	{
-		DatabaseUserKeyHome.remove( strKey );
-	}
+    /**
+     * Get the instance of the service
+     * @return the instance of the service
+     */
+    public static DatabaseUserKeyService getService(  )
+    {
+        return (DatabaseUserKeyService) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
+            BEAN_DATABASE_USER_KEY_SERVICE );
+    }
 
-	/**
-	 * Remove a key from a given id user
-	 * @param nUserId the id user
-	 */
-	public void removeByIdUser( int nUserId )
-	{
-		DatabaseUserKeyHome.removeByIdUser( nUserId );
-	}
+    // CRUD
 
-	// GET
+    /**
+     * Create a new user key from a given user id
+     * @param nUserId the id user
+     * @return the key
+     */
+    public DatabaseUserKey create( int nUserId )
+    {
+        DatabaseUserKey userKey = new DatabaseUserKey(  );
+        userKey.setUserId( nUserId );
+        userKey.setKey( DatabaseUtils.generateNewKey(  ) );
+        DatabaseUserKeyHome.create( userKey );
 
-	/**
-	 * Build the validation url
-	 * @param strKey the key
-	 * @param request the HTTP request
-	 */
-	public String getValidationUrl( String strKey, HttpServletRequest request )
-	{
-		StringBuilder sbBaseUrl = new StringBuilder( AppPathService.getBaseUrl( request ) );
+        return userKey;
+    }
+
+    /**
+     * Find the key
+     * @param strKey the key
+     * @return the key
+     */
+    public DatabaseUserKey findByPrimaryKey( String strKey )
+    {
+        return DatabaseUserKeyHome.findByPrimaryKey( strKey );
+    }
+
+    /**
+     * Remove a key
+     * @param strKey the key
+     */
+    public void remove( String strKey )
+    {
+        DatabaseUserKeyHome.remove( strKey );
+    }
+
+    /**
+     * Remove a key from a given id user
+     * @param nUserId the id user
+     */
+    public void removeByIdUser( int nUserId )
+    {
+        DatabaseUserKeyHome.removeByIdUser( nUserId );
+    }
+
+    // GET
+
+    /**
+     * Build the validation url
+     * @param strKey the key
+     * @param request the HTTP request
+     * @return the validation url
+     */
+    public String getValidationUrl( String strKey, HttpServletRequest request )
+    {
+        StringBuilder sbBaseUrl = new StringBuilder( AppPathService.getBaseUrl( request ) );
 
         if ( ( sbBaseUrl.length(  ) > 0 ) && !sbBaseUrl.toString(  ).endsWith( SLASH ) )
         {
@@ -141,7 +145,7 @@ public final class DatabaseUserKeyService
 
         UrlItem url = new UrlItem( sbBaseUrl.toString(  ) );
         url.addParameter( PARAMETER_KEY, strKey );
-        
+
         return url.getUrl(  );
-	}
+    }
 }

@@ -33,8 +33,8 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.Group;
-
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleRemovalListener;
+import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 
 
 /**
@@ -55,6 +55,6 @@ public final class GroupService
     public static void init(  )
     {
         // Initialize group
-        Group.init(  );
+        RoleRemovalListenerService.getService(  ).registerListener( new GroupRoleRemovalListener(  ) );
     }
 }

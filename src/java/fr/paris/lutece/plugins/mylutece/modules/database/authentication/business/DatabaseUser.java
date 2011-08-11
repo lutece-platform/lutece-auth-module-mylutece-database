@@ -33,9 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseMyLuteceUserFieldListenerService;
-import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
-
 
 /**
  * This class represents the business object DatabaseUser
@@ -43,33 +40,12 @@ import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 public class DatabaseUser
 {
     // Variables declarations
-    private static DatabaseUserRoleRemovalListener _listenerRole;
-    private static DatabaseUserFieldListener _listenerField;
     private int _nUserId;
     private String _strLogin;
     private String _strLastName;
     private String _strFirstName;
     private String _strEmail;
     private boolean _bIsActive;
-
-    /**
-     * Initialize the DatabaseUser
-     */
-    public static void init(  )
-    {
-        // Create removal listeners and register them
-        if ( _listenerRole == null )
-        {
-            _listenerRole = new DatabaseUserRoleRemovalListener(  );
-            RoleRemovalListenerService.getService(  ).registerListener( _listenerRole );
-        }
-        
-        if ( _listenerField == null )
-    	{
-        	_listenerField = new DatabaseUserFieldListener(  );
-    		DatabaseMyLuteceUserFieldListenerService.getService(  ).registerListener( _listenerField );
-    	}
-    }
 
     /**
      * Returns the UserId
@@ -175,17 +151,17 @@ public class DatabaseUser
      * Set the status active of the user
      * @param bIsActive true if it is active, false otherwise
      */
-	public void setActive( boolean bIsActive )
-	{
-		_bIsActive = bIsActive;
-	}
+    public void setActive( boolean bIsActive )
+    {
+        _bIsActive = bIsActive;
+    }
 
-	/**
-	 * Check if the user is active
-	 * @return true if it is active, false otherwise
-	 */
-	public boolean isActive(  )
-	{
-		return _bIsActive;
-	}
+    /**
+     * Check if the user is active
+     * @return true if it is active, false otherwise
+     */
+    public boolean isActive(  )
+    {
+        return _bIsActive;
+    }
 }

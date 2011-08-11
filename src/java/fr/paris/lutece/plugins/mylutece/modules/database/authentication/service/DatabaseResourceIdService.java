@@ -39,6 +39,8 @@ import fr.paris.lutece.portal.service.rbac.ResourceType;
 import fr.paris.lutece.portal.service.rbac.ResourceTypeManager;
 import fr.paris.lutece.util.ReferenceList;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Locale;
 
 
@@ -82,12 +84,12 @@ public class DatabaseResourceIdService extends ResourceIdService
 
     /**
      * Returns the Title of a given resource
-     * @param strAdminUserServiceId The Id of the resource
+     * @param strAdminUserId The Id of the admin user
      * @param locale The current locale
      * @return The Title of a given resource
      */
     public String getTitle( String strAdminUserId, Locale locale )
     {
-        return "";
+        return StringUtils.EMPTY;
     }
 }

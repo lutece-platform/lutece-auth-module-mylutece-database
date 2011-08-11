@@ -184,7 +184,7 @@ public final class DatabaseUserHome
     {
         return _dao.checkPassword( strLogin, strPassword, plugin );
     }
-    
+
     /**
      * Find DatabaseUsers by filter
      * @param duFilter filter
@@ -193,6 +193,6 @@ public final class DatabaseUserHome
      */
     public static List<DatabaseUser> findDatabaseUsersListByFilter( DatabaseUserFilter duFilter, Plugin plugin )
     {
-    	return _dao.selectDatabaseUsersListByFilter( duFilter, plugin );
+        return _dao.selectDatabaseUsersListByFilter( duFilter, plugin );
     }
 }

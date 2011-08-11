@@ -33,49 +33,50 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key;
 
+
 /**
- * 
+ *
  * DatabaseUserKey
  *
  */
 public class DatabaseUserKey
 {
-	private String _strKey;
-	private int _nUserId;
+    private String _strKey;
+    private int _nUserId;
 
-	/**
-	 * Set the key
-	 * @param strKey the key
-	 */
-	public void setKey( String strKey )
-	{
-		_strKey = strKey;
-	}
+    /**
+     * Set the key
+     * @param strKey the key
+     */
+    public void setKey( String strKey )
+    {
+        _strKey = strKey;
+    }
 
-	/**
-	 * Get the key
-	 * @return the key
-	 */
-	public String getKey(  )
-	{
-		return _strKey;
-	}
+    /**
+     * Get the key
+     * @return the key
+     */
+    public String getKey(  )
+    {
+        return _strKey;
+    }
 
-	/**
-	 * Set the user id
-	 * @param nUserId the user id
-	 */
-	public void setUserId( int nUserId )
-	{
-		_nUserId = nUserId;
-	}
+    /**
+     * Set the user id
+     * @param nUserId the user id
+     */
+    public void setUserId( int nUserId )
+    {
+        _nUserId = nUserId;
+    }
 
-	/**
-	 * Get the user id
-	 * @return
-	 */
-	public int getUserId(  )
-	{
-		return _nUserId;
-	}
+    /**
+     * Get the user id
+     * @return the id user
+     */
+    public int getUserId(  )
+    {
+        return _nUserId;
+    }
 }

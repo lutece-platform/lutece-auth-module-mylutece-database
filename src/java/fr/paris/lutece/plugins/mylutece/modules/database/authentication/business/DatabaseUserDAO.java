@@ -47,8 +47,7 @@ import java.util.List;
 public final class DatabaseUserDAO implements IDatabaseUserDAO
 {
     // Constants
-	private static final String PERCENT = "%";
-	
+    private static final String PERCENT = "%";
     private static final String SQL_QUERY_NEW_PK = " SELECT max( mylutece_database_user_id ) FROM mylutece_database_user ";
     private static final String SQL_QUERY_SELECT = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE mylutece_database_user_id = ?";
     private static final String SQL_QUERY_SELECT_PASSWORD = " SELECT password FROM mylutece_database_user WHERE mylutece_database_user_id = ? ";
@@ -61,8 +60,8 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String SQL_QUERY_SELECTALL_FOR_EMAIL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE email = ? ";
     private static final String SQL_QUERY_CHECK_PASSWORD_FOR_USER_ID = " SELECT count(*) FROM mylutece_database_user WHERE login = ? AND password = ? ";
     private static final String SQL_QUERY_SELECT_USER_FROM_SEARCH = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user " +
-			" WHERE login LIKE ? AND name_family LIKE ? and name_given LIKE ? AND email LIKE ? ORDER BY name_family ";
-    
+        " WHERE login LIKE ? AND name_family LIKE ? and name_given LIKE ? AND email LIKE ? ORDER BY name_family ";
+
     /** This class implements the Singleton design pattern. */
     private static DatabaseUserDAO _dao = new DatabaseUserDAO(  );
 
@@ -352,7 +351,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 
         return ( nCount == 1 ) ? true : false;
     }
-    
+
     /**
      * Load the list of DatabaseUsers by a filter
      * @param duFilter filter
@@ -361,24 +360,24 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
      */
     public List<DatabaseUser> selectDatabaseUsersListByFilter( DatabaseUserFilter duFilter, Plugin plugin )
     {
-    	List<DatabaseUser> listFilteredUsers = new ArrayList<DatabaseUser>(  );
+        List<DatabaseUser> listFilteredUsers = new ArrayList<DatabaseUser>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_FROM_SEARCH, plugin );
         daoUtil.setString( 1, PERCENT + duFilter.getLogin(  ) + PERCENT );
         daoUtil.setString( 2, PERCENT + duFilter.getLastName(  ) + PERCENT );
         daoUtil.setString( 3, PERCENT + duFilter.getFirstName(  ) + PERCENT );
         daoUtil.setString( 4, PERCENT + duFilter.getEmail(  ) + PERCENT );
-        
+
         daoUtil.executeQuery(  );
 
         while ( daoUtil.next(  ) )
         {
-        	DatabaseUser filteredUser = new DatabaseUser(  );
-        	filteredUser.setUserId( daoUtil.getInt( 1 ) );
-        	filteredUser.setLogin( daoUtil.getString( 2 ) );
-        	filteredUser.setLastName( daoUtil.getString( 3 ) );
-        	filteredUser.setFirstName( daoUtil.getString( 4 ) );
-        	filteredUser.setEmail( daoUtil.getString( 5 ) );
-        	filteredUser.setActive( daoUtil.getBoolean( 6 ) );
+            DatabaseUser filteredUser = new DatabaseUser(  );
+            filteredUser.setUserId( daoUtil.getInt( 1 ) );
+            filteredUser.setLogin( daoUtil.getString( 2 ) );
+            filteredUser.setLastName( daoUtil.getString( 3 ) );
+            filteredUser.setFirstName( daoUtil.getString( 4 ) );
+            filteredUser.setEmail( daoUtil.getString( 5 ) );
+            filteredUser.setActive( daoUtil.getBoolean( 6 ) );
             listFilteredUsers.add( filteredUser );
         }
 

@@ -39,7 +39,10 @@
 			<#if error_code = "error_syntax_email">
 				<div class="alert">#i18n{module.mylutece.database.message.account.errorBadEmail}</div>
 				<#assign classEmail = typeClass />
-			</#if>	
+			</#if>
+			<#if error_code = "error_sending_email">
+				<div class="alert">#i18n{module.mylutece.database.message.create_account.errorSendingEmail}</div>
+			</#if>
 		</#if>
 		
 		<#if action_successful?has_content>

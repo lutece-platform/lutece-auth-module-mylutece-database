@@ -33,15 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKey;
@@ -66,6 +57,15 @@ import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.string.StringUtil;
 import fr.paris.lutece.util.url.UrlItem;
+
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -278,7 +278,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_LOGIN_PAGE_URL );
     }
-    
+
     /**
      * This method is call by the JSP named DoMyLuteceLogout.jsp
      * @param request The HTTP request
@@ -299,7 +299,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getViewAccountPage( XPage page, HttpServletRequest request )
     {
-        HashMap model = new HashMap(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         DatabaseUser user = getRemoteUser( request );
 
         if ( user == null )
@@ -346,22 +346,22 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strValidationEmail = request.getParameter( PARAMETER_ACTION_VALIDATION_EMAIL );
         String strValidationSuccess = request.getParameter( PARAMETER_ACTION_VALIDATION_SUCCESS );
 
-        if ( strLogin != null )
+        if ( StringUtils.isNotBlank( strLogin ) )
         {
             user.setLogin( strLogin );
         }
 
-        if ( strLastName != null )
+        if ( StringUtils.isNotBlank( strLastName ) )
         {
             user.setLastName( strLastName );
         }
 
-        if ( strFirstName != null )
+        if ( StringUtils.isNotBlank( strFirstName ) )
         {
             user.setFirstName( strFirstName );
         }
 
-        if ( strEmail != null )
+        if ( StringUtils.isNotBlank( strEmail ) )
         {
             user.setEmail( strEmail );
         }
@@ -385,18 +385,13 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * This method is call by the JSP named DoCreateAccount.jsp
      * @param request The HTTP request
      * @return The URL to forward depending of the result of the change.
-     * @throws SiteMessageException if there is a validation email
      */
     public String doCreateAccount( HttpServletRequest request )
     {
         Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
-        DatabaseUser databaseUser = new DatabaseUser(  );
         init( request, plugin );
 
-        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
-        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
-
-        String strError = null;
+        String strError = StringUtils.EMPTY;
         String strLogin = request.getParameter( PARAMETER_LOGIN );
         String strPassword = request.getParameter( PARAMETER_PASSWORD );
         String strConfirmation = request.getParameter( PARAMETER_CONFIRMATION_PASSWORD );
@@ -404,87 +399,80 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
 
-        url.addParameter( PARAMETER_LOGIN, strLogin );
-        url.addParameter( PARAMETER_LAST_NAME, strLastName );
-        url.addParameter( PARAMETER_FIRST_NAME, strFirstName );
-        url.addParameter( PARAMETER_EMAIL, strEmail );
-
-        if ( ( strLogin == null ) || ( strPassword == null ) || ( strConfirmation == null ) || ( strFirstName == null ) ||
-                ( ( strEmail == null ) || ( strLastName == null ) || strLogin.equals( "" ) || strPassword.equals( "" ) ||
-                strConfirmation.equals( "" ) || strLastName.equals( "" ) || strFirstName.equals( "" ) ) ||
-                strEmail.equals( "" ) )
+        if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strPassword ) ||
+                StringUtils.isBlank( strConfirmation ) || StringUtils.isBlank( strFirstName ) ||
+                StringUtils.isBlank( strEmail ) || StringUtils.isBlank( strLastName ) )
         {
             strError = ERROR_MANDATORY_FIELDS;
         }
 
         // Check login unique code
-        if ( ( strError == null ) && !DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).isEmpty(  ) )
+        if ( StringUtils.isBlank( strError ) &&
+                !DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).isEmpty(  ) )
         {
             strError = ERROR_LOGIN_ALREADY_EXISTS;
         }
 
         // Check password confirmation
-        if ( ( strError == null ) && !checkPassword( strPassword, strConfirmation ) )
+        if ( StringUtils.isBlank( strError ) && !checkPassword( strPassword, strConfirmation ) )
         {
             strError = ERROR_CONFIRMATION_PASSWORD;
         }
 
         // Check email format
-        if ( ( strError == null ) && !StringUtil.checkEmail( strEmail ) )
+        if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
         {
             strError = ERROR_SYNTAX_EMAIL;
         }
-        
+
         // Check email attributes
-        boolean bAccountCreationValidationEmail = _userParamService.isAccountCreationValidationEmail( _plugin );
-        String strHost = StringUtils.EMPTY;
-        String strName = StringUtils.EMPTY;
-        String strSender = StringUtils.EMPTY;
-        String strObject = StringUtils.EMPTY;
-        if ( bAccountCreationValidationEmail )
+        if ( !checkSendingEmailValidation(  ) )
         {
-        	strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
-            strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
-            strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
-            strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_VALIDATION_OBJECT, _locale );
-            if ( ( strError == null ) && ( StringUtils.isBlank( strHost ) || StringUtils.isBlank( strName ) || 
-            		StringUtils.isBlank( strSender ) || StringUtils.isBlank( strObject ) ) )
-            {
-            	strError = ERROR_SENDING_EMAIL;
-            }
+            strError = ERROR_SENDING_EMAIL;
         }
 
-        if ( strError != null )
-        {
-            url.addParameter( PARAMETER_ERROR_CODE, strError );
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
+        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
+        url.addParameter( PARAMETER_LOGIN, strLogin );
+        url.addParameter( PARAMETER_LAST_NAME, strLastName );
+        url.addParameter( PARAMETER_FIRST_NAME, strFirstName );
+        url.addParameter( PARAMETER_EMAIL, strEmail );
 
-            return url.getUrl(  );
-        }
-        else
+        if ( StringUtils.isBlank( strError ) )
         {
+            boolean bAccountCreationValidationEmail = _userParamService.isAccountCreationValidationEmail( _plugin );
+            DatabaseUser databaseUser = new DatabaseUser(  );
             databaseUser.setLogin( strLogin );
             databaseUser.setLastName( strLastName );
             databaseUser.setFirstName( strFirstName );
             databaseUser.setEmail( strEmail );
             databaseUser.setActive( !bAccountCreationValidationEmail );
             databaseUser = DatabaseUserHome.create( databaseUser, strPassword, _plugin );
-            
+
             if ( bAccountCreationValidationEmail )
             {
-            	DatabaseUserKey userKey = _userKeyService.create( databaseUser.getUserId(  ) );
-            	
-            	// Send validation email
-            	Map<String, Object> model = new HashMap<String, Object>(  );
-            	model.put( MARK_VALIDATION_URL, _userKeyService.getValidationUrl( userKey.getKey(  ), request ) );
-            	
-            	HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_VALIDATION, _locale, model );
+                DatabaseUserKey userKey = _userKeyService.create( databaseUser.getUserId(  ) );
+
+                String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
+                String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
+                String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_VALIDATION_OBJECT, _locale );
+
+                // Send validation email
+                Map<String, Object> model = new HashMap<String, Object>(  );
+                model.put( MARK_VALIDATION_URL, _userKeyService.getValidationUrl( userKey.getKey(  ), request ) );
+
+                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_VALIDATION, _locale, model );
                 MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml(  ) );
                 url.addParameter( PARAMETER_ACTION_VALIDATION_EMAIL, getDefaultRedirectUrl(  ) );
             }
             else
             {
-            	url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
+                url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
             }
+        }
+        else
+        {
+            url.addParameter( PARAMETER_ERROR_CODE, strError );
         }
 
         return url.getUrl(  );
@@ -494,36 +482,38 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Do validate an account
      * @param request the HTTP request
      * @return the login page url
-     * @throws SiteMessageException site message if the key is correct
      */
     public String doValidateAccount( HttpServletRequest request )
     {
-    	Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         init( request, plugin );
-        
-    	UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
+
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
         url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
-        
-    	String strKey = request.getParameter( PARAMETER_KEY );
-    	if ( StringUtils.isNotBlank( strKey ) )
-    	{
-    		DatabaseUserKey userKey = _userKeyService.findByPrimaryKey( strKey );
-    		if ( userKey != null )
-    		{
-    			DatabaseUser databaseUser = DatabaseUserHome.findByPrimaryKey( userKey.getUserId(  ), _plugin );
-    			if ( databaseUser != null )
-    			{
-    				databaseUser.setActive( true );
-    				DatabaseUserHome.update( databaseUser, _plugin );
-    				_userKeyService.remove( strKey );
-    				url.addParameter( PARAMETER_ACTION_VALIDATION_SUCCESS, getDefaultRedirectUrl(  ) );
-    			}
-    		}
-    	}
-    	
-    	return url.getUrl(  );
+
+        String strKey = request.getParameter( PARAMETER_KEY );
+
+        if ( StringUtils.isNotBlank( strKey ) )
+        {
+            DatabaseUserKey userKey = _userKeyService.findByPrimaryKey( strKey );
+
+            if ( userKey != null )
+            {
+                DatabaseUser databaseUser = DatabaseUserHome.findByPrimaryKey( userKey.getUserId(  ), _plugin );
+
+                if ( databaseUser != null )
+                {
+                    databaseUser.setActive( true );
+                    DatabaseUserHome.update( databaseUser, _plugin );
+                    _userKeyService.remove( strKey );
+                    url.addParameter( PARAMETER_ACTION_VALIDATION_SUCCESS, getDefaultRedirectUrl(  ) );
+                }
+            }
+        }
+
+        return url.getUrl(  );
     }
-    
+
     /**
      * Build the default Lost password page
      * @param page The XPage object to fill
@@ -532,7 +522,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getLostPasswordPage( XPage page, HttpServletRequest request )
     {
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strStateSending = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
@@ -558,7 +548,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getChangePasswordPage( XPage page, HttpServletRequest request )
     {
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strSuccess = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
 
@@ -587,7 +577,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getChangePasswordUrl(  ) );
         url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
 
-        String strError = null;
+        String strError = StringUtils.EMPTY;
         DatabaseUser user = getRemoteUser( request );
         String strOldPassword = request.getParameter( PARAMETER_OLD_PASSWORD );
         String strNewPassword = request.getParameter( PARAMETER_NEW_PASSWORD );
@@ -606,35 +596,36 @@ public class MyLuteceDatabaseApp implements XPageApplication
             }
         }
 
-        if ( ( strOldPassword == null ) || ( strNewPassword == null ) || ( strConfirmationPassword == null ) ||
-                strOldPassword.equals( "" ) || strNewPassword.equals( "" ) || strConfirmationPassword.equals( "" ) )
+        if ( StringUtils.isBlank( strOldPassword ) || StringUtils.isBlank( strNewPassword ) ||
+                StringUtils.isBlank( strConfirmationPassword ) )
         {
             strError = ERROR_MANDATORY_FIELDS;
         }
 
-        if ( ( strError == null ) && !DatabaseUserHome.checkPassword( user.getLogin(  ), strOldPassword, _plugin ) )
+        if ( StringUtils.isBlank( strError ) &&
+                !DatabaseUserHome.checkPassword( user.getLogin(  ), strOldPassword, _plugin ) )
         {
             strError = ERROR_OLD_PASSWORD;
         }
 
-        if ( ( strError == null ) && !checkPassword( strNewPassword, strConfirmationPassword ) )
+        if ( StringUtils.isBlank( strError ) && !checkPassword( strNewPassword, strConfirmationPassword ) )
         {
             strError = ERROR_CONFIRMATION_PASSWORD;
         }
 
-        if ( ( strError == null ) && strNewPassword.equals( strOldPassword ) )
+        if ( StringUtils.isBlank( strError ) && strNewPassword.equals( strOldPassword ) )
         {
             strError = ERROR_SAME_PASSWORD;
         }
 
-        if ( strError != null )
-        {
-            url.addParameter( PARAMETER_ERROR_CODE, strError );
-        }
-        else
+        if ( StringUtils.isBlank( strError ) )
         {
             DatabaseUserHome.updatePassword( user, strNewPassword, _plugin );
             url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
+        }
+        else
+        {
+            url.addParameter( PARAMETER_ERROR_CODE, strError );
         }
 
         return url.getUrl(  );
@@ -650,15 +641,15 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private boolean checkPassword( String strPassword, String strConfirmation )
     {
-        Boolean bReturn = true;
+        boolean bIsPasswordCorrect = false;
 
-        if ( ( strPassword == null ) || ( strConfirmation == null ) || strPassword.equals( "" ) ||
-                !strPassword.equals( strConfirmation ) )
+        if ( StringUtils.isNotBlank( strPassword ) && StringUtils.isNotBlank( strConfirmation ) &&
+                strPassword.equals( strConfirmation ) )
         {
-            bReturn = false;
+            bIsPasswordCorrect = true;
         }
 
-        return bReturn;
+        return bIsPasswordCorrect;
     }
 
     /**
@@ -671,7 +662,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
         init( request, plugin );
 
-        HashMap model = new HashMap(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         String strError = null;
         UrlItem url = null;
         Collection<DatabaseUser> listUser = null;
@@ -682,25 +673,30 @@ public class MyLuteceDatabaseApp implements XPageApplication
         url.addParameter( PARAMETER_EMAIL, strEmail );
 
         // Check mandatory fields
-        if ( ( strEmail == null ) || ( strEmail.equals( "" ) ) )
+        if ( StringUtils.isBlank( strEmail ) )
         {
             strError = ERROR_MANDATORY_FIELDS;
         }
 
         // Check email format
-        if ( ( strError == null ) && !StringUtil.checkEmail( strEmail ) )
+        if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
         {
             strError = ERROR_SYNTAX_EMAIL;
         }
 
         listUser = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail, _plugin );
 
-        if ( ( strError == null ) && ( ( listUser == null ) || ( listUser.size(  ) == 0 ) ) )
+        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size(  ) == 0 ) ) )
         {
             strError = ERROR_UNKNOWN_EMAIL;
         }
 
-        if ( strError == null )
+        if ( !checkSendingPasswordEmail(  ) )
+        {
+            strError = ERROR_SENDING_EMAIL;
+        }
+
+        if ( StringUtils.isBlank( strError ) )
         {
             for ( DatabaseUser user : listUser )
             {
@@ -709,32 +705,19 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
                 HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_BODY, _locale, model );
 
-                String strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
                 String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
                 String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
                 String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_OBJECT, _locale );
 
-                if ( ( strError == null ) &&
-                        ( strHost.equals( "" ) || strName.equals( "" ) || strSender.equals( "" ) ||
-                        strObject.equals( "" ) ) )
-                {
-                    strError = ERROR_SENDING_EMAIL;
-                }
-                else
-                {
-                    MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml(  ) );
-                }
+                MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml(  ) );
             }
-        }
 
+            url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
+        }
         else
         {
             url.addParameter( PARAMETER_ERROR_CODE, strError );
-
-            return url.getUrl(  );
         }
-
-        url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
 
         return url.getUrl(  );
     }
@@ -772,7 +755,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
             return null;
         }
 
-        Collection listUsers = DatabaseUserHome.findDatabaseUsersListForLogin( luteceUser.getName(  ), _plugin );
+        Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersListForLogin( luteceUser.getName(  ),
+                _plugin );
 
         if ( listUsers.size(  ) != 1 )
         {
@@ -782,5 +766,57 @@ public class MyLuteceDatabaseApp implements XPageApplication
         DatabaseUser user = (DatabaseUser) listUsers.iterator(  ).next(  );
 
         return user;
+    }
+
+    /**
+     * Check if the parameters for the email validation are correctly filled
+     * @return true if they are correctly filled, false otherwise
+     */
+    private boolean checkSendingEmailValidation(  )
+    {
+        boolean bIsCorrect = false;
+        boolean bAccountCreationValidationEmail = _userParamService.isAccountCreationValidationEmail( _plugin );
+
+        if ( bAccountCreationValidationEmail )
+        {
+            bIsCorrect = checkSendingEmail( PROPERTY_EMAIL_VALIDATION_OBJECT );
+        }
+        else
+        {
+            bIsCorrect = true;
+        }
+
+        return bIsCorrect;
+    }
+
+    /**
+     * Check if the parameters for the password email are correctly flled
+     * @return true if they are correctly filled, false otherwise
+     */
+    private boolean checkSendingPasswordEmail(  )
+    {
+        return checkSendingEmail( PROPERTY_EMAIL_OBJECT );
+    }
+
+    /**
+     * Check if the parameters for sending an email are correctly filled
+     * @param strPropertyObject the property of the object of the email
+     * @return true if they are correctly filled, false otherwise
+     */
+    private boolean checkSendingEmail( String strPropertyObject )
+    {
+        boolean bIsCorrect = false;
+        String strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
+        String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
+        String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
+        String strObject = I18nService.getLocalizedString( strPropertyObject, _locale );
+
+        if ( StringUtils.isNotBlank( strHost ) && StringUtils.isNotBlank( strName ) &&
+                StringUtils.isNotBlank( strSender ) && StringUtils.isNotBlank( strObject ) )
+        {
+            bIsCorrect = true;
+        }
+
+        return bIsCorrect;
     }
 }

@@ -33,31 +33,33 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.url.UrlItem;
+
 import java.io.UnsupportedEncodingException;
+
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.url.UrlItem;
 
 /**
  * This class describes a workgroup used by the administration
  */
 public class GroupFilter
 {
-	// Constants
-	private static final String EQUAL = "=";
+    // Constants
+    private static final String EQUAL = "=";
     private static final String AMPERSAND = "&";
-    
+
     // Parameters
-	private static final String PARAMETER_SEARCH_IS_SEARCH = "search_is_search";
-	private static final String PARAMETER_SEARCH_KEY = "search_key";
-	private static final String PARAMETER_SEARCH_DESCRIPTION = "search_description";
-	
-	// Properties
+    private static final String PARAMETER_SEARCH_IS_SEARCH = "search_is_search";
+    private static final String PARAMETER_SEARCH_KEY = "search_key";
+    private static final String PARAMETER_SEARCH_DESCRIPTION = "search_description";
+
+    // Properties
     private static final String PROPERTY_ENCODING_URL = "lutece.encoding.url";
-	
     private String _strKey;
     private String _strDescription;
 
@@ -67,16 +69,16 @@ public class GroupFilter
     public GroupFilter(  )
     {
     }
-    
+
     /**
      * Initialize each component of the object
      */
     public void init(  )
     {
-    	_strKey = "";
-    	_strDescription = "";
+        _strKey = "";
+        _strDescription = "";
     }
-    
+
     /**
      * Gets the workgroup key
      * @return Returns the Key.
@@ -124,7 +126,7 @@ public class GroupFilter
     {
         return getKey(  );
     }
-    
+
     /**
      * Set the value of the AdminWorkgroupFilter
      * @param request HttpServletRequest
@@ -132,65 +134,65 @@ public class GroupFilter
      */
     public boolean setGroupFilter( HttpServletRequest request )
     {
-    	boolean bIsSearch = false;
-    	String strIsSearch = request.getParameter( PARAMETER_SEARCH_IS_SEARCH );
-        
-    	if ( strIsSearch != null )
+        boolean bIsSearch = false;
+        String strIsSearch = request.getParameter( PARAMETER_SEARCH_IS_SEARCH );
+
+        if ( strIsSearch != null )
         {
-        	bIsSearch = true;
-        	_strKey = request.getParameter( PARAMETER_SEARCH_KEY );
-        	_strDescription = request.getParameter( PARAMETER_SEARCH_DESCRIPTION );
+            bIsSearch = true;
+            _strKey = request.getParameter( PARAMETER_SEARCH_KEY );
+            _strDescription = request.getParameter( PARAMETER_SEARCH_DESCRIPTION );
         }
-    	else
-    	{
-    		init(  );
-    	}
-    	
-    	return bIsSearch;
+        else
+        {
+            init(  );
+        }
+
+        return bIsSearch;
     }
-    
+
     /**
      * Build url attributes
-     * @param the url
+     * @param url the url
      */
     public void setUrlAttributes( UrlItem url )
     {
-    	url.addParameter( PARAMETER_SEARCH_IS_SEARCH, Boolean.TRUE.toString(  ) );
-    	
-    	try
-    	{
-    		url.addParameter( PARAMETER_SEARCH_KEY, 
-    				URLEncoder.encode( _strKey, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		url.addParameter( PARAMETER_SEARCH_DESCRIPTION, 
-    				URLEncoder.encode( _strDescription, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    	}
-    	catch( UnsupportedEncodingException e )
-    	{
-    		e.printStackTrace(  );
-    	}
+        url.addParameter( PARAMETER_SEARCH_IS_SEARCH, Boolean.TRUE.toString(  ) );
+
+        try
+        {
+            url.addParameter( PARAMETER_SEARCH_KEY,
+                URLEncoder.encode( _strKey, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_DESCRIPTION,
+                URLEncoder.encode( _strDescription, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            AppLogService.error( e );
+        }
     }
-    
+
     /**
      * Build url attributes
      * @return the url attributes
      */
     public String getUrlAttributes(  )
     {
-    	StringBuilder sbUrlAttributes = new StringBuilder(  );
-    	sbUrlAttributes.append( PARAMETER_SEARCH_IS_SEARCH + EQUAL + Boolean.TRUE );
-    	
-    	try
-    	{
-    		sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_KEY + EQUAL +
-    				URLEncoder.encode( _strKey, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    		sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_DESCRIPTION + EQUAL +
-    				URLEncoder.encode( _strDescription, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-    	}
-    	catch( UnsupportedEncodingException e )
-    	{
-    		e.printStackTrace(  );
-    	}
-    	
-    	return sbUrlAttributes.toString(  );
+        StringBuilder sbUrlAttributes = new StringBuilder(  );
+        sbUrlAttributes.append( PARAMETER_SEARCH_IS_SEARCH + EQUAL + Boolean.TRUE );
+
+        try
+        {
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_KEY + EQUAL +
+                URLEncoder.encode( _strKey, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_DESCRIPTION + EQUAL +
+                URLEncoder.encode( _strDescription, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            AppLogService.error( e );
+        }
+
+        return sbUrlAttributes.toString(  );
     }
 }

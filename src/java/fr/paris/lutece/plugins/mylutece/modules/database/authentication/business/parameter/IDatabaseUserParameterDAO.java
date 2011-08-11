@@ -37,33 +37,33 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
+
 /**
- * 
+ *
  * IDefaultUserParameterDAO
  *
  */
-public interface IDatabaseUserParameterDAO 
+public interface IDatabaseUserParameterDAO
 {
-	/**
-     * Load the parameter value
-     * @param strParameterKey the parameter key
-     * @param plugin the plugin
-     * @return The parameter value
-     */
+    /**
+    * Load the parameter value
+    * @param strParameterKey the parameter key
+    * @param plugin the plugin
+    * @return The parameter value
+    */
     ReferenceItem load( String strParameterKey, Plugin plugin );
-    
+
     /**
      * Update the parameter value
-     * @param strParameterValue The parameter value 
-     * @param strParameterKey The parameter key
+     * @param userParam The parameter
      * @param plugin the plugin
      */
     void store( ReferenceItem userParam, Plugin plugin );
-    
+
     /**
      * Select all user parameters
      * @param plugin the plugin
-     * @return
+     * @return a {@link ReferenceList}
      */
     ReferenceList selectAll( Plugin plugin );
 }

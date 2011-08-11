@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import fr.paris.lutece.portal.business.workgroup.AdminWorkgroup;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -49,15 +48,14 @@ import java.util.List;
 public final class GroupDAO implements IGroupDAO
 {
     // Constants
-	private static final String PERCENT = "%";
-	
+    private static final String PERCENT = "%";
     private static final String SQL_QUERY_SELECTALL = " SELECT group_key, group_description FROM mylutece_database_group ORDER BY group_key";
     private static final String SQL_QUERY_SELECT_BY_KEY = " SELECT group_key, group_description FROM mylutece_database_group WHERE group_key = ? ORDER BY group_key";
     private static final String SQL_QUERY_INSERT = " INSERT INTO mylutece_database_group ( group_key, group_description ) VALUES ( ?, ? )";
     private static final String SQL_QUERY_DELETE = " DELETE FROM mylutece_database_group WHERE group_key like ? ";
     private static final String SQL_QUERY_UPDATE = " UPDATE mylutece_database_group SET group_key = ?, group_description = ? WHERE group_key like ?";
     private static final String SQL_QUERY_SELECT_GROUP_FROM_SEARCH = " SELECT group_key, group_description FROM mylutece_database_group " +
-			" WHERE group_key LIKE ? AND group_description LIKE ? ORDER BY group_key ";
+        " WHERE group_key LIKE ? AND group_description LIKE ? ORDER BY group_key ";
 
     ///////////////////////////////////////////////////////////////////////////////////////
     //Access methods to data
@@ -193,35 +191,35 @@ public final class GroupDAO implements IGroupDAO
 
         return listGroups;
     }
-    
+
     /**
      * Return the filtered groups list
-     * 
+     *
      * @param gFilter filter
      * @param plugin Plugin
      * @return List of Group
      */
     public List<Group> selectByFilter( GroupFilter gFilter, Plugin plugin )
     {
-    	List<Group> listFilteredGroups = new ArrayList<Group>(  );
-    	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_GROUP_FROM_SEARCH, plugin );
-    	
-    	daoUtil.setString( 1, PERCENT + gFilter.getKey(  ) + PERCENT );
-    	daoUtil.setString( 2, PERCENT + gFilter.getDescription(  ) + PERCENT );
-    	
-    	daoUtil.executeQuery(  );
-    	
-    	while ( daoUtil.next(  ) )
-        { 
-    		Group group = new Group(  );
-    		group.setGroupKey( daoUtil.getString( 1 ) );
-    		group.setGroupDescription( daoUtil.getString( 2 ) );
-    		
-    		listFilteredGroups.add( group );
+        List<Group> listFilteredGroups = new ArrayList<Group>(  );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_GROUP_FROM_SEARCH, plugin );
+
+        daoUtil.setString( 1, PERCENT + gFilter.getKey(  ) + PERCENT );
+        daoUtil.setString( 2, PERCENT + gFilter.getDescription(  ) + PERCENT );
+
+        daoUtil.executeQuery(  );
+
+        while ( daoUtil.next(  ) )
+        {
+            Group group = new Group(  );
+            group.setGroupKey( daoUtil.getString( 1 ) );
+            group.setGroupDescription( daoUtil.getString( 2 ) );
+
+            listFilteredGroups.add( group );
         }
-    	
-    	daoUtil.free(  );
-    	
-    	return listFilteredGroups;
+
+        daoUtil.free(  );
+
+        return listFilteredGroups;
     }
 }

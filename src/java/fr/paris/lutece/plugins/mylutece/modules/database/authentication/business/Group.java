@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
 import fr.paris.lutece.portal.service.rbac.RBACResource;
-import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 
 
 /**
@@ -43,22 +42,8 @@ import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 public class Group implements RBACResource
 {
     public static final String RESOURCE_TYPE = "GROUP_TYPE";
-    private static GroupRoleRemovalListener _listenerRole;
     private String _strGroupKey;
     private String _strGroupDescription;
-
-    /**
-     * Initialize the Group
-     */
-    public static void init(  )
-    {
-        // Create removal listeners and register them
-        if ( _listenerRole == null )
-        {
-            _listenerRole = new GroupRoleRemovalListener(  );
-            RoleRemovalListenerService.getService(  ).registerListener( _listenerRole );
-        }
-    }
 
     /**
      * Gets the group key

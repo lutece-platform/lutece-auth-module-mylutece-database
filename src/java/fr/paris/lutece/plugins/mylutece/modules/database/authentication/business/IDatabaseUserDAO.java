@@ -133,7 +133,7 @@ public interface IDatabaseUserDAO
      * @return true if password is ok
      */
     boolean checkPassword( String strLogin, String strPassword, Plugin plugin );
-    
+
     /**
      * Load the list of DatabaseUsers by a filter
      * @param duFilter filter

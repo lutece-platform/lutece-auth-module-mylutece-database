@@ -81,7 +81,7 @@ public interface IGroupDAO
 
     /**
      * Load the list of groups
-     * 
+     *
      * @param plugin Plugin
      * @return The Collection of the Groups
      */
@@ -94,10 +94,10 @@ public interface IGroupDAO
      * @param plugin Plugin
      */
     void store( Group group, Plugin plugin );
-    
+
     /**
      * Return the filtered groups list
-     * 
+     *
      * @param gFilter filter
      * @param plugin Plugin
      * @return List of Group

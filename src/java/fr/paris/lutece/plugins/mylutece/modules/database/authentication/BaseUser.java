@@ -43,13 +43,13 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
  */
 public class BaseUser extends LuteceUser
 {
-	private static final long serialVersionUID = -1414600470836409898L;
+    private static final long serialVersionUID = -1414600470836409898L;
 
-	/**
-     * Constructor
-     * @param strUserName The user's name
-     * @param authenticationService The authentication service that authenticates the user
-     */
+    /**
+    * Constructor
+    * @param strUserName The user's name
+    * @param authenticationService The authentication service that authenticates the user
+    */
     public BaseUser( String strUserName, LuteceAuthentication authenticationService )
     {
         super( strUserName, authenticationService );

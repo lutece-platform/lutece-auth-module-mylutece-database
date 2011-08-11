@@ -40,16 +40,16 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 
 /**
- * 
+ *
  * DatabaseUserKeyHome
- * 
+ *
  */
 public final class DatabaseUserKeyHome
 {
-	private static final String BEAN_DATABASE_USER_KEY_DAO = "mylutece-database.databaseUserKeyDAO";
-	private static Plugin _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+    private static final String BEAN_DATABASE_USER_KEY_DAO = "mylutece-database.databaseUserKeyDAO";
+    private static Plugin _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
     private static IDatabaseUserKeyDAO _dao = (IDatabaseUserKeyDAO) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
-    		BEAN_DATABASE_USER_KEY_DAO );
+            BEAN_DATABASE_USER_KEY_DAO );
 
     /**
      * Private constructor - this class need not be instantiated

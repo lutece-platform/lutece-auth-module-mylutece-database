@@ -33,12 +33,12 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import java.util.Collection;
-import java.util.List;
-
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseUser;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -60,6 +60,7 @@ public interface IDatabaseDAO
     /**
      * Load the list of {@link BaseUser}
      * @param plugin The Plugin using this data access service
+     * @param authenticationService the authentication service
      * @return The Collection of the {@link BaseUser}
      */
     Collection<BaseUser> selectLuteceUserList( Plugin plugin, LuteceAuthentication authenticationService );
@@ -119,7 +120,7 @@ public interface IDatabaseDAO
      * @param plugin The Plugin using this data access service
      */
     void createGroupForUser( int nIdUser, String strGroupKey, Plugin plugin );
-    
+
     /**
      * Find assigned users to the given group
      * @param strGroupKey The group key
