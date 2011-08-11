@@ -52,9 +52,6 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.portal.business.role.Role;
 import fr.paris.lutece.portal.business.role.RoleHome;
-import fr.paris.lutece.portal.business.user.AdminUser;
-import fr.paris.lutece.portal.business.user.AdminUserHome;
-import fr.paris.lutece.portal.business.workgroup.AdminWorkgroupHome;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
@@ -150,6 +147,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
+    private DatabaseService _databaseService = DatabaseService.getService(  );
     
     /**
      * Creates a new GroupJspBean object.
@@ -591,13 +589,13 @@ public class GroupJspBean extends PluginAdminPageJspBean
         List<DatabaseUser> listAllAssignedUsers = DatabaseHome.findGroupUsersFromGroupKey( selectedGroup.getGroupKey(  ), getPlugin(  ) );
         for ( DatabaseUser user : listAllAssignedUsers )
         {
-        	if ( DatabaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) )
+        	if ( _databaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) )
         	{
         		listAssignedUsers.add( user );
         	}
         }
         
-        List<DatabaseUser> listFilteredUsers = DatabaseService.getFilteredUsersInterface( listAssignedUsers, request, model, url );
+        List<DatabaseUser> listFilteredUsers = _databaseService.getFilteredUsersInterface( listAssignedUsers, request, model, url );
         
         // AVAILABLE USERS
         ReferenceList listAvailableUsers = new ReferenceList(  );
@@ -606,7 +604,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         	boolean bIsAvailable = Boolean.TRUE;
         	for ( DatabaseUser assignedUser : listAssignedUsers )
         	{
-        		if ( !DatabaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) || 
+        		if ( !_databaseService.isAuthorized( user, getUser(  ), getPlugin(  ) ) || 
         				user.getUserId(  ) == assignedUser.getUserId(  ) )
         		{
         			bIsAvailable = Boolean.FALSE;

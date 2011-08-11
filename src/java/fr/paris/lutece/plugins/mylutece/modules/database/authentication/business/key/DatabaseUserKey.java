@@ -31,27 +31,51 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
-
-import fr.paris.lutece.portal.service.security.LuteceAuthentication;
-import fr.paris.lutece.portal.service.security.LuteceUser;
-
+package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key;
 
 /**
- * This class implements The Lutece User in a database configuration.
- * User roles are retrieve from the database.
+ * 
+ * DatabaseUserKey
+ *
  */
-public class BaseUser extends LuteceUser
+public class DatabaseUserKey
 {
-	private static final long serialVersionUID = -1414600470836409898L;
+	private String _strKey;
+	private int _nUserId;
 
 	/**
-     * Constructor
-     * @param strUserName The user's name
-     * @param authenticationService The authentication service that authenticates the user
-     */
-    public BaseUser( String strUserName, LuteceAuthentication authenticationService )
-    {
-        super( strUserName, authenticationService );
-    }
+	 * Set the key
+	 * @param strKey the key
+	 */
+	public void setKey( String strKey )
+	{
+		_strKey = strKey;
+	}
+
+	/**
+	 * Get the key
+	 * @return the key
+	 */
+	public String getKey(  )
+	{
+		return _strKey;
+	}
+
+	/**
+	 * Set the user id
+	 * @param nUserId the user id
+	 */
+	public void setUserId( int nUserId )
+	{
+		_nUserId = nUserId;
+	}
+
+	/**
+	 * Get the user id
+	 * @return
+	 */
+	public int getUserId(  )
+	{
+		return _nUserId;
+	}
 }

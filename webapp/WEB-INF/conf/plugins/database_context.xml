@@ -2,13 +2,19 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  
+  <!-- DAO -->
   <bean id="mylutece-database.databaseUserDAO"  class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserDAO" />
   <bean id="mylutece-database.databaseDAO"  class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseDAO" />
   <bean id="mylutece-database.databaseGroupDAO"  class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupDAO" />
   <bean id="mylutece-database.databaseGroupRoleDAO"  class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleDAO" />
-  <bean id="mylutece-database.databaseMyLuteceUserFieldListenerService" class="fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldListenerService" />
   <bean id="mylutece-database.databaseUserParameterDAO" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterDAO" />
+  <bean id="mylutece-database.databaseUserKeyDAO"  class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKeyDAO" />
+  
   <bean id="mylutece-database.authentication" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication" />
-    
+
+  <!-- Services -->
+  <bean id="mylutece-database.databaseMyLuteceUserFieldListenerService" class="fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldListenerService" />
+  <bean id="mylutece-database.databaseUserParameterService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService" />
+  <bean id="mylutece-database.databaseService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService" />
+  <bean id="mylutece-database.databaseUserKeyService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService" />
 </beans>

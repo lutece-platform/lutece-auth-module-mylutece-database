@@ -50,6 +50,7 @@ public class DatabaseUser
     private String _strLastName;
     private String _strFirstName;
     private String _strEmail;
+    private boolean _bIsActive;
 
     /**
      * Initialize the DatabaseUser
@@ -169,4 +170,22 @@ public class DatabaseUser
     {
         _strLogin = strLogin;
     }
+
+    /**
+     * Set the status active of the user
+     * @param bIsActive true if it is active, false otherwise
+     */
+	public void setActive( boolean bIsActive )
+	{
+		_bIsActive = bIsActive;
+	}
+
+	/**
+	 * Check if the user is active
+	 * @return true if it is active, false otherwise
+	 */
+	public boolean isActive(  )
+	{
+		return _bIsActive;
+	}
 }

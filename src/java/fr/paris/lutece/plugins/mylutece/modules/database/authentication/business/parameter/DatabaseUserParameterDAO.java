@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 /**
@@ -45,25 +47,24 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
 {
 	private static final String SQL_QUERY_SELECT_USER_PARAMETERS_VALUE = " SELECT parameter_value FROM mylutece_database_user_parameter WHERE parameter_key = ? ";
 	private static final String SQL_QUERY_UPDATE_USER_PARAMETERS = " UPDATE mylutece_database_user_parameter SET parameter_value = ? WHERE parameter_key = ? ";
+	private static final String SQL_QUERY_SELECT_ALL = " SELECT parameter_key, parameter_value FROM mylutece_database_user_parameter ";
 	
-    /**
-     * Load the parameter value
-     * @param strParameterKey the parameter key
-     * @param plugin
-     * @return The parameter value
+	/**
+     * {@inheritDoc}
      */
-    public DatabaseUserParameter load( String strParameterKey, Plugin plugin )
+    public ReferenceItem load( String strParameterKey, Plugin plugin )
     {
-    	DatabaseUserParameter userParam = null;
+    	ReferenceItem userParam = null;
     	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_PARAMETERS_VALUE, plugin );
         daoUtil.setString( 1, strParameterKey );
         daoUtil.executeQuery(  );
         
         if ( daoUtil.next(  ) )
         {
-        	userParam = new DatabaseUserParameter(  );
-        	userParam.setParameterKey( strParameterKey );
-        	userParam.setParameterValue( daoUtil.getString( 1 ) );
+        	userParam = new ReferenceItem(  );
+        	userParam.setCode( strParameterKey );
+        	userParam.setName( daoUtil.getString( 1 ) );
+        	userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
         }
         
         daoUtil.free(  );
@@ -72,19 +73,41 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
     }
     
     /**
-     * Update the parameter value
-     * @param strParameterValue The parameter value 
-     * @param strParameterKey The parameter key
-     * @param plugin
+     * {@inheritDoc}
      */
-    public void store( DatabaseUserParameter userParam, Plugin plugin )
+    public void store( ReferenceItem userParam, Plugin plugin )
     {
-    	 DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_USER_PARAMETERS, plugin );
+    	int nIndex = 1;
+    	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_USER_PARAMETERS, plugin );
 
-         daoUtil.setString( 1, userParam.getParameterValue(  ) );
-         daoUtil.setString( 2, userParam.getParameterKey(  ) );
+    	daoUtil.setString( nIndex++, userParam.getName(  ) );
+    	daoUtil.setString( nIndex++, userParam.getCode(  ) );
 
-         daoUtil.executeUpdate(  );
-         daoUtil.free(  );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public ReferenceList selectAll( Plugin plugin )
+    {
+    	ReferenceList listUserParams = new ReferenceList(  );
+    	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin );
+        daoUtil.executeQuery(  );
+        
+        while ( daoUtil.next(  ) )
+        {
+        	int nIndex = 1;
+        	ReferenceItem userParam = new ReferenceItem(  );
+        	userParam.setCode( daoUtil.getString( nIndex++ ) );
+        	userParam.setName( daoUtil.getString( nIndex++ ) );
+        	userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+        	listUserParams.add( userParam );
+        }
+        
+        daoUtil.free(  );
+        
+        return listUserParams;
     }
 }

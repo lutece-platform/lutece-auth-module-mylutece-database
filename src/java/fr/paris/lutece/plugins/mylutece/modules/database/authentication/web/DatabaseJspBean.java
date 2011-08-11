@@ -42,6 +42,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
@@ -54,10 +56,10 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.Group;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameter;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseResourceIdService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.service.RoleResourceIdService;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
@@ -83,6 +85,8 @@ import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.ItemNavigator;
 import fr.paris.lutece.util.html.Paginator;
@@ -103,11 +107,10 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     // Contants
     private static final String MANAGE_USERS = "ManageUsers.jsp";
     private static final String REGEX_DATABASE_USER_ID = "^[\\d]+$";
-    private static final String CONSTANT_DEFAULT_ALGORITHM = "noValue";
-    private static final String CONSTANT_EMPTY_STRING = "";
     private static final String QUESTION_MARK = "?";
 	private static final String AMPERSAND = "&";
 	private static final String EQUAL = "=";
+	private static final String ZERO = "0";
 
     //JSP
     private static final String JSP_DO_REMOVE_USER = "jsp/admin/plugins/mylutece/modules/database/DoRemoveUser.jsp";
@@ -155,9 +158,9 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_LAST_NAME = "last_name";
     private static final String PARAMETER_FIRST_NAME = "first_name";
     private static final String PARAMETER_EMAIL = "email";
+    private static final String PARAMETER_CANCEL = "cancel";
     private static final String PARAMETER_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
     private static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
-    private static final String PARAMETER_CANCEL = "cancel";
 
     // Marks FreeMarker
     private static final String MARK_USERS_LIST = "user_list";
@@ -195,6 +198,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
+    private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
+    private DatabaseService _databaseService = DatabaseService.getService(  );
 
     /**
      * Creates a new WssodatabaseJspBean object.
@@ -230,8 +235,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
                 _nDefaultItemsPerPage );
 
         // Get users
-        List<DatabaseUser> listUsers = DatabaseService.getAuthorizedUsers( getUser(  ), _plugin );
-        List<DatabaseUser> listFilteredUsers = DatabaseService.getFilteredUsersInterface( listUsers, request, model, url );
+        List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
+        List<DatabaseUser> listFilteredUsers = _databaseService.getFilteredUsersInterface( listUsers, request, model, url );
         
         // SORT
         String strSortedAttributeName = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
@@ -342,6 +347,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         databaseUser.setFirstName( strFirstName );
         databaseUser.setLastName( strLastName );
         databaseUser.setLogin( strLogin );
+        databaseUser.setActive( true );
 
         if ( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).size(  ) != 0 )
         {
@@ -353,11 +359,9 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             return AdminMessageService.getMessageUrl( request, MESSAGE_DIFFERENT_PASSWORD, AdminMessage.TYPE_STOP );
         }
         
-        if ( Boolean.valueOf( 
-        		DatabaseUserParameterHome.findByKey( PARAMETER_ENABLE_PASSWORD_ENCRYPTION, getPlugin(  ) ).getParameterValue(  ) ) )
+        if ( _userParamService.isPasswordEncrypted( _plugin ) )
     	{
-        	String strAlgorithm = DatabaseUserParameterHome.findByKey( 
-        			PARAMETER_ENCRYPTION_ALGORITHM, getPlugin(  ) ).getParameterValue(  );
+        	String strAlgorithm = _userParamService.getEncryptionAlgorithm( _plugin );
         	strFirstPassword = CryptoService.encrypt( strFirstPassword, strAlgorithm );
     	}
         
@@ -392,7 +396,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         
         // ITEM NAVIGATION
         Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<DatabaseUser> listUsers = DatabaseService.getAuthorizedUsers( getUser(  ), _plugin );
+        List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
         int nMapKey = 1;
         int nCurrentItemId = 1;
         for( DatabaseUser user : listUsers )
@@ -424,7 +428,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         	if ( listUserFields.size(  ) == 0 )
         	{
         		MyLuteceUserField userField = new MyLuteceUserField(  );
-        		userField.setValue( CONSTANT_EMPTY_STRING );
+        		userField.setValue( StringUtils.EMPTY );
         		listUserFields.add( userField );
         	}
         	map.put( String.valueOf( attribute.getIdAttribute(  ) ), listUserFields );
@@ -567,6 +571,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         DatabaseHome.removeRolesForUser( user.getUserId(  ), _plugin );
         MyLuteceUserFieldService.doRemoveUserFields( user.getUserId(  ), request, getLocale(  ) );
+        DatabaseUserKeyService.getService(  ).removeByIdUser( user.getUserId(  ) );
 
         return MANAGE_USERS + "?" + PARAMETER_PLUGIN_NAME + "=" + _plugin.getName(  );
     }
@@ -617,7 +622,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         
         // ITEM NAVIGATION
         Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<DatabaseUser> listUsers = DatabaseService.getAuthorizedUsers( getUser(  ), _plugin );
+        List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
         int nMapKey = 1;
         int nCurrentItemId = 1;
         for( DatabaseUser user : listUsers )
@@ -760,7 +765,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         
         // ITEM NAVIGATION
         Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<DatabaseUser> listUsers = DatabaseService.getAuthorizedUsers( getUser(  ), _plugin );
+        List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
         int nMapKey = 1;
         int nCurrentItemId = 1;
         for( DatabaseUser user : listUsers )
@@ -877,7 +882,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     		return getManageUsers( request );
     	}
     	
-    	Map<String, Object> model = DatabaseService.getManageAdvancedParameters( getUser(  ) );
+    	Map<String, Object> model = _databaseService.getManageAdvancedParameters( getUser(  ) );
     	
     	HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ADVANCED_PARAMETERS, getLocale(  ), model );
 
@@ -896,34 +901,30 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     	String strEnablePasswordEncryption = request.getParameter( PARAMETER_ENABLE_PASSWORD_ENCRYPTION );
     	String strEncryptionAlgorithm = request.getParameter( PARAMETER_ENCRYPTION_ALGORITHM );
     	
-    	if ( strEncryptionAlgorithm.equals( CONSTANT_DEFAULT_ALGORITHM ) )
-    	{
-    		strEncryptionAlgorithm = CONSTANT_EMPTY_STRING;
-    	}
+    	strEnablePasswordEncryption = StringUtils.isNotBlank( strEnablePasswordEncryption ) ? strEnablePasswordEncryption : StringUtils.EMPTY;
+    	strEncryptionAlgorithm = StringUtils.isNotBlank( strEncryptionAlgorithm ) ? strEncryptionAlgorithm : StringUtils.EMPTY;
     	
-    	String strCurrentPasswordEnableEncryption = DatabaseUserParameterHome.findByKey( 
-    			PARAMETER_ENABLE_PASSWORD_ENCRYPTION, getPlugin(  ) ).getParameterValue(  );
-    	String strCurrentEncryptionAlgorithm = DatabaseUserParameterHome.findByKey( 
-    			PARAMETER_ENCRYPTION_ALGORITHM, getPlugin(  ) ).getParameterValue(  );
+    	boolean bEnablePasswordEncryption = Boolean.valueOf( strEnablePasswordEncryption );
+    	boolean bOldEnablePasswordEncryption = _userParamService.isPasswordEncrypted( _plugin );
+    	String strOldEncryptionAlgorithm = _userParamService.getEncryptionAlgorithm( _plugin );
     	
-    	String strUrl = CONSTANT_EMPTY_STRING;
-    	if ( strEnablePasswordEncryption.equals( strCurrentPasswordEnableEncryption ) 
-    			&& strEncryptionAlgorithm.equals( strCurrentEncryptionAlgorithm ) )
+    	String strUrl = StringUtils.EMPTY;
+    	if ( bEnablePasswordEncryption == bOldEnablePasswordEncryption
+    			&& strEncryptionAlgorithm.equals( strOldEncryptionAlgorithm ) )
     	{
     		strUrl = AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_NO_CHANGE_PASSWORD_ENCRYPTION, JSP_URL_MANAGE_ADVANCED_PARAMETERS,
                     AdminMessage.TYPE_INFO );
     	}
-    	else if ( strEnablePasswordEncryption.equals( String.valueOf( Boolean.TRUE ) )  
-    			&& strEncryptionAlgorithm.equals( CONSTANT_EMPTY_STRING ) )
+    	else if ( bEnablePasswordEncryption && StringUtils.isBlank( strEncryptionAlgorithm ) )
     	{
     		strUrl = AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_INVALID_ENCRYPTION_ALGORITHM, JSP_URL_MANAGE_ADVANCED_PARAMETERS,
                     AdminMessage.TYPE_STOP );
     	}
     	else
     	{
-    		if ( strEnablePasswordEncryption.equals( String.valueOf( Boolean.FALSE ) ) )
+    		if ( !bEnablePasswordEncryption )
     		{
-    			strEncryptionAlgorithm = CONSTANT_EMPTY_STRING;
+    			strEncryptionAlgorithm = StringUtils.EMPTY;
     		}
     		String strUrlModify = JSP_URL_MODIFY_PASSWORD_ENCRYPTION + "?" + PARAMETER_ENABLE_PASSWORD_ENCRYPTION + "=" + strEnablePasswordEncryption +
     				"&" + PARAMETER_ENCRYPTION_ALGORITHM + "=" + strEncryptionAlgorithm;
@@ -953,53 +954,43 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     	String strEnablePasswordEncryption = request.getParameter( PARAMETER_ENABLE_PASSWORD_ENCRYPTION );
     	String strEncryptionAlgorithm = request.getParameter( PARAMETER_ENCRYPTION_ALGORITHM );
     	
-    	String strCurrentPasswordEnableEncryption = DatabaseUserParameterHome.findByKey( 
-    			PARAMETER_ENABLE_PASSWORD_ENCRYPTION, getPlugin(  ) ).getParameterValue(  );
-    	String strCurrentEncryptionAlgorithm = DatabaseUserParameterHome.findByKey( 
-    			PARAMETER_ENCRYPTION_ALGORITHM, getPlugin(  ) ).getParameterValue(  );
+    	strEnablePasswordEncryption = StringUtils.isNotBlank( strEnablePasswordEncryption ) ? strEnablePasswordEncryption : StringUtils.EMPTY;
+    	strEncryptionAlgorithm = StringUtils.isNotBlank( strEncryptionAlgorithm ) ? strEncryptionAlgorithm : StringUtils.EMPTY;
     	
-    	if ( strEnablePasswordEncryption.equals( strCurrentPasswordEnableEncryption ) 
-    			&& strEncryptionAlgorithm.equals( strCurrentEncryptionAlgorithm ) )
+    	boolean bEnablePasswordEncryption = Boolean.valueOf( strEnablePasswordEncryption );
+    	boolean bOldEnablePasswordEncryption = _userParamService.isPasswordEncrypted( _plugin );
+    	String strOldEncryptionAlgorithm = _userParamService.getEncryptionAlgorithm( _plugin );
+    	
+    	if ( bEnablePasswordEncryption == bOldEnablePasswordEncryption 
+    			&& strEncryptionAlgorithm.equals( strOldEncryptionAlgorithm ) )
     	{
     		return JSP_MANAGE_ADVANCED_PARAMETERS;
     	}
     	
-    	DatabaseUserParameter userParamEnablePwdEncryption = 
-    		new DatabaseUserParameter( PARAMETER_ENABLE_PASSWORD_ENCRYPTION, strEnablePasswordEncryption );
-    	DatabaseUserParameter userParamEncryptionAlgorithm = 
-        		new DatabaseUserParameter( PARAMETER_ENCRYPTION_ALGORITHM, strEncryptionAlgorithm );
-        	
-    	DatabaseUserParameterHome.update( userParamEnablePwdEncryption, getPlugin(  ) );
-    	DatabaseUserParameterHome.update( userParamEncryptionAlgorithm, getPlugin(  ) );
+    	ReferenceItem userParamEnablePwdEncryption = new ReferenceItem(  );
+    	userParamEnablePwdEncryption.setCode( PARAMETER_ENABLE_PASSWORD_ENCRYPTION );
+    	userParamEnablePwdEncryption.setName( strEnablePasswordEncryption );
+    	userParamEnablePwdEncryption.setChecked( bEnablePasswordEncryption );
+        
+    	ReferenceItem userParamEncryptionAlgorithm = new ReferenceItem(  );
+    	userParamEncryptionAlgorithm.setCode( PARAMETER_ENCRYPTION_ALGORITHM );
+    	userParamEncryptionAlgorithm.setName( strEncryptionAlgorithm );
+    	
+    	_userParamService.update( userParamEnablePwdEncryption, _plugin );
+    	_userParamService.update( userParamEncryptionAlgorithm, _plugin );
         
         // Alert all users their password have been reinitialized.
     	Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersList( _plugin );
     	
     	for ( DatabaseUser user : listUsers )
     	{   		
-    		// make password
+    		// Makes password
             String strPassword = PasswordUtil.makePassword(  );
-            
-            // update password
-            if ( ( strPassword != null ) && !strPassword.equals( CONSTANT_EMPTY_STRING ) )
-            {
-            	// Encrypted password
-            	String strEncryptedPassword = strPassword;
-            	if ( Boolean.valueOf( 
-                		DatabaseUserParameterHome.findByKey( PARAMETER_ENABLE_PASSWORD_ENCRYPTION, getPlugin(  ) ).getParameterValue(  ) ) )
-            	{
-            		String strAlgorithm = DatabaseUserParameterHome.findByKey( 
-            				PARAMETER_ENCRYPTION_ALGORITHM, getPlugin(  ) ).getParameterValue(  );
-                	strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
-            	}
-            	DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId(  ), _plugin );
-            	DatabaseUserHome.remove( userStored, _plugin );
-            	DatabaseUserHome.create( userStored, strEncryptedPassword, _plugin );
-            }
+            _databaseService.doModifyPassword( user, strPassword, _plugin );
 
-            if ( !( ( user.getEmail(  ) == null ) || user.getEmail(  ).equals( CONSTANT_EMPTY_STRING ) ) )
+            if ( StringUtils.isNotBlank( user.getEmail(  ) ) )
             {
-            	//send password by e-mail
+            	// Sends password by e-mail
                 String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_NO_REPLY_EMAIL );
                 String strEmailSubject = I18nService.getLocalizedString( MESSAGE_EMAIL_SUBJECT, getLocale(  ) );
                 HashMap<String, Object> model = new HashMap<String, Object>(  );
@@ -1015,5 +1006,76 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     	}
     	
     	return JSP_MANAGE_ADVANCED_PARAMETERS;
+    }
+
+    /**
+     * Do activate the user
+     * @param request the Http
+     * @return the jsp home
+     */
+    public String doActivateUser( HttpServletRequest request )
+    {
+    	return doChangeUserStatus( request, true );
+    }
+    
+    /**
+     * Do deactivate the user
+     * @param request the HTTP request
+     * @return the JSP home
+     */
+    public String doDeactivateUser( HttpServletRequest request )
+    {
+    	return doChangeUserStatus( request, false );
+    }
+
+    /**
+     * Do modify the database user parameters
+     * @param request the HTTP request
+     * @return the JSP return
+     * @throws AccessDeniedException access denied if the user does have the right
+     */
+    public String doModifyDatabaseUserParameters( HttpServletRequest request )
+    	throws AccessDeniedException
+    {
+    	if ( !RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, 
+    			DatabaseResourceIdService.PERMISSION_MANAGE, getUser(  ) ) )
+    	{
+    		throw new AccessDeniedException(  );
+    	}
+	
+	    ReferenceList listParams = _userParamService.findAll( _plugin );
+	
+	    for ( ReferenceItem param : listParams )
+	    {
+	    	if ( !PARAMETER_ENABLE_PASSWORD_ENCRYPTION.equals( param.getCode(  ) ) &&
+	    			!PARAMETER_ENCRYPTION_ALGORITHM.equals( param.getCode(  ) ) )
+	    	{
+	    		String strParamValue = request.getParameter( param.getCode(  ) );
+	    		strParamValue = StringUtils.isNotBlank( strParamValue ) ? strParamValue : StringUtils.EMPTY;
+		
+		        param.setName( strParamValue );
+		        _userParamService.update( param, _plugin );
+	    	}
+	    }
+	
+	    return JSP_MANAGE_ADVANCED_PARAMETERS;
+    }
+    
+    /**
+     * Do change the status of the user
+     * @param request the HTTP request
+     * @param bIsActive true if the user must be changed to active, false otheriwse
+     * @return the JSP home
+     */
+    private String doChangeUserStatus( HttpServletRequest request, boolean bIsActive )
+    {
+    	DatabaseUser databaseUser = getDatabaseUserFromRequest( request );
+    	if ( databaseUser != null )
+    	{
+    		databaseUser.setActive( bIsActive );
+    		DatabaseUserHome.update( databaseUser, _plugin );
+    	}
+    	
+    	return MANAGE_USERS + "?" + PARAMETER_PLUGIN_NAME + "=" + _plugin.getName(  );
     }
 }

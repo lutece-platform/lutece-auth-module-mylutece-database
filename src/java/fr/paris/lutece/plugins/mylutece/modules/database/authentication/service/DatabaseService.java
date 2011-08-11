@@ -41,6 +41,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
@@ -54,7 +56,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFilter;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.business.role.Role;
@@ -64,9 +66,9 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.user.AdminUserResourceIdService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.service.workgroup.AdminWorkgroupService;
 import fr.paris.lutece.util.url.UrlItem;
 
@@ -78,7 +80,7 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 public class DatabaseService
 {
-    private static DatabaseService _singleton = new DatabaseService(  );
+    private static final String BEAN_DATABASE_SERVICE = "mylutece-database.databaseService"; 
     private static final String AUTHENTICATION_BEAN_NAME = "mylutece-database.authentication";
 
 	// CONSTANTS
@@ -87,8 +89,7 @@ public class DatabaseService
     private static final String AMPERSAND = "&";
 
     // MARKS
-    private static final String MARK_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
-    private static final String MARK_ENCRYPTION_ALGORITHM = "encryption_algorithm";
+    private static final String MARK_LIST_USER_PARAM_DEFAULT_VALUES = "list_user_param_default_values";
     private static final String MARK_ENCRYPTION_ALGORITHMS_LIST = "encryption_algorithms_list";
     private static final String MARK_SEARCH_IS_SEARCH = "search_is_search";
     private static final String MARK_SORT_SEARCH_ATTRIBUTE = "sort_search_attribute";
@@ -126,9 +127,9 @@ public class DatabaseService
      *
      * @return The instance of the singleton
      */
-    public static DatabaseService getInstance(  )
+    public static DatabaseService getService(  )
     {
-        return _singleton;
+        return (DatabaseService) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME, BEAN_DATABASE_SERVICE );
     }
     
     /**
@@ -136,7 +137,7 @@ public class DatabaseService
      * @param request HttpServletRequest
      * @return The model for the advanced parameters
      */
-    public static Map<String, Object> getManageAdvancedParameters( AdminUser user )
+    public Map<String, Object> getManageAdvancedParameters( AdminUser user )
     {
     	Map<String, Object> model = new HashMap<String, Object>(  );
     	Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -151,10 +152,7 @@ public class DatabaseService
         		strAlgorithm.trim(  );
         	}
         	
-    		model.put( MARK_ENABLE_PASSWORD_ENCRYPTION, 
-    				DatabaseUserParameterHome.findByKey( PARAMETER_ENABLE_PASSWORD_ENCRYPTION, plugin ).getParameterValue(  ) );
-        	model.put( MARK_ENCRYPTION_ALGORITHM, 
-        			DatabaseUserParameterHome.findByKey( PARAMETER_ENCRYPTION_ALGORITHM, plugin ).getParameterValue(  ) );
+    		model.put( MARK_LIST_USER_PARAM_DEFAULT_VALUES, DatabaseUserParameterService.getService(  ).findAll( plugin ) );
         	model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
     	}
     	
@@ -166,7 +164,7 @@ public class DatabaseService
      * @param user the Lutece user
      * @return true if the Lutece user should be visible, false otherwise
      */
-    public static boolean isAuthorized( DatabaseUser user, AdminUser adminUser, Plugin plugin )
+    public boolean isAuthorized( DatabaseUser user, AdminUser adminUser, Plugin plugin )
     {
     	boolean bHasRole = false;
     	List<String> userRoleKeyList = DatabaseHome.findUserRolesFromLogin( user.getLogin(  ), plugin );
@@ -209,13 +207,13 @@ public class DatabaseService
      * Get authorized users list
      * @return a list of users
      */
-    public static List<DatabaseUser> getAuthorizedUsers( AdminUser adminUser, Plugin plugin )
+    public List<DatabaseUser> getAuthorizedUsers( AdminUser adminUser, Plugin plugin )
     {
         Collection<DatabaseUser> userList = DatabaseUserHome.findDatabaseUsersList( plugin );
         List<DatabaseUser> authorizedUserList = new ArrayList<DatabaseUser>(  );
         for ( DatabaseUser user : userList )
         {
-        	if ( DatabaseService.isAuthorized( user, adminUser, plugin ) )
+        	if ( isAuthorized( user, adminUser, plugin ) )
         	{
         		authorizedUserList.add( user );
         	}
@@ -232,7 +230,7 @@ public class DatabaseService
      * @param url UrlItem
      * @return the filtered list
      */
-    public static List<DatabaseUser> getFilteredUsersInterface
+    public List<DatabaseUser> getFilteredUsersInterface
     	( List<DatabaseUser> listUsers, HttpServletRequest request, Map<String, Object> model, UrlItem url )
     {
     	Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -308,5 +306,51 @@ public class DatabaseService
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
     	
     	return filteredUsers;
+    }
+
+    /**
+     * Do modify the password
+     * @param user the DatabaseUser
+     * @param strPassword the new password
+     * @param plugin the plugin
+     */
+    public void doModifyPassword( DatabaseUser user, String strPassword, Plugin plugin )
+    {
+        // Updates password
+        if ( StringUtils.isNotBlank( strPassword ) )
+        {
+        	// Encrypts password or not
+        	String strEncryptedPassword = strPassword;
+        	if ( DatabaseUserParameterService.getService(  ).isPasswordEncrypted( plugin ) )
+        	{
+        		String strAlgorithm = DatabaseUserParameterService.getService(  ).getEncryptionAlgorithm( plugin );
+            	strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
+        	}
+        	DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId(  ), plugin );
+        	if ( userStored != null )
+        	{
+        		DatabaseUserHome.updatePassword( userStored, strEncryptedPassword, plugin );
+        	}
+        }
+    }
+
+    /**
+     * Check if the user is active or not
+     * @param strUserName the user name
+     * @param plugin the plugin
+     * @return true if it is active, false otherwise
+     */
+    public boolean isUserActive( String strUserName, Plugin plugin )
+    {
+    	boolean bIsActive = false;
+    	
+    	List<DatabaseUser> listUsers = (List<DatabaseUser>) DatabaseUserHome.findDatabaseUsersListForLogin( strUserName, plugin );
+    	if ( listUsers != null && !listUsers.isEmpty(  ) )
+    	{
+    		DatabaseUser user = listUsers.get( 0 );
+    		bIsActive = user.isActive(  );
+    	}
+    	
+    	return bIsActive;
     }
 }

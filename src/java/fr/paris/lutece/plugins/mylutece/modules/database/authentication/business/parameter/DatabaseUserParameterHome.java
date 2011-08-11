@@ -33,22 +33,31 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter;
 
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.ReferenceList;
 
+/**
+ * 
+ * DatabaseUserParameterHome
+ *
+ */
 public final class DatabaseUserParameterHome 
 {
+	private static final String BEAN_DATABASE_USER_PARAMETER_DAO = "mylutece-database.databaseUserParameterDAO";
 	// Static variable pointed at the DAO instance
-    private static IDatabaseUserParameterDAO _dao = ( IDatabaseUserParameterDAO ) SpringContextService.getPluginBean( "database",
-    		"mylutece-database.databaseUserParameterDAO" );
+    private static IDatabaseUserParameterDAO _dao = ( IDatabaseUserParameterDAO ) SpringContextService.getPluginBean( 
+    		DatabasePlugin.PLUGIN_NAME, BEAN_DATABASE_USER_PARAMETER_DAO );
 
 	/**
      * Load the parameter value
      * @param strParameterKey the parameter key
-     * @param plugin
+     * @param plugin the plugin
      * @return The parameter value
      */
-    public static DatabaseUserParameter findByKey( String strParameterKey, Plugin plugin )
+    public static ReferenceItem findByKey( String strParameterKey, Plugin plugin )
     {
     	return _dao.load( strParameterKey, plugin );
     }
@@ -57,10 +66,20 @@ public final class DatabaseUserParameterHome
      * Update the parameter value
      * @param strParameterKey The parameter key
      * @param strParameterValue The parameter value 
-     * @param plugin
+     * @param plugin the plugin
      */
-    public static void update( DatabaseUserParameter userParam, Plugin plugin )
+    public static void update( ReferenceItem userParam, Plugin plugin )
     {
     	_dao.store( userParam, plugin );
+    }
+    
+    /**
+     * Find all parameters
+     * @param plugin the plugin
+     * @return a ReferenceList
+     */
+    public static ReferenceList findAll( Plugin plugin )
+    {
+    	return _dao.selectAll( plugin );
     }
 }

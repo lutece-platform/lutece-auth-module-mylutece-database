@@ -69,7 +69,7 @@ public class DatabaseAdminDashboardComponent extends AdminDashboardComponent
 		if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, 
 				DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
     	{
-			Map<String, Object> model = DatabaseService.getManageAdvancedParameters( user );
+			Map<String, Object> model = DatabaseService.getService(  ).getManageAdvancedParameters( user );
 			HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ADMIN_DASHBOARD, user.getLocale(  ), model );
 			
 			return template.getHtml(  );

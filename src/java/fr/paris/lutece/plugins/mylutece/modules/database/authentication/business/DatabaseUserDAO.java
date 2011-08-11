@@ -50,17 +50,17 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 	private static final String PERCENT = "%";
 	
     private static final String SQL_QUERY_NEW_PK = " SELECT max( mylutece_database_user_id ) FROM mylutece_database_user ";
-    private static final String SQL_QUERY_SELECT = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user WHERE mylutece_database_user_id = ?";
+    private static final String SQL_QUERY_SELECT = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE mylutece_database_user_id = ?";
     private static final String SQL_QUERY_SELECT_PASSWORD = " SELECT password FROM mylutece_database_user WHERE mylutece_database_user_id = ? ";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO mylutece_database_user ( mylutece_database_user_id, login, name_family, name_given, email, password ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO mylutece_database_user ( mylutece_database_user_id, login, name_family, name_given, email, is_active, password ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM mylutece_database_user WHERE mylutece_database_user_id = ?  ";
-    private static final String SQL_QUERY_UPDATE = " UPDATE mylutece_database_user SET login = ?, name_family = ?, name_given = ?, email = ? WHERE mylutece_database_user_id = ? ";
+    private static final String SQL_QUERY_UPDATE = " UPDATE mylutece_database_user SET login = ?, name_family = ?, name_given = ?, email = ?, is_active = ? WHERE mylutece_database_user_id = ? ";
     private static final String SQL_QUERY_UPDATE_PASSWORD = " UPDATE mylutece_database_user SET password = ? WHERE mylutece_database_user_id = ? ";
-    private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user ORDER BY name_family, login";
-    private static final String SQL_QUERY_SELECTALL_FOR_LOGIN = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user WHERE login = ? ";
-    private static final String SQL_QUERY_SELECTALL_FOR_EMAIL = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user WHERE email = ? ";
+    private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user ORDER BY name_family, login";
+    private static final String SQL_QUERY_SELECTALL_FOR_LOGIN = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE login = ? ";
+    private static final String SQL_QUERY_SELECTALL_FOR_EMAIL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE email = ? ";
     private static final String SQL_QUERY_CHECK_PASSWORD_FOR_USER_ID = " SELECT count(*) FROM mylutece_database_user WHERE login = ? AND password = ? ";
-    private static final String SQL_QUERY_SELECT_USER_FROM_SEARCH = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user " +
+    private static final String SQL_QUERY_SELECT_USER_FROM_SEARCH = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user " +
 			" WHERE login LIKE ? AND name_family LIKE ? and name_given LIKE ? AND email LIKE ? ORDER BY name_family ";
     
     /** This class implements the Singleton design pattern. */
@@ -124,7 +124,8 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
         daoUtil.setString( 3, databaseUser.getLastName(  ) );
         daoUtil.setString( 4, databaseUser.getFirstName(  ) );
         daoUtil.setString( 5, databaseUser.getEmail(  ) );
-        daoUtil.setString( 6, strPassword );
+        daoUtil.setBoolean( 6, databaseUser.isActive(  ) );
+        daoUtil.setString( 7, strPassword );
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
@@ -153,6 +154,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
             databaseUser.setLastName( daoUtil.getString( 3 ) );
             databaseUser.setFirstName( daoUtil.getString( 4 ) );
             databaseUser.setEmail( daoUtil.getString( 5 ) );
+            databaseUser.setActive( daoUtil.getBoolean( 6 ) );
         }
 
         daoUtil.free(  );
@@ -186,8 +188,9 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
         daoUtil.setString( 2, databaseUser.getLastName(  ) );
         daoUtil.setString( 3, databaseUser.getFirstName(  ) );
         daoUtil.setString( 4, databaseUser.getEmail(  ) );
+        daoUtil.setBoolean( 5, databaseUser.isActive(  ) );
 
-        daoUtil.setInt( 5, databaseUser.getUserId(  ) );
+        daoUtil.setInt( 6, databaseUser.getUserId(  ) );
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
@@ -252,6 +255,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
             databaseUser.setLastName( daoUtil.getString( 3 ) );
             databaseUser.setFirstName( daoUtil.getString( 4 ) );
             databaseUser.setEmail( daoUtil.getString( 5 ) );
+            databaseUser.setActive( daoUtil.getBoolean( 6 ) );
 
             listDatabaseUsers.add( databaseUser );
         }
@@ -282,6 +286,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
             databaseUser.setLastName( daoUtil.getString( 3 ) );
             databaseUser.setFirstName( daoUtil.getString( 4 ) );
             databaseUser.setEmail( daoUtil.getString( 5 ) );
+            databaseUser.setActive( daoUtil.getBoolean( 6 ) );
 
             listDatabaseUsers.add( databaseUser );
         }
@@ -312,6 +317,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
             databaseUser.setLastName( daoUtil.getString( 3 ) );
             databaseUser.setFirstName( daoUtil.getString( 4 ) );
             databaseUser.setEmail( daoUtil.getString( 5 ) );
+            databaseUser.setActive( daoUtil.getBoolean( 6 ) );
 
             listDatabaseUsers.add( databaseUser );
         }
@@ -372,6 +378,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
         	filteredUser.setLastName( daoUtil.getString( 3 ) );
         	filteredUser.setFirstName( daoUtil.getString( 4 ) );
         	filteredUser.setEmail( daoUtil.getString( 5 ) );
+        	filteredUser.setActive( daoUtil.getBoolean( 6 ) );
             listFilteredUsers.add( filteredUser );
         }
 

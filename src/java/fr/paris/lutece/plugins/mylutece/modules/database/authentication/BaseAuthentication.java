@@ -48,7 +48,8 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -74,12 +75,7 @@ public class BaseAuthentication extends PortalAuthentication
     // Constants
 
     private static final String AUTH_SERVICE_NAME = AppPropertiesService.getProperty("mylutece-database.service.name");
-    
-    // PARAMETERS
-    public static final String PARAMETER_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
-    public static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
-    
-    
+
     // Messages properties
     private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/database/mylutece-database.png";
@@ -131,16 +127,15 @@ public class BaseAuthentication extends PortalAuthentication
         BaseUser user = DatabaseHome.findLuteceUserByLogin(strUserName, plugin, this);
 
         //Unable to find the user
-        if (user == null)
+        if ( user == null || !DatabaseService.getService(  ).isUserActive( strUserName, plugin ) )
         {
             AppLogService.info("Unable to find user in the database : " + strUserName);
             throw new LoginException(I18nService.getLocalizedString(PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale));
         }
         
-        if ( Boolean.valueOf( 
-        		DatabaseUserParameterHome.findByKey( PARAMETER_ENABLE_PASSWORD_ENCRYPTION, plugin ).getParameterValue(  ) ) )
+        if ( DatabaseUserParameterService.getService(  ).isPasswordEncrypted( plugin ) )
     	{
-        	String strAlgorithm = DatabaseUserParameterHome.findByKey( PARAMETER_ENCRYPTION_ALGORITHM, plugin ).getParameterValue(  );
+        	String strAlgorithm = DatabaseUserParameterService.getService(  ).getEncryptionAlgorithm( plugin );
         	strUserPassword = CryptoService.encrypt( strUserPassword, strAlgorithm );
     	}
 

@@ -96,6 +96,15 @@
 	                <img src="images/admin/skin/actions/publish.png" class="icon" alt="#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}" title="#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}" />
 	            </a>
 	            </#if>
+	            <#if user.isActive(  )>
+	            	<a href="jsp/admin/plugins/mylutece/modules/database/DoDeactivateUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">
+		            	<img src="images/admin/skin/actions/disable.png" class="icon" alt="#i18n{module.mylutece.database.manage_users.linkDeactivateUser}" title="#i18n{module.mylutece.database.manage_users.linkDeactivateUser}" />
+		            </a>
+	            <#else>
+		            <a href="jsp/admin/plugins/mylutece/modules/database/DoActivateUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">
+		            	<img src="images/admin/skin/actions/enable.png" class="icon" alt="#i18n{module.mylutece.database.manage_users.linkActivateUser}" title="#i18n{module.mylutece.database.manage_users.linkActivateUser}" />
+		            </a>
+		        </#if>
 	            <a href="jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">
 	                <img src="images/admin/skin/actions/group.png" class="icon" alt="#i18n{module.mylutece.database.manage_users.linkManageGroups}" title="#i18n{module.mylutece.database.manage_users.linkManageGroups}" />
 	            </a>

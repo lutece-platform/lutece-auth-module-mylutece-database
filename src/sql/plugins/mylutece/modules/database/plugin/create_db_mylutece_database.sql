@@ -9,6 +9,7 @@ CREATE TABLE mylutece_database_user (
   name_given varchar(100) DEFAULT '' NOT NULL,
   name_family varchar(100) DEFAULT '' NOT NULL,
   email varchar(100) DEFAULT NULL,
+  is_active SMALLINT DEFAULT 0 NOT NULL,
   PRIMARY KEY  (mylutece_database_user_id)
 );
 
@@ -63,3 +64,14 @@ CREATE TABLE mylutece_database_user_parameter (
 	parameter_value varchar(100) NOT NULL,
 	PRIMARY KEY (parameter_key)
 );
+
+--
+-- Table structure for table mylutece_database_key
+--
+DROP TABLE IF EXISTS mylutece_database_key;
+CREATE TABLE mylutece_database_key(
+	mylutece_database_user_key VARCHAR(255) DEFAULT NULL,
+	mylutece_database_user_id INT DEFAULT 0 NOT NULL,	
+	PRIMARY KEY (mylutece_database_user_key)
+);
+

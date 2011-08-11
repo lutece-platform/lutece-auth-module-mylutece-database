@@ -1,38 +1,70 @@
+<#function getName code reference_list>
+	<#if reference_list?has_content>
+		<#list reference_list as reference_item>
+			<#if reference_item.code = code>
+  				<#return reference_item.name>
+  			</#if>
+  		</#list>
+	</#if>
+	<#return "">
+</#function>
+
+<#function getChecked code reference_list>
+	<#if reference_list?has_content>
+		<#list reference_list as reference_item>
+			<#if reference_item.code = code>
+				<#if reference_item.checked>
+  					<#return "checked='checked'">
+  				<#else>
+  					<#return "">
+  				</#if>
+  			</#if>
+  		</#list>
+	</#if>
+	<#return "">
+</#function>
+
 <!-- PASSWORD ENCRYPTION -->
 <div class="highlight-box">
 	<div id="password-encryption">
 		<form method="post" name="password_encryption" action="jsp/admin/plugins/mylutece/modules/database/ModifyPasswordEncryption.jsp">
 			<p>
-				<label for="enable_password_encryption">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnablePasswordEncryption}</label>
-				<#if enable_password_encryption = "false">
-					<input type="radio" name="enable_password_encryption" value="false" checked="checked" /> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOff}
-					<input type="radio" name="enable_password_encryption" value="true" /> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOn}
-				<#else>
-					<input type="radio" name="enable_password_encryption" value="false" /> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOff}
-					<input type="radio" name="enable_password_encryption" value="true" checked="checked"/> #i18n{module.mylutece.database.manage_advanced_parameters.buttonPasswordEncryptionOn}
-				</#if>
+				<label for="enable_password_encryption">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnablePasswordEncryption} : </label>
+				<input type="checkbox" name="enable_password_encryption" value="true" ${getChecked('enable_password_encryption',list_user_param_default_values)} />
 				<br />
-				<br />
-				<span id="password-encryption-algorithm">
-					<label for="encryption_algorithm">#i18n{module.mylutece.database.manage_advanced_parameters.labelEncryptionAlgorithm}</label>
-					<select name="encryption_algorithm">
-						<#if !encryption_algorithm?has_content>
-							<option value="noValue" selected="selected">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
+				<label for="encryption_algorithm">#i18n{module.mylutece.database.manage_advanced_parameters.labelEncryptionAlgorithm} : </label>
+				<select name="encryption_algorithm">
+					<#assign encryption_algorithm = getName( 'encryption_algorithm', list_user_param_default_values)>
+					<#if !encryption_algorithm?has_content>
+						<option value="" selected="selected">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
+					<#else>
+						<option value="">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
+					</#if>
+					<#list encryption_algorithms_list as algorithm>
+						<#if algorithm = encryption_algorithm>
+							<option value="${algorithm}" selected="selected">${algorithm}</option>
 						<#else>
-							<option value="noValue">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
+							<option value=${algorithm}>${algorithm}</option>
 						</#if>
- 					<#list encryption_algorithms_list as algorithm>
- 						<#if algorithm = encryption_algorithm>
- 							<option value="${algorithm}" selected="selected">${algorithm}</option>
- 						<#else>
- 							<option value=${algorithm}>${algorithm}</option>
- 						</#if>
- 					</#list>
-					</select>
-				</span>
+					</#list>
+				</select>
 				<br />
 				<input type="submit" class="button" value="#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}" />
 			</p>
 		</form>
 	</div>
+</div>
+<div class="highlight-box">
+	<form method="post" name="password_encryption" action="jsp/admin/plugins/mylutece/modules/database/DoModifyDatabaseUserParameters.jsp">
+		<p>
+			<label for="account_creation_validation_email">#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmail} : </label>
+			<input type="checkbox" name="account_creation_validation_email" value="true" ${getChecked('account_creation_validation_email',list_user_param_default_values)} />
+			<br />
+			<label>&nbsp;</label>
+			#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmailComment}
+		</p>
+		<p>
+			<input type="submit" class="button" value="#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}" />
+		</p>
+	</form>
 </div>

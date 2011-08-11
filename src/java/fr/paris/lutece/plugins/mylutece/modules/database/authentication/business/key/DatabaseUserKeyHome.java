@@ -31,39 +31,67 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter;
+package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key;
 
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.util.ReferenceItem;
-import fr.paris.lutece.util.ReferenceList;
+import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+
 
 /**
  * 
- * IDefaultUserParameterDAO
- *
+ * DatabaseUserKeyHome
+ * 
  */
-public interface IDatabaseUserParameterDAO 
+public final class DatabaseUserKeyHome
 {
-	/**
-     * Load the parameter value
-     * @param strParameterKey the parameter key
-     * @param plugin the plugin
-     * @return The parameter value
-     */
-    ReferenceItem load( String strParameterKey, Plugin plugin );
-    
+	private static final String BEAN_DATABASE_USER_KEY_DAO = "mylutece-database.databaseUserKeyDAO";
+	private static Plugin _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+    private static IDatabaseUserKeyDAO _dao = (IDatabaseUserKeyDAO) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
+    		BEAN_DATABASE_USER_KEY_DAO );
+
     /**
-     * Update the parameter value
-     * @param strParameterValue The parameter value 
-     * @param strParameterKey The parameter key
-     * @param plugin the plugin
+     * Private constructor - this class need not be instantiated
      */
-    void store( ReferenceItem userParam, Plugin plugin );
-    
+    private DatabaseUserKeyHome(  )
+    {
+    }
+
     /**
-     * Select all user parameters
-     * @param plugin the plugin
-     * @return
+     * Create a new key
+     * @param userKey the key
      */
-    ReferenceList selectAll( Plugin plugin );
+    public static void create( DatabaseUserKey userKey )
+    {
+        _dao.insert( userKey, _plugin );
+    }
+
+    /**
+     * Remove a key from a given key
+     * @param strKey the key
+     */
+    public static void remove( String strKey )
+    {
+        _dao.delete( strKey, _plugin );
+    }
+
+    /**
+     * Remove a key from a given id user
+     * @param nUserId the id user
+     */
+    public static void removeByIdUser( int nUserId )
+    {
+        _dao.deleteByIdUser( nUserId, _plugin );
+    }
+
+    /**
+     * Find a key from a given key
+     * @param strKey the key
+     * @return a {@link DatabaseUserKey}
+     */
+    public static DatabaseUserKey findByPrimaryKey( String strKey )
+    {
+        return _dao.load( strKey, _plugin );
+    }
 }

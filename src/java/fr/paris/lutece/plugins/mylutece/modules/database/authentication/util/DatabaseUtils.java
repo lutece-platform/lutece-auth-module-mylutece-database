@@ -31,71 +31,33 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter;
+package fr.paris.lutece.plugins.mylutece.modules.database.authentication.util;
+
+import java.util.UUID;
+
 
 /**
- * 
- * Default parameters for AdminUsers
+ *
+ * DatabaseUtils
  *
  */
-public class DatabaseUserParameter 
+public final class DatabaseUtils
 {
-	private String _strParameterKey;
-	private String _strParameterValue;
-	
-	/**
-	 * Constructor
-	 */
-	public DatabaseUserParameter(  )
-	{
-		_strParameterKey = "";
-		_strParameterValue = "";
-	}
-	
-	/**
-	 * Constructor
-	 * @param strParameterKey Key
-	 * @param strParameterValue Value
-	 */
-	public DatabaseUserParameter( String strParameterKey, String strParameterValue )
-	{
-		_strParameterKey = strParameterKey;
-		_strParameterValue = strParameterValue;
-	}
-	
-	/**
-	 * Getter
-	 * @return key
-	 */
-	public String getParameterKey(  )
-	{
-		return _strParameterKey;
-	}
-	
-	/**
-	 * Setter
-	 * @param strParameterKey Key
-	 */
-	public void setParameterKey( String strParameterKey )
-	{
-		_strParameterKey = strParameterKey;
-	}
-	
-	/**
-	 * Getter 
-	 * @return Value
-	 */
-	public String getParameterValue(  )
-	{
-		return _strParameterValue;
-	}
-	
-	/**
-	 * Setter
-	 * @param strParameterValue Value
-	 */
-	public void setParameterValue( String strParameterValue )
-	{
-		_strParameterValue = strParameterValue;
-	}
+    /**
+     * Private constructor
+     */
+    private DatabaseUtils(  )
+    {
+    }
+
+    /**
+     * Generate a new random key
+     * @return a new random key
+     */
+    public static String generateNewKey(  )
+    {
+        UUID key = UUID.randomUUID(  );
+
+        return key.toString(  );
+    }
 }

@@ -49,6 +49,6 @@ public class DatabasePlugin extends PluginDefaultImplementation
     public void init(  )
     {
         // Initialize the Database service
-        DatabaseService.getInstance(  ).init(  );
+        DatabaseService.getService(  ).init(  );
     }
 }

@@ -53,6 +53,28 @@
 					</tr>
 	            </table>
 			</form>
+		<#elseif action_validation_email?has_content>
+			<h3>#i18n{module.mylutece.database.message.create_account.validation.email}</h3>
+			<form class="default-form" id="createAccount" name="createAccount" action="${action_validation_email}" method="post">		
+				<table align="center">
+	            	<tr>
+	                	<td>
+							<input class="site-buttons" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
+						</td>
+					</tr>
+	            </table>
+			</form>
+		<#elseif action_validation_success?has_content>
+			<h3>#i18n{module.mylutece.database.message.create_account.validation.success}</h3>
+			<form class="default-form" id="createAccount" name="createAccount" action="${action_validation_success}" method="post">		
+				<table align="center">
+	            	<tr>
+	                	<td>
+							<input class="site-buttons" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
+						</td>
+					</tr>
+	            </table>
+			</form>
 		<#else>
 	        <form class="default-form" id="createAccount" name="createAccount" action="jsp/site/plugins/mylutece/modules/database/DoCreateAccount.jsp" method="post">
 			<input type="hidden" name="plugin_name" value="${plugin_name}" />

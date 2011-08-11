@@ -31,27 +31,43 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
+package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key;
 
-import fr.paris.lutece.portal.service.security.LuteceAuthentication;
-import fr.paris.lutece.portal.service.security.LuteceUser;
-
+import fr.paris.lutece.portal.service.plugin.Plugin;
 
 /**
- * This class implements The Lutece User in a database configuration.
- * User roles are retrieve from the database.
+ * 
+ * IDatabaseUserKey
+ *
  */
-public class BaseUser extends LuteceUser
+public interface IDatabaseUserKeyDAO
 {
-	private static final long serialVersionUID = -1414600470836409898L;
+	/**
+	 * Load an instance of {@link DatabaseUserKey}
+	 * @param strKey the key
+	 * @param plugin the plugin
+	 * @return an instance of {@link DatabaseUserKey}
+	 */
+	DatabaseUserKey load( String strKey, Plugin plugin );
 
 	/**
-     * Constructor
-     * @param strUserName The user's name
-     * @param authenticationService The authentication service that authenticates the user
-     */
-    public BaseUser( String strUserName, LuteceAuthentication authenticationService )
-    {
-        super( strUserName, authenticationService );
-    }
+	 * Insert a new {@link DatabaseUserKey}
+	 * @param userKey the {@link DatabaseUserKey}
+	 * @param plugin the plugin
+	 */
+	void insert( DatabaseUserKey userKey, Plugin plugin );
+
+	/**
+	 * Delete a {@link DatabaseUserKey}
+	 * @param strKey the key
+	 * @param plugin the plugin
+	 */
+	void delete( String strKey, Plugin plugin );
+
+	/**
+	 * Delete by id user
+	 * @param nUserId the id user
+	 * @param plugin the plugin
+	 */
+	void deleteByIdUser( int nUserId, Plugin plugin );
 }
