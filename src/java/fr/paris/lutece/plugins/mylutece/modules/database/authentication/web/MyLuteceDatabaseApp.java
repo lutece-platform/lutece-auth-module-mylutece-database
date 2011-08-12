@@ -715,16 +715,19 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             for ( DatabaseUser user : listUser )
             {
-                model.put( MARK_USER, user );
-                model.put( MARK_PASSWORD, DatabaseUserHome.findPasswordByPrimaryKey( user.getUserId(  ), _plugin ) );
+                if ( user.isActive(  ) )
+                {
+                    model.put( MARK_USER, user );
+                    model.put( MARK_PASSWORD, DatabaseUserHome.findPasswordByPrimaryKey( user.getUserId(  ), _plugin ) );
 
-                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_BODY, _locale, model );
+                    HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_BODY, _locale, model );
 
-                String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
-                String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
-                String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_OBJECT, _locale );
+                    String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
+                    String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
+                    String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_OBJECT, _locale );
 
-                MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml(  ) );
+                    MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml(  ) );
+                }
             }
 
             url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
