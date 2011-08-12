@@ -286,7 +286,7 @@ public class DatabaseDAO implements IDatabaseDAO
 
         while ( daoUtil.next(  ) )
         {
-            DatabaseUser user = new DatabaseUser(  );
+            DatabaseUser user = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
             user.setUserId( daoUtil.getInt( 1 ) );
             user.setLogin( daoUtil.getString( 2 ) );
             user.setLastName( daoUtil.getString( 3 ) );

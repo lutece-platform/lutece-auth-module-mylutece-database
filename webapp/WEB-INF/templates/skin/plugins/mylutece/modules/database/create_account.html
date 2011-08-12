@@ -86,8 +86,13 @@
 			<input type="hidden" name="plugin_name" value="${plugin_name}" />
 	        <fieldset>
 		        <p>
-		            <label class="text-label" for="login">#i18n{module.mylutece.database.xpage.create_account.login} * : </label>
-		            <input type="text" ${classLogin?if_exists} name="login" maxlength="100" size="35" tabindex="1" value="${(user.login)?if_exists}" />
+		        	<#if show_input_login>
+			            <label class="text-label" for="login">#i18n{module.mylutece.database.xpage.create_account.login} * : </label>
+			            <input type="text" ${classLogin?if_exists} name="login" maxlength="100" size="35" tabindex="1" value="${(user.login)?if_exists}" />
+			            <br />
+			        </#if>
+		            <label class="text-label" for="email">#i18n{module.mylutece.database.xpage.create_account.eMail} * : </label>
+		            <input type="text" ${classEmail?if_exists} name="email" maxlength="100" size="35" tabindex="4" value="${(user.email)?if_exists}" />
 		            <br />
 		            <label class="text-label" for="password">#i18n{module.mylutece.database.xpage.create_account.password} * : </label>
 		            <input type="password" ${classPassword?if_exists} name="password" maxlength="100" size="35" tabindex="1" value="" />
@@ -100,9 +105,6 @@
 		            <br />
 		            <label class="text-label" for="first_name">#i18n{module.mylutece.database.xpage.create_account.firstName} * : </label>
 		            <input type="text" ${classFirstName?if_exists} name="first_name" maxlength="100" size="35" tabindex="3" value="${(user.firstName)?if_exists}" />
-		            <br />
-		            <label class="text-label" for="email">#i18n{module.mylutece.database.xpage.create_account.eMail} * : </label>
-		            <input type="text" ${classEmail?if_exists} name="email" maxlength="100" size="35" tabindex="4" value="${(user.email)?if_exists}" />
 				</p>
 				<#if jcaptcha?exists>
 					<p>${jcaptcha}</p>

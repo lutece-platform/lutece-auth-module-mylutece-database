@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKey;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
@@ -88,6 +89,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_ACTION_VALIDATION_SUCCESS = "action_validation_success";
     private static final String MARK_VALIDATION_URL = "validation_url";
     private static final String MARK_JCAPTCHA = "jcaptcha";
+    private static final String MARK_SHOW_INPUT_LOGIN = "show_input_login";
 
     // Parameters
     private static final String PARAMETER_ACTION = "action";
@@ -166,6 +168,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
     private DatabaseUserKeyService _userKeyService = DatabaseUserKeyService.getService(  );
     private CaptchaSecurityService _captchaService = new CaptchaSecurityService(  );
+    private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory(  );
 
     /**
      *
@@ -321,6 +324,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         model.put( MARK_USER, user );
         model.put( MARK_ROLES, luteceUser.getRoles(  ) );
         model.put( MARK_GROUPS, luteceUser.getGroups(  ) );
+        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin(  ) );
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_VIEW_ACCOUNT_PAGE, _locale, model );
         page.setContent( t.getHtml(  ) );
@@ -339,7 +343,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private XPage getCreateAccountPage( XPage page, HttpServletRequest request )
     {
         Map<String, Object> model = new HashMap<String, Object>(  );
-        DatabaseUser user = new DatabaseUser(  );
+        DatabaseUser user = _userFactory.newDatabaseUser(  );
 
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strLogin = request.getParameter( PARAMETER_LOGIN );
@@ -376,6 +380,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         model.put( MARK_ACTION_SUCCESSFUL, strSuccess );
         model.put( MARK_ACTION_VALIDATION_EMAIL, strValidationEmail );
         model.put( MARK_ACTION_VALIDATION_SUCCESS, strValidationSuccess );
+        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin(  ) );
 
         if ( _userParamService.isJcaptchaEnable( _plugin ) )
         {
@@ -401,12 +406,21 @@ public class MyLuteceDatabaseApp implements XPageApplication
         init( request, plugin );
 
         String strError = StringUtils.EMPTY;
-        String strLogin = request.getParameter( PARAMETER_LOGIN );
         String strPassword = request.getParameter( PARAMETER_PASSWORD );
         String strConfirmation = request.getParameter( PARAMETER_CONFIRMATION_PASSWORD );
         String strLastName = request.getParameter( PARAMETER_LAST_NAME );
         String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
+        String strLogin = StringUtils.EMPTY;
+
+        if ( _userFactory.isEmailUsedAsLogin(  ) )
+        {
+            strLogin = strEmail;
+        }
+        else
+        {
+            strLogin = request.getParameter( PARAMETER_LOGIN );
+        }
 
         if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strPassword ) ||
                 StringUtils.isBlank( strConfirmation ) || StringUtils.isBlank( strFirstName ) ||
@@ -448,15 +462,19 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
         url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
-        url.addParameter( PARAMETER_LOGIN, strLogin );
         url.addParameter( PARAMETER_LAST_NAME, strLastName );
         url.addParameter( PARAMETER_FIRST_NAME, strFirstName );
         url.addParameter( PARAMETER_EMAIL, strEmail );
 
+        if ( !_userFactory.isEmailUsedAsLogin(  ) )
+        {
+            url.addParameter( PARAMETER_LOGIN, strLogin );
+        }
+
         if ( StringUtils.isBlank( strError ) )
         {
             boolean bAccountCreationValidationEmail = _userParamService.isAccountCreationValidationEmail( _plugin );
-            DatabaseUser databaseUser = new DatabaseUser(  );
+            DatabaseUser databaseUser = _userFactory.newDatabaseUser(  );
             databaseUser.setLogin( strLogin );
             databaseUser.setLastName( strLastName );
             databaseUser.setFirstName( strFirstName );

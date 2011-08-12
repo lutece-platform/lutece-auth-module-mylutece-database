@@ -41,6 +41,7 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.Group;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupHome;
@@ -346,7 +347,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
         }
 
-        DatabaseUser databaseUser = new DatabaseUser(  );
+        DatabaseUser databaseUser = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
         databaseUser.setEmail( strEmail );
         databaseUser.setFirstName( strFirstName );
         databaseUser.setLastName( strLastName );

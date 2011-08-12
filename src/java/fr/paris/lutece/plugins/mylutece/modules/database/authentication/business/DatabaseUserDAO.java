@@ -147,7 +147,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 
         if ( daoUtil.next(  ) )
         {
-            databaseUser = new DatabaseUser(  );
+            databaseUser = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
             databaseUser.setUserId( daoUtil.getInt( 1 ) );
             databaseUser.setLogin( daoUtil.getString( 2 ) );
             databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -248,7 +248,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 
         while ( daoUtil.next(  ) )
         {
-            DatabaseUser databaseUser = new DatabaseUser(  );
+            DatabaseUser databaseUser = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
             databaseUser.setUserId( daoUtil.getInt( 1 ) );
             databaseUser.setLogin( daoUtil.getString( 2 ) );
             databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -279,7 +279,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 
         while ( daoUtil.next(  ) )
         {
-            DatabaseUser databaseUser = new DatabaseUser(  );
+            DatabaseUser databaseUser = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
             databaseUser.setUserId( daoUtil.getInt( 1 ) );
             databaseUser.setLogin( daoUtil.getString( 2 ) );
             databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -310,7 +310,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 
         while ( daoUtil.next(  ) )
         {
-            DatabaseUser databaseUser = new DatabaseUser(  );
+            DatabaseUser databaseUser = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
             databaseUser.setUserId( daoUtil.getInt( 1 ) );
             databaseUser.setLogin( daoUtil.getString( 2 ) );
             databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -371,7 +371,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 
         while ( daoUtil.next(  ) )
         {
-            DatabaseUser filteredUser = new DatabaseUser(  );
+            DatabaseUser filteredUser = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
             filteredUser.setUserId( daoUtil.getInt( 1 ) );
             filteredUser.setLogin( daoUtil.getString( 2 ) );
             filteredUser.setLastName( daoUtil.getString( 3 ) );
