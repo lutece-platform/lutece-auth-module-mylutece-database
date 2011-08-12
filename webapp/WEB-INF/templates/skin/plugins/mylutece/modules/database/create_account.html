@@ -92,19 +92,19 @@
 			            <br />
 			        </#if>
 		            <label class="text-label" for="email">#i18n{module.mylutece.database.xpage.create_account.eMail} * : </label>
-		            <input type="text" ${classEmail?if_exists} name="email" maxlength="100" size="35" tabindex="4" value="${(user.email)?if_exists}" />
+		            <input type="text" ${classEmail?if_exists} name="email" maxlength="100" size="35" tabindex="2" value="${(user.email)?if_exists}" />
 		            <br />
 		            <label class="text-label" for="password">#i18n{module.mylutece.database.xpage.create_account.password} * : </label>
-		            <input type="password" ${classPassword?if_exists} name="password" maxlength="100" size="35" tabindex="1" value="" />
+		            <input type="password" ${classPassword?if_exists} name="password" maxlength="100" size="35" tabindex="3" value="" />
 		            <br />
 		            <label class="text-label" for="confirmation">#i18n{module.mylutece.database.xpage.create_account.confirmation} * : </label>
-		            <input type="password" ${classConfirmation?if_exists} name="confirmation_password" maxlength="100" size="35" tabindex="1" value="" />
+		            <input type="password" ${classConfirmation?if_exists} name="confirmation_password" maxlength="100" size="35" tabindex="4" value="" />
 		            <br />
 		            <label class="text-label" for="last_name">#i18n{module.mylutece.database.xpage.create_account.lastName} * : </label>
-		            <input type="text" ${classLastName?if_exists} name="last_name" maxlength="100" size="35" tabindex="2"  value="${(user.lastName)?if_exists}" />
+		            <input type="text" ${classLastName?if_exists} name="last_name" maxlength="100" size="35" tabindex="5"  value="${(user.lastName)?if_exists}" />
 		            <br />
 		            <label class="text-label" for="first_name">#i18n{module.mylutece.database.xpage.create_account.firstName} * : </label>
-		            <input type="text" ${classFirstName?if_exists} name="first_name" maxlength="100" size="35" tabindex="3" value="${(user.firstName)?if_exists}" />
+		            <input type="text" ${classFirstName?if_exists} name="first_name" maxlength="100" size="35" tabindex="6" value="${(user.firstName)?if_exists}" />
 				</p>
 				<#if jcaptcha?exists>
 					<p>${jcaptcha}</p>
