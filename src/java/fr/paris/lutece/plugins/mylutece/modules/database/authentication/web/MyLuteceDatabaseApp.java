@@ -144,7 +144,6 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String PROPERTY_MYLUTECE_TEMPLATE_ACCESS_DENIED = "mylutece-database.template.accessDenied";
     private static final String PROPERTY_MYLUTECE_TEMPLATE_ACCESS_CONTROLED = "mylutece-database.template.accessControled";
     private static final String PROPERTY_MYLUTECE_LOGIN_PAGE_URL = "mylutece.url.login.page";
-    private static final String PROPERTY_MAIL_HOST = "mail.server";
     private static final String PROPERTY_PORTAL_NAME = "lutece.name";
     private static final String PROPERTY_NOREPLY_EMAIL = "mail.noreply.email";
 
@@ -826,7 +825,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     }
 
     /**
-     * Check if the parameters for the password email are correctly flled
+     * Check if the parameters for the password email are correctly filled
      * @return true if they are correctly filled, false otherwise
      */
     private boolean checkSendingPasswordEmail(  )
@@ -842,13 +841,12 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private boolean checkSendingEmail( String strPropertyObject )
     {
         boolean bIsCorrect = false;
-        String strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
         String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
         String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
         String strObject = I18nService.getLocalizedString( strPropertyObject, _locale );
 
-        if ( StringUtils.isNotBlank( strHost ) && StringUtils.isNotBlank( strName ) &&
-                StringUtils.isNotBlank( strSender ) && StringUtils.isNotBlank( strObject ) )
+        if ( StringUtils.isNotBlank( strName ) && StringUtils.isNotBlank( strSender ) &&
+                StringUtils.isNotBlank( strObject ) )
         {
             bIsCorrect = true;
         }
