@@ -10,7 +10,7 @@
 	<groupId>fr.paris.lutece.plugins</groupId>
 	<artifactId>module-mylutece-database</artifactId>
 	<packaging>lutece-plugin</packaging>
-	<version>2.3.2-SNAPSHOT</version>
+	<version>2.3.2</version>
 	<name>Lutece mylutece database module</name>
 
 	<repositories>
@@ -37,8 +37,8 @@
 		<jiraComponentId>10177</jiraComponentId>
     </properties>
     <scm>
-        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/authentication/module-mylutece-database</connection>
-        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/authentication/module-mylutece-database</developerConnection>
-        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/trunk/plugins/authentication/module-mylutece-database</url>
+        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/tags/module-mylutece-database-2.3.2</connection>
+        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/tags/module-mylutece-database-2.3.2</developerConnection>
+        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/tags/module-mylutece-database-2.3.2</url>
     </scm>
 </project>
