@@ -180,6 +180,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
     private static final String MARK_LOCALE = "locale";
     private static final String MARK_MAP_LIST_ATTRIBUTE_DEFAULT_VALUES = "map_list_attribute_default_values";
+    private static final String MARK_SHOW_INPUT_LOGIN = "show_input_login";
 
     // Templates
     private static final String TEMPLATE_CREATE_USER = "admin/plugins/mylutece/modules/database/create_user.html";
@@ -200,6 +201,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private String _strCurrentPageIndex;
     private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
     private DatabaseService _databaseService = DatabaseService.getService(  );
+    private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory(  );
 
     /**
      * Creates a new WssodatabaseJspBean object.
@@ -307,6 +309,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
         model.put( MARK_LOCALE, getLocale(  ) );
+        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin(  ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_USER, getLocale(  ), model );
 
@@ -328,12 +331,21 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         String strError = StringUtils.EMPTY;
-        String strLogin = request.getParameter( PARAMETER_LOGIN );
+        String strLogin = StringUtils.EMPTY;
         String strFirstPassword = request.getParameter( PARAMETER_FIRST_PASSWORD );
         String strSecondPassword = request.getParameter( PARAMETER_SECOND_PASSWORD );
         String strLastName = request.getParameter( PARAMETER_LAST_NAME );
         String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
+        
+        if ( _userFactory.isEmailUsedAsLogin(  ) )
+        {
+        	strLogin = strEmail;
+        }
+        else
+        {
+        	strLogin = request.getParameter( PARAMETER_LOGIN );
+        }
 
         if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strFirstPassword ) ||
                 StringUtils.isBlank( strLastName ) || StringUtils.isBlank( strFirstName ) ||
@@ -346,13 +358,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
         }
-
-        DatabaseUser databaseUser = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
-        databaseUser.setEmail( strEmail );
-        databaseUser.setFirstName( strFirstName );
-        databaseUser.setLastName( strLastName );
-        databaseUser.setLogin( strLogin );
-        databaseUser.setActive( true );
 
         if ( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).size(  ) != 0 )
         {
@@ -376,6 +381,13 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         {
             return strError;
         }
+
+        DatabaseUser databaseUser = _userFactory.newDatabaseUser(  );
+        databaseUser.setEmail( strEmail );
+        databaseUser.setFirstName( strFirstName );
+        databaseUser.setLastName( strLastName );
+        databaseUser.setLogin( strLogin );
+        databaseUser.setActive( true );
 
         DatabaseUserHome.create( databaseUser, strFirstPassword, _plugin );
         MyLuteceUserFieldService.doCreateUserFields( databaseUser.getUserId(  ), request, getLocale(  ) );
@@ -458,6 +470,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
         model.put( MARK_LOCALE, getLocale(  ) );
         model.put( MARK_MAP_LIST_ATTRIBUTE_DEFAULT_VALUES, map );
+        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin(  ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MODIFY_USER, getLocale(  ), model );
 
@@ -489,10 +502,19 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         else
         {
             String strError = StringUtils.EMPTY;
-            String strLogin = request.getParameter( PARAMETER_LOGIN );
+            String strLogin = StringUtils.EMPTY;
             String strLastName = request.getParameter( PARAMETER_LAST_NAME );
             String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
             String strEmail = request.getParameter( PARAMETER_EMAIL );
+            
+            if ( _userFactory.isEmailUsedAsLogin(  ) )
+            {
+            	strLogin = strEmail;
+            }
+            else
+            {
+            	strLogin = request.getParameter( PARAMETER_LOGIN );
+            }
 
             if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strLastName ) ||
                     StringUtils.isBlank( strFirstName ) || StringUtils.isBlank( strEmail ) )

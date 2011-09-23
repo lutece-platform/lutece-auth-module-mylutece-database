@@ -8,32 +8,34 @@
 				<p>
 					#i18n{module.mylutece.database.create_user.labelIdentity}
 				</p>
+				<#if show_input_login>
+			        <p>
+			            <label for="login">#i18n{module.mylutece.database.create_user.login} * : </label>
+			            <input type="text"  name="login" maxlength="100" size="35" tabindex="1" value="" />
+			        </p>
+			    </#if>
+		        
 		        <p>
-		            <label for="login">#i18n{module.mylutece.database.create_user.login} * : </label>
-		            <input type="text"  name="login" maxlength="100" size="35" tabindex="1" value="" />
+		            <label for="email">#i18n{module.mylutece.database.create_user.eMail} * : </label>
+		            <input type="text"  name="email" maxlength="100" size="35" tabindex="2" value="" />
 		        </p>
 		
 		        <p>
 		            <label for="first_password">#i18n{module.mylutece.database.create_user.firstPassword} * : </label>
-		            <input type="password"  name="first_password" maxlength="100" size="35" tabindex="2" value="" />
+		            <input type="password"  name="first_password" maxlength="100" size="35" tabindex="3" value="" />
 		        </p>
 		        <p>
 		            <label for="second_password">#i18n{module.mylutece.database.create_user.secondPassword} * : </label>
-		            <input type="password"  name="second_password" maxlength="100" size="35" tabindex="2" value="" />
+		            <input type="password"  name="second_password" maxlength="100" size="35" tabindex="3" value="" />
 		        </p>
 		        <p>
 		            <label for="last_name">#i18n{module.mylutece.database.create_user.lastName} * : </label>
-		            <input type="text" name="last_name" maxlength="100" size="35" tabindex="3"  value="" />
+		            <input type="text" name="last_name" maxlength="100" size="35" tabindex="4"  value="" />
 		        </p>
 		        
 		        <p>
 		            <label for="first_name">#i18n{module.mylutece.database.create_user.firstName} * : </label>
-		            <input type="text"  name="first_name" maxlength="100" size="35" tabindex="4" value="" />
-		        </p>
-		
-		        <p>
-		            <label for="email">#i18n{module.mylutece.database.create_user.eMail} * : </label>
-		            <input type="text"  name="email" maxlength="100" size="35" tabindex="5" value="" />
+		            <input type="text"  name="first_name" maxlength="100" size="35" tabindex="5" value="" />
 		        </p>
 	        </div>
 		</div>
