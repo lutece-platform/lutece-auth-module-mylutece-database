@@ -81,7 +81,7 @@ import javax.servlet.http.HttpServletRequest;
  * DatabaseService
  *
  */
-public class DatabaseService
+public final class DatabaseService
 {
     private static final String BEAN_DATABASE_SERVICE = "mylutece-database.databaseService";
     private static final String AUTHENTICATION_BEAN_NAME = "mylutece-database.authentication";
@@ -104,6 +104,25 @@ public class DatabaseService
 
     // PROPERTIES
     private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
+
+    // VARIABLES
+    private DatabaseUserParameterService _userParamService;
+
+    /**
+     * Private constructor
+     */
+    private DatabaseService(  )
+    {
+    }
+
+    /**
+     * Set the database user parameter service
+     * @param userParamService the user parameter service
+     */
+    public void setDatabaseUserParameterService( DatabaseUserParameterService userParamService )
+    {
+        _userParamService = userParamService;
+    }
 
     /**
     * Initialize the Database service
@@ -156,8 +175,7 @@ public class DatabaseService
             {
                 String[] listAlgorithms = strAlgorithms.split( COMMA );
 
-                model.put( MARK_LIST_USER_PARAM_DEFAULT_VALUES,
-                    DatabaseUserParameterService.getService(  ).findAll( plugin ) );
+                model.put( MARK_LIST_USER_PARAM_DEFAULT_VALUES, _userParamService.findAll( plugin ) );
                 model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
                 model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable(  ) );
             }
@@ -329,6 +347,26 @@ public class DatabaseService
     }
 
     /**
+     * Do create a new database user
+     * @param user the user
+     * @param strPassword the password
+     * @param plugin the plugin
+     * @return the new database user with a new ID
+     */
+    public DatabaseUser doCreateUser( DatabaseUser user, String strPassword, Plugin plugin )
+    {
+        String strEncryptedPassword = strPassword;
+
+        if ( _userParamService.isPasswordEncrypted( plugin ) )
+        {
+            String strAlgorithm = _userParamService.getEncryptionAlgorithm( plugin );
+            strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
+        }
+
+        return DatabaseUserHome.create( user, strEncryptedPassword, plugin );
+    }
+
+    /**
      * Do modify the password
      * @param user the DatabaseUser
      * @param strPassword the new password
@@ -342,9 +380,9 @@ public class DatabaseService
             // Encrypts password or not
             String strEncryptedPassword = strPassword;
 
-            if ( DatabaseUserParameterService.getService(  ).isPasswordEncrypted( plugin ) )
+            if ( _userParamService.isPasswordEncrypted( plugin ) )
             {
-                String strAlgorithm = DatabaseUserParameterService.getService(  ).getEncryptionAlgorithm( plugin );
+                String strAlgorithm = _userParamService.getEncryptionAlgorithm( plugin );
                 strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
             }
 
@@ -355,6 +393,36 @@ public class DatabaseService
                 DatabaseUserHome.updatePassword( userStored, strEncryptedPassword, plugin );
             }
         }
+    }
+
+    /**
+     * Update the info of the user
+     * @param user the user
+     * @param plugin the plugin
+     */
+    public void doUpdateUser( DatabaseUser user, Plugin plugin )
+    {
+        DatabaseUserHome.update( user, plugin );
+    }
+
+    /**
+     * Check the password
+     * @param strUserGuid the user guid
+     * @param strPassword the password
+     * @param plugin the plugin
+     * @return true if the password is the same as stored in the database, false otherwise
+     */
+    public boolean checkPassword( String strUserGuid, String strPassword, Plugin plugin )
+    {
+        String strEncryptedPassword = strPassword;
+
+        if ( _userParamService.isPasswordEncrypted( plugin ) )
+        {
+            String strAlgorithm = _userParamService.getEncryptionAlgorithm( plugin );
+            strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
+        }
+
+        return DatabaseUserHome.checkPassword( strUserGuid, strEncryptedPassword, plugin );
     }
 
     /**

@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKeyHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.util.DatabaseUtils;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.url.UrlItem;
@@ -142,6 +143,29 @@ public final class DatabaseUserKeyService
         }
 
         sbBaseUrl.append( JSP_VALIDATE_ACCOUNT );
+
+        UrlItem url = new UrlItem( sbBaseUrl.toString(  ) );
+        url.addParameter( PARAMETER_KEY, strKey );
+
+        return url.getUrl(  );
+    }
+
+    /**
+     * Get reinit url
+     * @param strKey the key
+     * @param request the HTTP request
+     * @return the url
+     */
+    public String getReinitUrl( String strKey, HttpServletRequest request )
+    {
+        StringBuilder sbBaseUrl = new StringBuilder( AppPathService.getBaseUrl( request ) );
+
+        if ( ( sbBaseUrl.length(  ) > 0 ) && !sbBaseUrl.toString(  ).endsWith( SLASH ) )
+        {
+            sbBaseUrl.append( SLASH );
+        }
+
+        sbBaseUrl.append( MyLuteceDatabaseApp.getReinitPageUrl(  ) );
 
         UrlItem url = new UrlItem( sbBaseUrl.toString(  ) );
         url.addParameter( PARAMETER_KEY, strKey );

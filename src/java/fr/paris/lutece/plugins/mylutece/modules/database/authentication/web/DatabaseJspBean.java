@@ -69,7 +69,6 @@ import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.service.workgroup.AdminWorkgroupService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
@@ -337,14 +336,14 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         String strLastName = request.getParameter( PARAMETER_LAST_NAME );
         String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
-        
+
         if ( _userFactory.isEmailUsedAsLogin(  ) )
         {
-        	strLogin = strEmail;
+            strLogin = strEmail;
         }
         else
         {
-        	strLogin = request.getParameter( PARAMETER_LOGIN );
+            strLogin = request.getParameter( PARAMETER_LOGIN );
         }
 
         if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strFirstPassword ) ||
@@ -354,28 +353,26 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             strError = AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-        if ( !StringUtil.checkEmail( strEmail ) )
+        if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
         }
 
-        if ( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).size(  ) != 0 )
+        if ( StringUtils.isBlank( strError ) &&
+                ( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).size(  ) != 0 ) )
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP );
         }
 
-        if ( !strFirstPassword.equals( strSecondPassword ) )
+        if ( StringUtils.isBlank( strError ) && !strFirstPassword.equals( strSecondPassword ) )
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_DIFFERENT_PASSWORD, AdminMessage.TYPE_STOP );
         }
 
-        if ( _userParamService.isPasswordEncrypted( _plugin ) )
+        if ( StringUtils.isBlank( strError ) )
         {
-            String strAlgorithm = _userParamService.getEncryptionAlgorithm( _plugin );
-            strFirstPassword = CryptoService.encrypt( strFirstPassword, strAlgorithm );
+            strError = MyLuteceUserFieldService.checkUserFields( request, getLocale(  ) );
         }
-
-        strError = MyLuteceUserFieldService.checkUserFields( request, getLocale(  ) );
 
         if ( StringUtils.isNotBlank( strError ) )
         {
@@ -389,7 +386,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         databaseUser.setLogin( strLogin );
         databaseUser.setActive( true );
 
-        DatabaseUserHome.create( databaseUser, strFirstPassword, _plugin );
+        _databaseService.doCreateUser( databaseUser, strFirstPassword, _plugin );
         MyLuteceUserFieldService.doCreateUserFields( databaseUser.getUserId(  ), request, getLocale(  ) );
 
         return MANAGE_USERS + "?" + PARAMETER_PLUGIN_NAME + "=" + _plugin.getName(  );
@@ -506,14 +503,14 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             String strLastName = request.getParameter( PARAMETER_LAST_NAME );
             String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
             String strEmail = request.getParameter( PARAMETER_EMAIL );
-            
+
             if ( _userFactory.isEmailUsedAsLogin(  ) )
             {
-            	strLogin = strEmail;
+                strLogin = strEmail;
             }
             else
             {
-            	strLogin = request.getParameter( PARAMETER_LOGIN );
+                strLogin = request.getParameter( PARAMETER_LOGIN );
             }
 
             if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strLastName ) ||
@@ -553,7 +550,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             databaseUser.setLastName( strLastName );
             databaseUser.setLogin( strLogin );
 
-            DatabaseUserHome.update( databaseUser, _plugin );
+            _databaseService.doUpdateUser( databaseUser, _plugin );
             MyLuteceUserFieldService.doModifyUserFields( databaseUser.getUserId(  ), request, getLocale(  ), getUser(  ) );
 
             strReturn = JSP_MODIFY_USER + QUESTION_MARK + PARAMETER_PLUGIN_NAME + EQUAL + _plugin.getName(  ) +
@@ -1141,7 +1138,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         if ( databaseUser != null )
         {
             databaseUser.setActive( bIsActive );
-            DatabaseUserHome.update( databaseUser, _plugin );
+            _databaseService.doUpdateUser( databaseUser, _plugin );
         }
 
         return MANAGE_USERS + "?" + PARAMETER_PLUGIN_NAME + "=" + _plugin.getName(  );

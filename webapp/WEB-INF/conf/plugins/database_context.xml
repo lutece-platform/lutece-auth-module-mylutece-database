@@ -24,7 +24,9 @@
   <!-- Services -->
   <bean id="mylutece-database.databaseMyLuteceUserFieldListenerService" class="fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldListenerService" />
   <bean id="mylutece-database.databaseUserParameterService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService" />
-  <bean id="mylutece-database.databaseService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService" />
+  <bean id="mylutece-database.databaseService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService">
+  	<property name="databaseUserParameterService" ref="mylutece-database.databaseUserParameterService" />
+  </bean>
   <bean id="mylutece-database.databaseUserKeyService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService" />
   
   <!-- DatabaseUser -->

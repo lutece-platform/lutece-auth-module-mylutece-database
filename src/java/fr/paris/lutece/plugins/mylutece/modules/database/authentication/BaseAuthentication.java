@@ -35,11 +35,9 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
 
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -47,7 +45,6 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.portal.service.util.CryptoService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -132,16 +129,8 @@ public class BaseAuthentication extends PortalAuthentication
             throw new LoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
         }
 
-        String strPassword = strUserPassword;
-
-        if ( DatabaseUserParameterService.getService(  ).isPasswordEncrypted( plugin ) )
-        {
-            String strAlgorithm = DatabaseUserParameterService.getService(  ).getEncryptionAlgorithm( plugin );
-            strPassword = CryptoService.encrypt( strUserPassword, strAlgorithm );
-        }
-
         //Check password
-        if ( !DatabaseUserHome.checkPassword( strUserName, strPassword, plugin ) )
+        if ( !DatabaseService.getService(  ).checkPassword( strUserName, strUserPassword, plugin ) )
         {
             AppLogService.info( "User login : Incorrect login or password" + strUserName );
             throw new LoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
