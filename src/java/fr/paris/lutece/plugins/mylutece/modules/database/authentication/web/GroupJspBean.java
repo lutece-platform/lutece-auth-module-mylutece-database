@@ -148,6 +148,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
+    private ItemNavigator _itemNavigator;
     private DatabaseService _databaseService = DatabaseService.getService(  );
 
     /**
@@ -310,30 +311,11 @@ public class GroupJspBean extends PluginAdminPageJspBean
         int nAssignedUsersNumber = listAllAssignedUsers.size(  );
 
         // ITEM NAVIGATION
-        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<Group> listGroups = getAuthorizedGroups(  );
-        int nMapKey = 1;
-        int nCurrentItemId = 1;
-
-        for ( Group group : listGroups )
-        {
-            listItem.put( nMapKey, group.getGroupKey(  ) );
-
-            if ( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
-            {
-                nCurrentItemId = nMapKey;
-            }
-
-            nMapKey++;
-        }
-
-        String strBaseUrl = AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_GROUP;
-        UrlItem url = new UrlItem( strBaseUrl );
-        ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ), PARAMETER_GROUP_KEY );
+        setItemNavigator( selectedGroup.getGroupKey(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_GROUP );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_GROUP, selectedGroup );
-        model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
         model.put( MARK_ASSIGNED_USERS_NUMBER, nAssignedUsersNumber );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_GROUP_MODIFY, getLocale(  ), model );
@@ -456,32 +438,13 @@ public class GroupJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<Group> listGroups = getAuthorizedGroups(  );
-        int nMapKey = 1;
-        int nCurrentItemId = 1;
-
-        for ( Group group : listGroups )
-        {
-            listItem.put( nMapKey, group.getGroupKey(  ) );
-
-            if ( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
-            {
-                nCurrentItemId = nMapKey;
-            }
-
-            nMapKey++;
-        }
-
-        String strBaseUrl = AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_GROUP;
-        UrlItem url = new UrlItem( strBaseUrl );
-        ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ), PARAMETER_GROUP_KEY );
+        setItemNavigator( selectedGroup.getGroupKey(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_GROUP );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_ROLES_LIST, allRoleList );
         model.put( MARK_ROLES_LIST_FOR_GROUP, groupRoleList );
         model.put( MARK_GROUP, selectedGroup );
-        model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
         model.put( MARK_ASSIGNED_USERS_NUMBER, nAssignedUsersNumber );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ROLES_GROUP, getLocale(  ), model );
@@ -649,13 +612,13 @@ public class GroupJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        ItemNavigator itemNavigator = getItemNavigator( selectedGroup, url );
+        setItemNavigator( selectedGroup.getGroupKey(  ), url.getUrl(  ) );
 
         LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( (List<DatabaseUser>) listFilteredUsers,
                 _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
 
         model.put( MARK_GROUP, selectedGroup );
-        model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_AVAILABLE_USERS, listAvailableUsers );
@@ -798,29 +761,27 @@ public class GroupJspBean extends PluginAdminPageJspBean
 
     /**
      * Get the item navigator
-     * @param selectedGroup the selected group
-     * @param url the url
-     * @return the {@link ItemNavigator}
+     * @param strLogin the role key
+     * @param strUrl the url
      */
-    private ItemNavigator getItemNavigator( Group selectedGroup, UrlItem url )
+    private void setItemNavigator( String strGroupKey, String strUrl )
     {
-        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<Group> listGroups = getAuthorizedGroups(  );
-        int nMapKey = 1;
-        int nCurrentItemId = 1;
-
-        for ( Group group : listGroups )
+		List<String> listIdsDatabaseUser = new ArrayList<String>(  );
+		int nCurrentItemId = 0;
+		int nIndex = 0;
+        for ( Group group : getAuthorizedGroups(  ) )
         {
-            listItem.put( nMapKey, group.getGroupKey(  ) );
-
-            if ( group.getGroupKey(  ).equals( selectedGroup.getGroupKey(  ) ) )
-            {
-                nCurrentItemId = nMapKey;
-            }
-
-            nMapKey++;
+        	if ( group != null )
+        	{
+        		listIdsDatabaseUser.add( group.getGroupKey(  ) );
+        		if ( group.getGroupKey(  ).equals( strGroupKey ) )
+        		{
+        			nCurrentItemId = nIndex;
+        		}
+        		nIndex++;
+        	}
         }
 
-        return new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ), PARAMETER_GROUP_KEY );
+        _itemNavigator = new ItemNavigator( listIdsDatabaseUser, nCurrentItemId, strUrl, PARAMETER_GROUP_KEY );
     }
 }

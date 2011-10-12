@@ -33,6 +33,17 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
@@ -83,17 +94,6 @@ import fr.paris.lutece.util.password.PasswordUtil;
 import fr.paris.lutece.util.sort.AttributeComparator;
 import fr.paris.lutece.util.string.StringUtil;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -198,6 +198,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
+    private ItemNavigator _itemNavigator;
     private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
     private DatabaseService _databaseService = DatabaseService.getService(  );
     private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory(  );
@@ -410,27 +411,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
-        int nMapKey = 1;
-        int nCurrentItemId = 1;
-
-        for ( DatabaseUser user : listUsers )
-        {
-            listItem.put( nMapKey, Integer.toString( user.getUserId(  ) ) );
-
-            if ( user.getUserId(  ) == selectedUser.getUserId(  ) )
-            {
-                nCurrentItemId = nMapKey;
-            }
-
-            nMapKey++;
-        }
-
-        String strBaseUrl = AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_USER;
-        UrlItem url = new UrlItem( strBaseUrl );
-        ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ),
-                PARAMETER_MYLUTECE_DATABASE_USER_ID );
+        setItemNavigator( selectedUser.getUserId(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_USER );
 
         Boolean applicationsExist = Boolean.FALSE;
 
@@ -463,7 +444,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_USER, selectedUser );
         model.put( MARK_EXTERNAL_APPLICATION_EXIST, applicationsExist );
-        model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
         model.put( MARK_LOCALE, getLocale(  ) );
         model.put( MARK_MAP_LIST_ATTRIBUTE_DEFAULT_VALUES, map );
@@ -605,7 +586,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         DatabaseUserHome.remove( user, _plugin );
-
+        DatabaseHome.removeGroupsForUser( user.getUserId(  ), _plugin );
         DatabaseHome.removeRolesForUser( user.getUserId(  ), _plugin );
         MyLuteceUserFieldService.doRemoveUserFields( user.getUserId(  ), request, getLocale(  ) );
         DatabaseUserKeyService.getService(  ).removeByIdUser( user.getUserId(  ) );
@@ -658,27 +639,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
-        int nMapKey = 1;
-        int nCurrentItemId = 1;
-
-        for ( DatabaseUser user : listUsers )
-        {
-            listItem.put( nMapKey, Integer.toString( user.getUserId(  ) ) );
-
-            if ( user.getUserId(  ) == selectedUser.getUserId(  ) )
-            {
-                nCurrentItemId = nMapKey;
-            }
-
-            nMapKey++;
-        }
-
-        String strBaseUrl = AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_USER;
-        UrlItem url = new UrlItem( strBaseUrl );
-        ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ),
-                PARAMETER_MYLUTECE_DATABASE_USER_ID );
+        setItemNavigator( selectedUser.getUserId(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_USER );
 
         Boolean applicationsExist = Boolean.FALSE;
 
@@ -688,7 +649,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_USER, selectedUser );
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_EXTERNAL_APPLICATION_EXIST, applicationsExist );
-        model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ROLES_USER, getLocale(  ), model );
 
@@ -813,27 +774,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        Map<Integer, String> listItem = new HashMap<Integer, String>(  );
-        List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
-        int nMapKey = 1;
-        int nCurrentItemId = 1;
-
-        for ( DatabaseUser user : listUsers )
-        {
-            listItem.put( nMapKey, Integer.toString( user.getUserId(  ) ) );
-
-            if ( user.getUserId(  ) == selectedUser.getUserId(  ) )
-            {
-                nCurrentItemId = nMapKey;
-            }
-
-            nMapKey++;
-        }
-
-        String strBaseUrl = AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_GROUPS_USER;
-        UrlItem url = new UrlItem( strBaseUrl );
-        ItemNavigator itemNavigator = new ItemNavigator( listItem, nCurrentItemId, url.getUrl(  ),
-                PARAMETER_MYLUTECE_DATABASE_USER_ID );
+        setItemNavigator( selectedUser.getUserId(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_GROUPS_USER );
 
         Boolean applicationsExist = Boolean.FALSE;
 
@@ -843,7 +784,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_USER, selectedUser );
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_EXTERNAL_APPLICATION_EXIST, applicationsExist );
-        model.put( MARK_ITEM_NAVIGATOR, itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_GROUPS_USER, getLocale(  ), model );
 
@@ -1142,5 +1083,31 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         return MANAGE_USERS + "?" + PARAMETER_PLUGIN_NAME + "=" + _plugin.getName(  );
+    }
+    
+    /**
+     * Get the item navigator
+     * @param strLogin the role key
+     * @param strUrl the url
+     */
+    private void setItemNavigator( int nIdDatabaseUser, String strUrl )
+    {
+		List<String> listIdsDatabaseUser = new ArrayList<String>(  );
+		int nCurrentItemId = 0;
+		int nIndex = 0;
+        for ( DatabaseUser databaseUser : _databaseService.getAuthorizedUsers( getUser(  ), _plugin ) )
+        {
+        	if ( databaseUser != null )
+        	{
+        		listIdsDatabaseUser.add( Integer.toString( databaseUser.getUserId(  ) ) );
+        		if ( databaseUser.getUserId(  ) == nIdDatabaseUser )
+        		{
+        			nCurrentItemId = nIndex;
+        		}
+        		nIndex++;
+        	}
+        }
+
+        _itemNavigator = new ItemNavigator( listIdsDatabaseUser, nCurrentItemId, strUrl, PARAMETER_MYLUTECE_DATABASE_USER_ID );
     }
 }
