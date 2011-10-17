@@ -53,6 +53,7 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFilter;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.Group;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupHome;
@@ -160,6 +161,9 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_CANCEL = "cancel";
     private static final String PARAMETER_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
     private static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
+    private static final String PARAMETER_MODIFY_USER = "modify_user";
+    private static final String PARAMETER_ASSIGN_ROLE = "assign_role";
+    private static final String PARAMETER_ASSIGN_GROUP = "assign_group";
 
     // Marks FreeMarker
     private static final String MARK_USERS_LIST = "user_list";
@@ -198,7 +202,10 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
-    private ItemNavigator _itemNavigator;
+    private Map<String, ItemNavigator> _itemNavigators = new HashMap<String, ItemNavigator>(  );
+    private DatabaseUserFilter _duFilter;
+    private String _strSortedAttributeName;
+    private boolean _bIsAscSort = true;
     private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
     private DatabaseService _databaseService = DatabaseService.getService(  );
     private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory(  );
@@ -226,6 +233,9 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_USERS );
 
+        // Reinit session
+        reinitItemNavigators(  );
+
         Map<String, Object> model = new HashMap<String, Object>(  );
         Boolean applicationsExist = Boolean.FALSE;
         String strURL = getHomeUrl( request );
@@ -238,25 +248,28 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         // Get users
         List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
-        List<DatabaseUser> listFilteredUsers = _databaseService.getFilteredUsersInterface( listUsers, request, model,
-                url );
+        // FILTER
+        _duFilter = new DatabaseUserFilter(  );
+        boolean bIsSearch = _duFilter.setDatabaseUserFilter( request );
+        List<DatabaseUser> listFilteredUsers = _databaseService.getFilteredUsersInterface( _duFilter, bIsSearch, listUsers, 
+        		request, model, url );
 
         // SORT
-        String strSortedAttributeName = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+        _strSortedAttributeName = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
         String strAscSort = null;
 
-        if ( strSortedAttributeName != null )
+        if ( _strSortedAttributeName != null )
         {
             strAscSort = request.getParameter( Parameters.SORTED_ASC );
 
-            boolean bIsAscSort = Boolean.parseBoolean( strAscSort );
+            _bIsAscSort = Boolean.parseBoolean( strAscSort );
 
-            Collections.sort( listFilteredUsers, new AttributeComparator( strSortedAttributeName, bIsAscSort ) );
+            Collections.sort( listFilteredUsers, new AttributeComparator( _strSortedAttributeName, _bIsAscSort ) );
         }
 
-        if ( strSortedAttributeName != null )
+        if ( _strSortedAttributeName != null )
         {
-            url.addParameter( Parameters.SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
+            url.addParameter( Parameters.SORTED_ATTRIBUTE_NAME, _strSortedAttributeName );
         }
 
         if ( strAscSort != null )
@@ -411,7 +424,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        setItemNavigator( selectedUser.getUserId(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_USER );
+        setItemNavigator( PARAMETER_MODIFY_USER, selectedUser.getUserId(  ), 
+        		AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_USER, request );
 
         Boolean applicationsExist = Boolean.FALSE;
 
@@ -444,7 +458,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_USER, selectedUser );
         model.put( MARK_EXTERNAL_APPLICATION_EXIST, applicationsExist );
-        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigators.get( PARAMETER_MODIFY_USER ) );
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
         model.put( MARK_LOCALE, getLocale(  ) );
         model.put( MARK_MAP_LIST_ATTRIBUTE_DEFAULT_VALUES, map );
@@ -639,7 +653,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        setItemNavigator( selectedUser.getUserId(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_USER );
+        setItemNavigator( PARAMETER_ASSIGN_ROLE, selectedUser.getUserId(  ), 
+        		AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_USER, request );
 
         Boolean applicationsExist = Boolean.FALSE;
 
@@ -649,7 +664,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_USER, selectedUser );
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_EXTERNAL_APPLICATION_EXIST, applicationsExist );
-        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigators.get( PARAMETER_ASSIGN_ROLE ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ROLES_USER, getLocale(  ), model );
 
@@ -774,7 +789,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         // ITEM NAVIGATION
-        setItemNavigator( selectedUser.getUserId(  ), AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_GROUPS_USER );
+        setItemNavigator( PARAMETER_ASSIGN_GROUP, selectedUser.getUserId(  ), 
+        		AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_GROUPS_USER, request );
 
         Boolean applicationsExist = Boolean.FALSE;
 
@@ -784,7 +800,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         model.put( MARK_USER, selectedUser );
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_EXTERNAL_APPLICATION_EXIST, applicationsExist );
-        model.put( MARK_ITEM_NAVIGATOR, _itemNavigator );
+        model.put( MARK_ITEM_NAVIGATOR, _itemNavigators.get( PARAMETER_ASSIGN_GROUP ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_GROUPS_USER, getLocale(  ), model );
 
@@ -1090,24 +1106,56 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
      * @param strLogin the role key
      * @param strUrl the url
      */
-    private void setItemNavigator( int nIdDatabaseUser, String strUrl )
+    private void setItemNavigator( String strItemNavigatorKey, int nIdDatabaseUser, String strUrl, HttpServletRequest request )
     {
-		List<String> listIdsDatabaseUser = new ArrayList<String>(  );
-		int nCurrentItemId = 0;
-		int nIndex = 0;
-        for ( DatabaseUser databaseUser : _databaseService.getAuthorizedUsers( getUser(  ), _plugin ) )
-        {
-        	if ( databaseUser != null )
-        	{
-        		listIdsDatabaseUser.add( Integer.toString( databaseUser.getUserId(  ) ) );
-        		if ( databaseUser.getUserId(  ) == nIdDatabaseUser )
-        		{
-        			nCurrentItemId = nIndex;
-        		}
-        		nIndex++;
-        	}
-        }
+    	ItemNavigator itemNavigator = _itemNavigators.get( strItemNavigatorKey );
+    	if ( itemNavigator == null )
+		{
+    		if ( _duFilter == null )
+    		{
+    			_duFilter = new DatabaseUserFilter(  );
+    		}
+    		List<String> listIdsDatabaseUser = new ArrayList<String>(  );
+    		List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
+    		List<DatabaseUser> listFilteredUsers = _databaseService.getListFilteredUsers( request, _duFilter, listUsers );
+    		
+    		// SORT
+            if ( StringUtils.isNotBlank( _strSortedAttributeName ) )
+            {
+                Collections.sort( listFilteredUsers, new AttributeComparator( _strSortedAttributeName, _bIsAscSort ) );
+            }
 
-        _itemNavigator = new ItemNavigator( listIdsDatabaseUser, nCurrentItemId, strUrl, PARAMETER_MYLUTECE_DATABASE_USER_ID );
+    		int nCurrentItemId = 0;
+    		int nIndex = 0;
+    		for ( DatabaseUser databaseUser : listFilteredUsers )
+    		{
+    			if ( databaseUser != null )
+    			{
+    				listIdsDatabaseUser.add( Integer.toString( databaseUser.getUserId(  ) ) );
+    				if ( databaseUser.getUserId(  ) == nIdDatabaseUser )
+    				{
+    					nCurrentItemId = nIndex;
+    				}
+    				nIndex++;
+    			}
+    		}
+    		
+    		itemNavigator = new ItemNavigator( listIdsDatabaseUser, nCurrentItemId, strUrl, PARAMETER_MYLUTECE_DATABASE_USER_ID );
+		}
+    	else
+    	{
+    		itemNavigator.setCurrentItemId( Integer.toString( nIdDatabaseUser ) );
+    	}
+    	_itemNavigators.put( strItemNavigatorKey, itemNavigator );
+    }
+
+    /**
+     * Reinit the item navigator
+     */
+    private void reinitItemNavigators(  )
+    {
+        _itemNavigators = new HashMap<String, ItemNavigator>(  );
+        _strSortedAttributeName = StringUtils.EMPTY;
+        _bIsAscSort = true;
     }
 }

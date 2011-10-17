@@ -260,14 +260,62 @@ public final class DatabaseService
      * @param url UrlItem
      * @return the filtered list
      */
-    public List<DatabaseUser> getFilteredUsersInterface( List<DatabaseUser> listUsers, HttpServletRequest request,
-        Map<String, Object> model, UrlItem url )
+    public List<DatabaseUser> getFilteredUsersInterface( DatabaseUserFilter duFilter, boolean bIsSearch, List<DatabaseUser> listUsers, 
+    		HttpServletRequest request, Map<String, Object> model, UrlItem url )
     {
-        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+    	Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+    	List<DatabaseUser> filteredUsers = getListFilteredUsers( request, duFilter, listUsers );
+    	MyLuteceUserFieldFilter mlFieldFilter = new MyLuteceUserFieldFilter(  );
+        mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale(  ) );
 
-        // FILTER
-        DatabaseUserFilter duFilter = new DatabaseUserFilter(  );
-        boolean bIsSearch = duFilter.setDatabaseUserFilter( request );
+        List<IAttribute> listAttributes = AttributeHome.findAll( request.getLocale(  ), myLutecePlugin );
+
+        for ( IAttribute attribute : listAttributes )
+        {
+            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
+                    myLutecePlugin );
+            attribute.setListAttributeFields( listAttributeFields );
+        }
+
+        String strSortSearchAttribute = EMPTY_STRING;
+
+        if ( bIsSearch )
+        {
+            duFilter.setUrlAttributes( url );
+
+            if ( duFilter.getUrlAttributes(  ) != EMPTY_STRING )
+            {
+                strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes(  );
+            }
+
+            mlFieldFilter.setUrlAttributes( url );
+
+            if ( mlFieldFilter.getUrlAttributes(  ) != EMPTY_STRING )
+            {
+                strSortSearchAttribute += ( AMPERSAND + mlFieldFilter.getUrlAttributes(  ) );
+            }
+        }
+
+        model.put( MARK_SEARCH_IS_SEARCH, bIsSearch );
+        model.put( MARK_SEARCH_USER_FILTER, duFilter );
+        model.put( MARK_SORT_SEARCH_ATTRIBUTE, strSortSearchAttribute );
+        model.put( MARK_SEARCH_MYLUTECE_USER_FIELD_FILTER, mlFieldFilter );
+        model.put( MARK_ATTRIBUTES_LIST, listAttributes );
+
+        return filteredUsers;
+    }
+
+    /**
+     * Get th list of filteredUsers
+     * @param request the HTTP request
+     * @param duFilter the filter
+     * @param listUsers the list of users
+     * @return a list of {@link DatabaseUser}
+     */
+    public List<DatabaseUser> getListFilteredUsers( HttpServletRequest request, DatabaseUserFilter duFilter, List<DatabaseUser> listUsers )
+    {
+    	Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+
         List<DatabaseUser> listFilteredUsers = DatabaseUserHome.findDatabaseUsersListByFilter( duFilter, plugin );
         List<DatabaseUser> listAvailableUsers = new ArrayList<DatabaseUser>(  );
 
@@ -308,40 +356,6 @@ public final class DatabaseService
         {
             filteredUsers = listAvailableUsers;
         }
-
-        List<IAttribute> listAttributes = AttributeHome.findAll( request.getLocale(  ), myLutecePlugin );
-
-        for ( IAttribute attribute : listAttributes )
-        {
-            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
-                    myLutecePlugin );
-            attribute.setListAttributeFields( listAttributeFields );
-        }
-
-        String strSortSearchAttribute = EMPTY_STRING;
-
-        if ( bIsSearch )
-        {
-            duFilter.setUrlAttributes( url );
-
-            if ( duFilter.getUrlAttributes(  ) != EMPTY_STRING )
-            {
-                strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes(  );
-            }
-
-            mlFieldFilter.setUrlAttributes( url );
-
-            if ( mlFieldFilter.getUrlAttributes(  ) != EMPTY_STRING )
-            {
-                strSortSearchAttribute += ( AMPERSAND + mlFieldFilter.getUrlAttributes(  ) );
-            }
-        }
-
-        model.put( MARK_SEARCH_IS_SEARCH, bIsSearch );
-        model.put( MARK_SEARCH_USER_FILTER, duFilter );
-        model.put( MARK_SORT_SEARCH_ATTRIBUTE, strSortSearchAttribute );
-        model.put( MARK_SEARCH_MYLUTECE_USER_FIELD_FILTER, mlFieldFilter );
-        model.put( MARK_ATTRIBUTES_LIST, listAttributes );
 
         return filteredUsers;
     }

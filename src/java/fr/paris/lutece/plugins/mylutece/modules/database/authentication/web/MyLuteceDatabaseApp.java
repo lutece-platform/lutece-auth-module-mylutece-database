@@ -33,6 +33,10 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
+import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
@@ -41,6 +45,8 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
+import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
@@ -66,6 +72,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -94,6 +101,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_SHOW_INPUT_LOGIN = "show_input_login";
     private static final String MARK_REINIT_URL = "reinit_url";
     private static final String MARK_KEY = "key";
+    private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
 
     // Parameters
     private static final String PARAMETER_ACTION = "action";
@@ -399,7 +407,20 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             user.setEmail( strEmail );
         }
+        
+        Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
 
+        // Specific attributes
+        List<IAttribute> listAttributes = AttributeHome.findAll( _locale, myLutecePlugin );
+
+        for ( IAttribute attribute : listAttributes )
+        {
+            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
+                    myLutecePlugin );
+            attribute.setListAttributeFields( listAttributeFields );
+        }
+
+        model.put( MARK_ATTRIBUTES_LIST, listAttributes );
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_ERROR_CODE, strErrorCode );
         model.put( MARK_USER, user );
@@ -507,6 +528,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             databaseUser.setEmail( strEmail );
             databaseUser.setActive( !bAccountCreationValidationEmail );
             databaseUser = _databaseService.doCreateUser( databaseUser, strPassword, _plugin );
+            MyLuteceUserFieldService.doCreateUserFields( databaseUser.getUserId(  ), request, _locale );
 
             if ( bAccountCreationValidationEmail )
             {
