@@ -1,0 +1,49 @@
+<div class="content-box">
+	<h2>#i18n{portal.users.anonymize_user.titleAnonymizeUser}</h2>
+	
+	<form method="post" name="anonymize_user" action="jsp/admin/plugins/mylutece/modules/database/DoChangeFieldAnonymizeUsers.jsp" >
+		<div class="highlight-box">
+			<div class="highlight-box-content">
+				<p>
+					#i18n{portal.users.create_user.labelIdentity}
+				</p>
+				<p>
+					<label for="login" >#i18n{module.mylutece.database.create_user.login} </label>
+					<input type="checkbox" id="login" name="login" value="true" <#if login?? && login>checked="checked"</#if> />
+				</p>
+				<p>
+					<label for="email" >#i18n{module.mylutece.database.create_user.eMail} </label>
+					<input type="checkbox" id="email" name="email" value="true" <#if email?? && email>checked="checked"</#if> />
+				</p>
+				<p>
+					<label for="last_name" >#i18n{module.mylutece.database.create_user.lastName} </label>
+					<input type="checkbox" id="name_given" name="name_given" value="true" <#if name_given?? && name_given>checked="checked"</#if> />
+				</p>
+				<p>
+					<label for="first_name" >#i18n{module.mylutece.database.create_user.firstName} </label>
+					<input type="checkbox" id="name_family" name="name_family" value="true" <#if name_family?? && name_family>checked="checked"</#if> />
+				</p>
+			</div>
+		</div>
+		       
+        
+		<#if attributes_list?has_content>
+			<div class="highlight-box">
+				<div class="highlight-box-content">
+					<p>
+						#i18n{module.mylutece.database.create_user.labelComplementaryAttributes}
+					</p>
+					<#list attributes_list as attribute>
+						<p>
+							<label for="attribute_${attribute.idAttribute}">${attribute.title} :</label>
+							<input type="checkbox" value="true" name="attribute_${attribute.idAttribute}" id="attribute_${attribute.idAttribute}" <#if attribute.anonymize >checked="checked"</#if> />
+						</p>
+					</#list>
+				</div>
+			</div>
+		</#if>
+		<p>
+			<input type="submit" value="#i18n{portal.users.anonymize_user.buttonSave}" tabindex="6" class="button" />   
+		</p>
+	</form>
+</div>

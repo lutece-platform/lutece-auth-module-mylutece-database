@@ -50,30 +50,42 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
+import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.business.role.Role;
 import fr.paris.lutece.portal.business.role.RoleHome;
 import fr.paris.lutece.portal.business.user.AdminUser;
+import fr.paris.lutece.portal.service.admin.AdminAuthenticationService;
+import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
+import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.service.workgroup.AdminWorkgroupService;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.password.PasswordUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.lang.StringUtils;
-
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -88,12 +100,13 @@ public final class DatabaseService
 
     // CONSTANTS
     private static final String COMMA = ",";
-    private static final String EMPTY_STRING = "";
     private static final String AMPERSAND = "&";
     private static final String PLUGIN_JCAPTCHA = "jcaptcha";
 
+    // MESSAGES
+    private static final String MESSAGE_EMAIL_SUBJECT = "module.mylutece.database.forgot_password.email.subject";
+
     // MARKS
-    private static final String MARK_LIST_USER_PARAM_DEFAULT_VALUES = "list_user_param_default_values";
     private static final String MARK_ENCRYPTION_ALGORITHMS_LIST = "encryption_algorithms_list";
     private static final String MARK_SEARCH_IS_SEARCH = "search_is_search";
     private static final String MARK_SORT_SEARCH_ATTRIBUTE = "sort_search_attribute";
@@ -101,12 +114,27 @@ public final class DatabaseService
     private static final String MARK_SEARCH_MYLUTECE_USER_FIELD_FILTER = "search_mylutece_user_field_filter";
     private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
     private static final String MARK_IS_PLUGIN_JCAPTCHA_ENABLE = "is_plugin_jcatpcha_enable";
-
+    private static final String MARK_LOGIN_URL = "login_url";
+    private static final String MARK_NEW_PASSWORD = "new_password";
+    private static final String MARK_ENABLE_JCAPTCHA = "enable_jcaptcha";
+    
     // PROPERTIES
     private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
+    private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
+
+    // PARAMETERS
+    private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
+    private static final String PARAMETER_ACCOUNT_REACTIVATED_MAIL_SENDER = "account_reactivated_mail_sender";
+    private static final String PARAMETER_ACCOUNT_REACTIVATED_MAIL_SUBJECT = "account_reactivated_mail_subject";
+    private static final String PARAMETER_ACCOUNT_REACTIVATED_MAIL_BODY = "mylutece_database_account_reactivated_mail";
 
     // VARIABLES
     private DatabaseUserParameterService _userParamService;
+
+    // TEMPLATES
+    private static final String TEMPLATE_EMAIL_FORGOT_PASSWORD = "admin/plugins/mylutece/modules/database/email_forgot_password.html";
+
+    private static DatabaseService _singleton;
 
     /**
      * Private constructor
@@ -152,7 +180,11 @@ public final class DatabaseService
      */
     public static DatabaseService getService(  )
     {
-        return (DatabaseService) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME, BEAN_DATABASE_SERVICE );
+        if ( _singleton == null )
+        {
+            _singleton = SpringContextService.getBean( BEAN_DATABASE_SERVICE );
+        }
+        return _singleton;
     }
 
     /**
@@ -165,20 +197,28 @@ public final class DatabaseService
         Map<String, Object> model = new HashMap<String, Object>(  );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
-        // Encryption Password
         if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
                     DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
         {
+            // Encryption Password
             String strAlgorithms = AppPropertiesService.getProperty( PROPERTY_ENCRYPTION_ALGORITHMS_LIST );
 
             if ( StringUtils.isNotBlank( strAlgorithms ) )
             {
                 String[] listAlgorithms = strAlgorithms.split( COMMA );
 
-                model.put( MARK_LIST_USER_PARAM_DEFAULT_VALUES, _userParamService.findAll( plugin ) );
                 model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
                 model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable(  ) );
+                if ( isPluginJcaptchaEnable( ) )
+                {
+                    model.put( MARK_ENABLE_JCAPTCHA, _userParamService.findByKey( MARK_ENABLE_JCAPTCHA, plugin )
+                            .getName( ) );
+                }
             }
+            model.put( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL, SecurityUtils.getBooleanSecurityParameter(
+                    _userParamService, plugin, PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL ) );
+
+            model = SecurityUtils.checkSecurityParameters( _userParamService, model, plugin );
         }
 
         return model;
@@ -277,20 +317,20 @@ public final class DatabaseService
             attribute.setListAttributeFields( listAttributeFields );
         }
 
-        String strSortSearchAttribute = EMPTY_STRING;
+        String strSortSearchAttribute = StringUtils.EMPTY;
 
         if ( bIsSearch )
         {
             duFilter.setUrlAttributes( url );
 
-            if ( duFilter.getUrlAttributes(  ) != EMPTY_STRING )
+            if ( duFilter.getUrlAttributes( ) != StringUtils.EMPTY )
             {
                 strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes(  );
             }
 
             mlFieldFilter.setUrlAttributes( url );
 
-            if ( mlFieldFilter.getUrlAttributes(  ) != EMPTY_STRING )
+            if ( mlFieldFilter.getUrlAttributes( ) != StringUtils.EMPTY )
             {
                 strSortSearchAttribute += ( AMPERSAND + mlFieldFilter.getUrlAttributes(  ) );
             }
@@ -377,13 +417,15 @@ public final class DatabaseService
             strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
         }
 
+        user.setPasswordMaxValidDate( SecurityUtils.getPasswordMaxValidDate( _userParamService, plugin ) );
+        user.setAccountMaxValidDate( SecurityUtils.getAccountMaxValidDate( _userParamService, plugin ) );
         return DatabaseUserHome.create( user, strEncryptedPassword, plugin );
     }
 
     /**
      * Do modify the password
      * @param user the DatabaseUser
-     * @param strPassword the new password
+     * @param strPassword the new password not encrypted
      * @param plugin the plugin
      */
     public void doModifyPassword( DatabaseUser user, String strPassword, Plugin plugin )
@@ -404,8 +446,25 @@ public final class DatabaseService
 
             if ( userStored != null )
             {
+                userStored.setPasswordMaxValidDate( SecurityUtils.getPasswordMaxValidDate( _userParamService, plugin ) );
                 DatabaseUserHome.updatePassword( userStored, strEncryptedPassword, plugin );
             }
+        }
+    }
+
+    /**
+     * Do modify the reset password attribute
+     * @param user the DatabaseUser
+     * @param bNewValue the new value
+     * @param plugin the plugin
+     */
+    public void doModifyResetPassword( DatabaseUser user, boolean bNewValue, Plugin plugin )
+    {
+        DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId( ), plugin );
+
+        if ( userStored != null )
+        {
+            DatabaseUserHome.updateResetPassword( userStored, bNewValue, plugin );
         }
     }
 
@@ -468,5 +527,98 @@ public final class DatabaseService
     public boolean isPluginJcaptchaEnable(  )
     {
         return PluginService.isPluginEnable( PLUGIN_JCAPTCHA );
+    }
+
+    /**
+     * Change all user's password and notify them with an email.
+     * @param strBaseURL The base url of the application
+     * @param plugin The plugin
+     * @param locale The locale to use
+     */
+    public void changeUserPasswordAndNotify( String strBaseURL, Plugin plugin, Locale locale )
+    {
+        // Alert all users their password have been reinitialized.
+        Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersList( plugin );
+
+        for ( DatabaseUser user : listUsers )
+        {
+            // Makes password
+            String strPassword = PasswordUtil.makePassword( );
+            doModifyPassword( user, strPassword, plugin );
+
+            if ( StringUtils.isNotBlank( user.getEmail( ) ) )
+            {
+                // Sends password by e-mail
+                String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_NO_REPLY_EMAIL );
+                String strEmailSubject = I18nService.getLocalizedString( MESSAGE_EMAIL_SUBJECT, locale );
+                Map<String, Object> model = new HashMap<String, Object>( );
+                model.put( MARK_NEW_PASSWORD, strPassword );
+                model.put( MARK_LOGIN_URL, strBaseURL + AdminAuthenticationService.getInstance( ).getLoginPageUrl( ) );
+
+                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_FORGOT_PASSWORD, locale, model );
+
+                MailService.sendMailHtml( user.getEmail( ), strSenderEmail, strSenderEmail, strEmailSubject,
+                        template.getHtml( ) );
+            }
+        }
+    }
+
+    /**
+     * Check whether a user must change his password
+     * @param databaseUser The user to check
+     * @param plugin The plugin
+     * @return True if a user must change his password, false otherwise.
+     */
+    public boolean mustUserChangePassword( LuteceUser databaseUser, Plugin plugin )
+    {
+        return DatabaseHome.findResetPasswordFromLogin( databaseUser.getName( ), plugin );
+    }
+
+    /**
+     * Log a password change in the password history
+     * @param strPassword New password of the user
+     * @param nUserId Id of the user
+     * @param plugin The plugin
+     */
+    public void doInsertNewPasswordInHistory( String strPassword, int nUserId, Plugin plugin )
+    {
+        strPassword = SecurityUtils.buildPassword( _userParamService, plugin, strPassword );
+        DatabaseUserHome.insertNewPasswordInHistory( strPassword, nUserId, plugin );
+    }
+
+    /**
+     * Update the user expiration date with new values, and notify him with an
+     * email.
+     * @param nIdUser Id of the user to update
+     * @param plugin The plugin
+     */
+    @SuppressWarnings( "deprecation" )
+    public void updateUserExpirationDate( int nIdUser, Plugin plugin )
+    {
+        // We update the user account
+        int nbMailSend = DatabaseUserHome.getNbAccountLifeTimeNotification( nIdUser, plugin );
+        Timestamp newExpirationDate = SecurityUtils.getAccountMaxValidDate( _userParamService, plugin );
+        DatabaseUserHome.updateUserExpirationDate( nIdUser, newExpirationDate, plugin );
+
+        // We notify the user
+        DatabaseAccountLifeTimeService accountLifeTimeService = new DatabaseAccountLifeTimeService( );
+        String strUserMail = accountLifeTimeService.getUserMainEmail( nIdUser );
+        
+        if ( nbMailSend > 0 && StringUtils.isNotBlank( strUserMail ) )
+        {
+            String strBody = DatabaseTemplateService.getTemplateFromKey( PARAMETER_ACCOUNT_REACTIVATED_MAIL_BODY );
+
+            ReferenceItem referenceItem = _userParamService.findByKey( PARAMETER_ACCOUNT_REACTIVATED_MAIL_SENDER,
+                    plugin );
+            String strSender = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+
+            referenceItem = _userParamService.findByKey( PARAMETER_ACCOUNT_REACTIVATED_MAIL_SUBJECT, plugin );
+            String strSubject = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+
+            Map<String, String> model = new HashMap<String, String>( );
+            accountLifeTimeService.addParametersToModel( model, nIdUser );
+            HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strBody, Locale.getDefault( ), model );
+            MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml( ) );
+        }
     }
 }

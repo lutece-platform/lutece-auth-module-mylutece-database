@@ -71,4 +71,13 @@ public interface IDatabaseUserKeyDAO
      * @param plugin the plugin
      */
     void deleteByIdUser( int nUserId, Plugin plugin );
+
+    /**
+     * Find a key from a given login
+     * @param login the user's login
+     * @param plugin the plugin
+     * @return a {@link DatabaseUserKey}
+     */
+    public DatabaseUserKey selectKeyByLogin( String login, Plugin plugin );
+
 }

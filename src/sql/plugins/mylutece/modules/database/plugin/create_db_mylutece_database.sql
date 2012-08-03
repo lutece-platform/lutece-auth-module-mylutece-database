@@ -10,6 +10,10 @@ CREATE TABLE mylutece_database_user (
   name_family varchar(100) DEFAULT '' NOT NULL,
   email varchar(100) DEFAULT NULL,
   is_active SMALLINT DEFAULT 0 NOT NULL,
+  reset_password SMALLINT DEFAULT 0 NOT NULL,
+  password_max_valid_date TIMESTAMP NULL,
+  account_max_valid_date BIGINT NULL,
+  nb_alerts_sent INTEGER DEFAULT 0 NOT NULL,
   PRIMARY KEY  (mylutece_database_user_id)
 );
 
@@ -74,4 +78,12 @@ CREATE TABLE mylutece_database_key(
 	mylutece_database_user_id INT DEFAULT 0 NOT NULL,	
 	PRIMARY KEY (mylutece_database_user_key)
 );
+
+DROP TABLE IF EXISTS mylutece_database_user_password_history;
+CREATE  TABLE mylutece_database_user_password_history (
+  mylutece_database_user_id INT NOT NULL ,
+  password VARCHAR(100) NOT NULL ,
+  date_password_change TIMESTAMP NOT NULL DEFAULT NOW() ,
+  PRIMARY KEY (mylutece_database_user_id, date_password_change)
+  );
 

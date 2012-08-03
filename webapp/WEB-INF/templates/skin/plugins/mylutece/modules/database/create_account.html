@@ -46,6 +46,16 @@
 			<#if error_code = "error_captcha">
 				<div class="alert">#i18n{module.mylutece.database.message.create_account.errorCaptcha}</div>
 			</#if>
+			<#if error_code = "password_minimum_length">
+				<div class="error">${password_minimum_length!}</div>
+				<#assign classPassword = typeClass />
+				<#assign classConfirmation = typeClass />
+			</#if>
+			<#if error_code = "password_format">
+				<div class="error">#i18n{mylutece.message.password.labelPasswordFormat}</div>
+				<#assign classPassword = typeClass />
+				<#assign classConfirmation = typeClass />
+			</#if>
 		</#if>
 		
 		<#if action_successful?has_content>

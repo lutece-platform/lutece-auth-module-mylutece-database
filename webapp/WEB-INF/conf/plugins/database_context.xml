@@ -28,6 +28,9 @@
   	<property name="databaseUserParameterService" ref="mylutece-database.databaseUserParameterService" />
   </bean>
   <bean id="mylutece-database.databaseUserKeyService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService" />
+  <bean id="mylutece-database.databaseAnonymizationService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAnonymizationService" />
+  <bean id="mylutece-database.databaseAccountLifeTimeService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAccountLifeTimeService" />
+  
   
   <!-- DatabaseUser -->
   <bean id="mylutece-database.databaseUser" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser" scope="prototype" />

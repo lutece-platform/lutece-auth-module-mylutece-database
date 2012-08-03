@@ -50,6 +50,7 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
     private static final String SQL_WHERE = " WHERE ";
     private static final String SQL_USER_KEY = " mylutece_database_user_key = ? ";
     private static final String SQL_USER_ID = " mylutece_database_user_id = ? ";
+    private static final String SQL_QUERY_SELECT_BY_LOGIN = " SELECT mdk.mylutece_database_user_key, mdk.mylutece_database_user_id FROM mylutece_database_key mdk LEFT JOIN mylutece_database_user mdu ON (mdu.mylutece_database_user_id = mdk.mylutece_database_user_id) WHERE mdu.login = ? ";
 
     /**
      * {@inheritDoc}
@@ -112,5 +113,30 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DatabaseUserKey selectKeyByLogin( String login, Plugin plugin )
+    {
+        DatabaseUserKey userKey = null;
+
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_LOGIN, plugin );
+        daoUtil.setString( 1, login );
+
+        daoUtil.executeQuery( );
+
+        if ( daoUtil.next( ) )
+        {
+            int nIndex = 1;
+            userKey = new DatabaseUserKey( );
+            userKey.setKey( daoUtil.getString( nIndex++ ) );
+            userKey.setUserId( daoUtil.getInt( nIndex++ ) );
+        }
+
+        daoUtil.free( );
+
+        return userKey;
     }
 }

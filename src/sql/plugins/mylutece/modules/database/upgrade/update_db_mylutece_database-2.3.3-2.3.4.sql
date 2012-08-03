@@ -1,10 +1,6 @@
 --
--- Init  table mylutece_database_user_parameter
+-- Add security parameters to mylutece_database_user_parameter
 --
-INSERT INTO mylutece_database_user_parameter VALUES ('enable_password_encryption', 'false');
-INSERT INTO mylutece_database_user_parameter VALUES ('encryption_algorithm', '');
-INSERT INTO mylutece_database_user_parameter VALUES ('account_creation_validation_email', 'false');
-INSERT INTO mylutece_database_user_parameter VALUES ('enable_jcaptcha', 'false');
 INSERT INTO mylutece_database_user_parameter VALUES ('force_change_password_reinit', '');
 INSERT INTO mylutece_database_user_parameter VALUES ('password_minimum_length', '8');
 INSERT INTO mylutece_database_user_parameter VALUES ('password_format', 'false');
@@ -27,6 +23,21 @@ INSERT INTO mylutece_database_user_parameter VALUES ('other_alert_mail_sender', 
 INSERT INTO mylutece_database_user_parameter VALUES ('other_alert_mail_subject', 'Votre compte va bientot expirer');
 INSERT INTO mylutece_database_user_parameter VALUES ('account_reactivated_mail_sender', 'lutece@nowhere.com');
 INSERT INTO mylutece_database_user_parameter VALUES ('account_reactivated_mail_subject', 'Votre compte a bien été réactivé');
+
+
+
+ALTER TABLE mylutece_database_user ADD COLUMN reset_password SMALLINT DEFAULT 0 NOT NULL;
+ALTER TABLE mylutece_database_user ADD COLUMN password_max_valid_date TIMESTAMP NULL;
+ALTER TABLE mylutece_database_user ADD COLUMN account_max_valid_date BIGINT NULL;
+ALTER TABLE mylutece_database_user ADD COLUMN nb_alerts_sent INTEGER DEFAULT 0 NOT NULL;
+
+DROP TABLE IF EXISTS mylutece_database_user_password_history;
+CREATE  TABLE mylutece_database_user_password_history (
+  mylutece_database_user_id INT NOT NULL ,
+  password VARCHAR(100) NOT NULL ,
+  date_password_change TIMESTAMP NOT NULL DEFAULT NOW() ,
+  PRIMARY KEY (mylutece_database_user_id, date_password_change)
+  );
 
 INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('login', 1);
 INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('name_given', 1);

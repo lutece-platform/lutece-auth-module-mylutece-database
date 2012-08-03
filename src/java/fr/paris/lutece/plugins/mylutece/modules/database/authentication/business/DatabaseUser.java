@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
+import java.sql.Timestamp;
+
 
 /**
  * This class represents the business object DatabaseUser
@@ -40,12 +42,30 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 public class DatabaseUser
 {
     // Variables declarations
+    /**
+     * Status of not activated users.
+     */
+    public static final int STATUS_NOT_ACTIVATED = 0;
+    /**
+     * Status of activated users.
+     */
+    public static final int STATUS_ACTIVATED = 1;
+    /**
+     * Status of expired users. Expired users will be anonymized.
+     */
+    public static final int STATUS_EXPIRED = 5;
+    /**
+     * Status of anonymized users.
+     */
+    public static final int STATUS_ANONYMIZED = 10;
     private int _nUserId;
     private String _strLogin;
     private String _strLastName;
     private String _strFirstName;
     private String _strEmail;
-    private boolean _bIsActive;
+    private int _nStatus;
+    private Timestamp _passwordMaxValidDate;
+    private Timestamp _accountMaxValidDate;
 
     /**
      * Returns the UserId
@@ -148,12 +168,21 @@ public class DatabaseUser
     }
 
     /**
-     * Set the status active of the user
-     * @param bIsActive true if it is active, false otherwise
+     * Get the status of the user
+     * @return The status of the user
      */
-    public void setActive( boolean bIsActive )
+    public int getStatus( )
     {
-        _bIsActive = bIsActive;
+        return _nStatus;
+    }
+
+    /**
+     * Set the status of the user
+     * @param nStatus The status of the user
+     */
+    public void setStatus( int nStatus )
+    {
+        _nStatus = nStatus;
     }
 
     /**
@@ -162,6 +191,43 @@ public class DatabaseUser
      */
     public boolean isActive(  )
     {
-        return _bIsActive;
+        return ( _nStatus >= STATUS_ACTIVATED && _nStatus < STATUS_EXPIRED );
+    }
+
+    /**
+     * Set the password maximum valide date of a user
+     * @param passwordMaxValidDate The new value of the password maximum valide
+     *            date of a user
+     */
+    public void setPasswordMaxValidDate( Timestamp passwordMaxValidDate )
+    {
+        this._passwordMaxValidDate = passwordMaxValidDate;
+    }
+
+    /**
+     * Get the password maximum valide date of a user
+     * @return The password maximum valide date of a user
+     */
+    public Timestamp getPasswordMaxValidDate( )
+    {
+        return this._passwordMaxValidDate;
+    }
+
+    /**
+     * Get the maximum valid date of the account of the user
+     * @return The maximum valid date of the account of the user
+     */
+    public Timestamp getAccountMaxValidDate( )
+    {
+        return _accountMaxValidDate;
+    }
+
+    /**
+     * Set the maximum valid date of the account of the user
+     * @param accountMaxValidDate The maximum valid date
+     */
+    public void setAccountMaxValidDate( Timestamp accountMaxValidDate )
+    {
+        this._accountMaxValidDate = accountMaxValidDate;
     }
 }

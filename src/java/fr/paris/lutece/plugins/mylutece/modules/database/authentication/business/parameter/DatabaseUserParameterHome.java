@@ -39,6 +39,8 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  *
@@ -89,5 +91,32 @@ public final class DatabaseUserParameterHome
     public static ReferenceList findAll( Plugin plugin )
     {
         return _dao.selectAll( plugin );
+    }
+
+    /**
+     * Get the integer value of a security parameter
+     * @param strParameterkey The key of the parameter
+     * @param plugin the plugin
+     * @return The integer value of a security parameter
+     */
+    public static int getIntegerSecurityParameter( String strParameterkey, Plugin plugin )
+    {
+        ReferenceItem refItem = findByKey( strParameterkey, plugin );
+        if ( refItem == null || StringUtils.isEmpty( refItem.getName( ) ) )
+        {
+            return 0;
+        }
+        else
+        {
+            try
+            {
+                int nValue = Integer.parseInt( refItem.getName( ) );
+                return nValue;
+            }
+            catch ( NumberFormatException e )
+            {
+                return 0;
+            }
+        }
     }
 }

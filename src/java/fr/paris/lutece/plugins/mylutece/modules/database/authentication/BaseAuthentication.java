@@ -34,18 +34,24 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
 
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
+import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLog;
+import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLogHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
+import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -53,8 +59,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
-
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -72,6 +78,10 @@ public class BaseAuthentication extends PortalAuthentication
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Constants
     private static final String AUTH_SERVICE_NAME = AppPropertiesService.getProperty( "mylutece-database.service.name" );
+
+    // PROPERTIES
+    private static final String PROPERTY_MAX_ACCESS_FAILED = "access_failures_max";
+    private static final String PROPERTY_INTERVAL_MINUTES = "access_failures_interval";
 
     // Messages properties
     private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
@@ -117,23 +127,48 @@ public class BaseAuthentication extends PortalAuthentication
     public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request )
         throws LoginException
     {
-        Locale locale = request.getLocale(  );
+        DatabaseService _databaseService = DatabaseService.getService( );
+
+        Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+        // Creating a record of connections log
+        ConnectionLog connectionLog = new ConnectionLog( );
+        connectionLog.setIpAddress( request.getRemoteAddr( ) );
+        connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+
+        // Test the number of errors during an interval of minutes
+        int nMaxFailed = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_MAX_ACCESS_FAILED, plugin );
+        int nIntervalMinutes = DatabaseUserParameterHome
+                .getIntegerSecurityParameter( PROPERTY_INTERVAL_MINUTES, plugin );
+
+        if ( nMaxFailed > 0 && nIntervalMinutes > 0 )
+        {
+            int nNbFailed = ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece );
+
+            if ( nNbFailed > nMaxFailed )
+            {
+                throw new FailedLoginException( );
+            }
+        }
+
+        Locale locale = request.getLocale(  );
 
         BaseUser user = DatabaseHome.findLuteceUserByLogin( strUserName, plugin, this );
 
         //Unable to find the user
-        if ( ( user == null ) || !DatabaseService.getService(  ).isUserActive( strUserName, plugin ) )
+        if ( ( user == null ) || !_databaseService.isUserActive( strUserName, plugin ) )
         {
             AppLogService.info( "Unable to find user in the database : " + strUserName );
-            throw new LoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE,
+                    locale ) );
         }
 
         //Check password
-        if ( !DatabaseService.getService(  ).checkPassword( strUserName, strUserPassword, plugin ) )
+        if ( !_databaseService.checkPassword( strUserName, strUserPassword, plugin ) )
         {
             AppLogService.info( "User login : Incorrect login or password" + strUserName );
-            throw new LoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE,
+                    locale ) );
         }
 
         //Get roles
@@ -152,6 +187,15 @@ public class BaseAuthentication extends PortalAuthentication
             user.setGroups( arrayGroups );
         }
 
+        // We update the status of the user if his password has become obsolete
+        Timestamp passwordMaxValidDate = DatabaseHome.findPasswordMaxValideDateFromLogin( strUserName, plugin );
+        if ( passwordMaxValidDate != null && passwordMaxValidDate.getTime( ) < new java.util.Date( ).getTime( ) )
+        {
+            DatabaseHome.updateResetPasswordFromLogin( strUserName, Boolean.TRUE, plugin );
+        }
+        int nUserId = DatabaseHome.findUserIdFromLogin( strUserName, plugin );
+        _databaseService.updateUserExpirationDate( nUserId, plugin );
+
         return user;
     }
 
@@ -164,8 +208,20 @@ public class BaseAuthentication extends PortalAuthentication
     }
 
     /**
+     * Find users by login
+     * @param request The request
+     * @param strLogin the login
+     * @return DatabaseUser the user corresponding to the login
+     */
+    public boolean findResetPassword( HttpServletRequest request, String strLogin )
+    {
+        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+        return DatabaseHome.findResetPasswordFromLogin( strLogin, plugin );
+    }
+
+    /**
      * This method returns an anonymous Lutece user
-     *
+     * 
      * @return An anonymous Lutece user
      */
     public LuteceUser getAnonymousUser(  )
@@ -232,6 +288,15 @@ public class BaseAuthentication extends PortalAuthentication
     public String getLostPasswordPageUrl(  )
     {
         return MyLuteceDatabaseApp.getLostPasswordUrl(  );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getResetPasswordPageUrl( HttpServletRequest request )
+    {
+        return AppPathService.getBaseUrl( request ) + MyLuteceDatabaseApp.getReinitPageUrl( );
     }
 
     /**

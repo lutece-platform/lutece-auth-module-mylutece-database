@@ -45,6 +45,33 @@
      </admin-feature>
    </admin-features>
    
+   <daemons>
+        <daemon>
+            <daemon-id>databaseAnonymizationDaemon</daemon-id>
+            <daemon-name>
+                mylutece.daemon.anonymizationDaemon.name
+			</daemon-name>
+            <daemon-description>
+                mylutece.daemon.anonymizationDaemon.description
+			</daemon-description>
+            <daemon-class>
+                fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAnonymizationDaemon
+			</daemon-class>
+        </daemon>
+        <daemon>
+            <daemon-id>databaseAccountLifeTimeDaemon</daemon-id>
+            <daemon-name>
+                mylutece.daemon.accountLifeTimeDaemon.name
+			</daemon-name>
+            <daemon-description>
+                mylutece.daemon.accountLifeTimeDaemon.description
+			</daemon-description>
+            <daemon-class>
+                fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAccountLifeTimeDaemon
+			</daemon-class>
+        </daemon>
+    </daemons>
+   
    	<!-- RBAC Resources -->
 	<rbac-resource-types>
 		<rbac-resource-type>

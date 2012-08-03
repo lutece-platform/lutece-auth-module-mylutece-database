@@ -1,0 +1,123 @@
+package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
+
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
+import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
+import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
+import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
+import fr.paris.lutece.plugins.mylutece.service.IAnonymizationService;
+import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.util.CryptoService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+
+/**
+ * Service to handle user anonymization
+ * 
+ */
+public class DatabaseAnonymizationService implements IAnonymizationService
+{
+
+    public static final String BEAN_DATABASE_ANONYMIZATION_SERVICE = "mylutece-database.databaseAnonymizationService";
+
+    // PARAMETERS
+    private static final String PARAMETER_LOGIN = "login";
+    private static final String PARAMETER_EMAIL = "email";
+    private static final String PARAMETER_NAME_GIVEN = "name_given";
+    private static final String PARAMETER_NAME_FAMILY = "name_family";
+
+    // PROPERTIES
+    private static final String PROPERTY_ANONYMIZATION_ENCRYPT_ALGO = "security.anonymization.encryptAlgo";
+
+    // CONSTANTS
+    private static final String CONSTANT_DEFAULT_ENCRYPT_ALGO = "SHA-256";
+
+    private Plugin _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+
+    /**
+     * Returns the instance of the singleton
+     * @return The instance of the singleton
+     */
+    public static DatabaseAnonymizationService getService( )
+    {
+        return SpringContextService.<DatabaseAnonymizationService> getBean( BEAN_DATABASE_ANONYMIZATION_SERVICE );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void anonymizeUser( Integer nUserId, Locale locale )
+    {
+        DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nUserId, _plugin );
+
+        String strEncryptionAlgorithme = AppPropertiesService.getProperty( PROPERTY_ANONYMIZATION_ENCRYPT_ALGO,
+                CONSTANT_DEFAULT_ENCRYPT_ALGO );
+        Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+        Map<String, Boolean> anonymizationStatus = AttributeHome.getAnonymizationStatusUserStaticField( pluginMyLutece );
+
+        if ( anonymizationStatus.get( PARAMETER_LOGIN ) )
+        {
+            user.setLogin( CryptoService.encrypt( user.getLogin( ), strEncryptionAlgorithme ) );
+        }
+        if ( anonymizationStatus.get( PARAMETER_EMAIL ) )
+        {
+            user.setEmail( CryptoService.encrypt( user.getEmail( ), strEncryptionAlgorithme ) );
+        }
+        if ( anonymizationStatus.get( PARAMETER_NAME_FAMILY ) )
+        {
+            user.setLastName( CryptoService.encrypt( user.getLastName( ), strEncryptionAlgorithme ) );
+        }
+        if ( anonymizationStatus.get( PARAMETER_NAME_GIVEN ) )
+        {
+            user.setFirstName( CryptoService.encrypt( user.getFirstName( ), strEncryptionAlgorithme ) );
+        }
+        user.setStatus( DatabaseUser.STATUS_ANONYMIZED );
+
+        DatabaseHome.removeGroupsForUser( nUserId, _plugin );
+        DatabaseHome.removeRolesForUser( nUserId, _plugin );
+        DatabaseUserHome.update( user, _plugin );
+
+        List<IAttribute> listAllAttributes = AttributeHome.findAll( locale, pluginMyLutece );
+        List<IAttribute> listAttributesText = new ArrayList<IAttribute>( );
+        for ( IAttribute attribut : listAllAttributes )
+        {
+            if ( attribut.isAnonymizable( ) )
+            {
+                listAttributesText.add( attribut );
+            }
+        }
+
+        for ( IAttribute attribute : listAttributesText )
+        {
+            List<MyLuteceUserField> listUserField = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( nUserId,
+                    attribute.getIdAttribute( ), pluginMyLutece );
+
+            for ( MyLuteceUserField userField : listUserField )
+            {
+                userField.setValue( CryptoService.encrypt( userField.getValue( ), strEncryptionAlgorithme ) );
+                MyLuteceUserFieldHome.update( userField, pluginMyLutece );
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> getExpiredUserIdList( )
+    {
+        return DatabaseUserHome.findAllExpiredUserId( _plugin );
+    }
+
+}

@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseUser
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,6 +57,25 @@ public interface IDatabaseDAO
      * @return BaseUser the user corresponding to the login
      */
     BaseUser selectLuteceUserByLogin( String strLogin, Plugin plugin, LuteceAuthentication authenticationService );
+
+    /**
+     * Check if a user has reset his password from his login
+     * 
+     * @param strLogin the login
+     * @param plugin The Plugin using this data access service
+     * @param authenticationService the LuteceAuthentication object
+     * @return boolean true if the password vhas been reset, false otherwise
+     */
+    boolean selectResetPasswordFromLogin( String strLogin, Plugin plugin );
+
+    /**
+     * Gets the password max valid date of a user from his login.
+     * @param strLogin the login of the user
+     * @param plugin The plugin
+     * @return The date of end of validity of the password of the user, or null
+     *         if none has been set.
+     */
+    Timestamp selectPasswordMaxValideDateFromLogin( String strLogin, Plugin plugin );
 
     /**
      * Load the list of {@link BaseUser}
@@ -128,4 +148,20 @@ public interface IDatabaseDAO
      * @return a list of DatabaseUser
      */
     List<DatabaseUser> selectGroupUsersFromGroupKey( String strGroupKey, Plugin plugin );
+
+    /**
+     * Update the reset password attribut of a user from his login
+     * @param strUserName Login of the user to update
+     * @param bNewValue New value
+     * @param plugin The plugin
+     */
+    void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin );
+
+    /**
+     * Get the id of a user from his login
+     * @param strLogin Login of the user
+     * @param plugin The plugin
+     * @return The id of the user
+     */
+    int findUserIdFromLogin( String strLogin, Plugin plugin );
 }

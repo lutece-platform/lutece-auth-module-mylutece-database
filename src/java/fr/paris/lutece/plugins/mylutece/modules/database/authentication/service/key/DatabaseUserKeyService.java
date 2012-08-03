@@ -108,6 +108,16 @@ public final class DatabaseUserKeyService
     }
 
     /**
+     * Get a key of a user by his login
+     * @param strLogin The login of the user
+     * @return A key associated to the user
+     */
+    public DatabaseUserKey findKeyByLogin( String strLogin )
+    {
+        return DatabaseUserKeyHome.findKeyByLogin( strLogin );
+    }
+
+    /**
      * Remove a key
      * @param strKey the key
      */

@@ -47,6 +47,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
+import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
@@ -61,15 +62,17 @@ import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.portal.web.xpages.XPageApplication;
+import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.password.PasswordUtil;
 import fr.paris.lutece.util.string.StringUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.lang.StringUtils;
-
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -78,16 +81,18 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
- * This class provides the XPageApp that manage personalization features for Mylutece Database module
+ * This class provides the XPageApp that manage personalization features for
+ * Mylutece Database module
  * : login, account management, ...
  */
 public class MyLuteceDatabaseApp implements XPageApplication
 {
     // Markers
     private static final String MARK_USER = "user";
-    private static final String MARK_PASSWORD = "password";
     private static final String MARK_ROLES = "roles";
     private static final String MARK_GROUPS = "groups";
     private static final String MARK_PLUGIN_NAME = "plugin_name";
@@ -102,6 +107,9 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_REINIT_URL = "reinit_url";
     private static final String MARK_KEY = "key";
     private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
+    private static final String MARK_PASSWORD_MINIMUM_LENGTH = "password_minimum_length";
+    private static final String MARK_USER_ID = "user_id";
+    private static final String MARK_REF = "ref";
 
     // Parameters
     private static final String PARAMETER_ACTION = "action";
@@ -119,6 +127,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String PARAMETER_KEY = "key";
     private static final String PARAMETER_ACTION_VALIDATION_EMAIL = "action_validation_email";
     private static final String PARAMETER_ACTION_VALIDATION_SUCCESS = "action_validation_success";
+    private static final String PARAMETER_FORCE_CHANGE_PASSWORD_REINIT = "force_change_password_reinit";
+    private static final String PARAMETER_TIME_BEFORE_ALERT_ACCOUNT = "time_before_alert_account";
 
     // Actions
     private static final String ACTION_CHANGE_PASSWORD = "changePassword";
@@ -127,6 +137,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String ACTION_ACCESS_DENIED = "accessDenied";
     private static final String ACTION_CREATE_ACCOUNT = "createAccount";
     private static final String ACTION_REINIT_PASSWORD = "reinitPassword";
+    private static final String ACTION_REACTIVATE_ACCOUNT = "reactivateAccount";
 
     // Errors
     private static final String ERROR_OLD_PASSWORD = "error_old_password";
@@ -138,22 +149,23 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String ERROR_MANDATORY_FIELDS = "error_mandatory_fields";
     private static final String ERROR_LOGIN_ALREADY_EXISTS = "error_login_already_exists";
     private static final String ERROR_CAPTCHA = "error_captcha";
+    private static final String ERROR_PASSWORD_MINIMUM_LENGTH = "password_minimum_length";
 
     // Templates
     private static final String TEMPLATE_LOST_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/lost_password.html";
     private static final String TEMPLATE_VIEW_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/view_account.html";
     private static final String TEMPLATE_CHANGE_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/change_password.html";
-    private static final String TEMPLATE_EMAIL_BODY = "skin/plugins/mylutece/modules/database/email_body.html";
-    private static final String TEMPLATE_EMAIL_REINIT = "skin/plugins/mylutece/modules/database/email_reinit.html";
     private static final String TEMPLATE_CREATE_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/create_account.html";
     private static final String TEMPLATE_EMAIL_VALIDATION = "skin/plugins/mylutece/modules/database/email_validation.html";
     private static final String TEMPLATE_REINIT_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/reinit_password.html";
+    private static final String TEMPLATE_EMAIL_REINIT = "skin/plugins/mylutece/email_reinit.html";
 
     // Properties
     private static final String PROPERTY_MYLUTECE_CHANGE_PASSWORD_URL = "mylutece-database.url.changePassword.page";
     private static final String PROPERTY_MYLUTECE_VIEW_ACCOUNT_URL = "mylutece-database.url.viewAccount.page";
     private static final String PROPERTY_MYLUTECE_CREATE_ACCOUNT_URL = "mylutece-database.url.createAccount.page";
     private static final String PROPERTY_MYLUTECE_LOST_PASSWORD_URL = "mylutece-database.url.lostPassword.page";
+    private static final String PROPERTY_MYLUTECE_RESET_PASSWORD_URL = "mylutece-database.url.resetPassword.page";
     private static final String PROPERTY_MYLUTECE_ACCESS_DENIED_URL = "mylutece-database.url.accessDenied.page";
     private static final String PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL = "mylutece-database.url.default.redirect";
     private static final String PROPERTY_MYLUTECE_TEMPLATE_ACCESS_DENIED = "mylutece-database.template.accessDenied";
@@ -162,6 +174,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String PROPERTY_MYLUTECE_REINIT_PASSWORD_URL = "mylutece-database.url.reinitPassword.page";
     private static final String PROPERTY_PORTAL_NAME = "lutece.name";
     private static final String PROPERTY_NOREPLY_EMAIL = "mail.noreply.email";
+    private static final String PROPERTY_MAIL_HOST = "mail.server";
+    private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
 
     // i18n Properties
     private static final String PROPERTY_CHANGE_PASSWORD_LABEL = "module.mylutece.database.xpage.changePassword.label";
@@ -178,43 +192,51 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String PROPERTY_ACCESS_DENIED_TITLE_MESSAGE = "module.mylutece.database.siteMessage.access_denied.title";
     private static final String PROPERTY_REINIT_PASSWORD_LABEL = "module.mylutece.database.xpage.reinitPassword.label";
     private static final String PROPERTY_REINIT_PASSWORD_TITLE = "module.mylutece.database.xpage.reinitPassword.title";
+    private static final String PROPERTY_NO_USER_SELECTED = "mylutece.message.noUserSelected";
+    private static final String PROPERTY_MESSAGE_LABEL_ERROR = "mylutece.message.labelError";
+    private static final String PROPERTY_ERROR_NO_ACCOUNT_TO_REACTIVATE = "mylutece.message.error.noAccountToReactivate";
+    private static final String PROPERTY_ACCOUNT_REACTIVATED = "mylutece.user.messageAccountReactivated";
+    private static final String PROPERTY_ACCOUNT_REACTIVATED_TITLE = "mylutece.user.messageAccountReactivatedTitle";
+    private static final String PROPERTY_ACCOUNT_REF_ENCRYPT_ALGO = "mylutece-database.account_life_time.refEncryptionAlgorythm";
 
     // Messages
     private static final String MESSAGE_REINIT_PASSWORD_SUCCESS = "module.mylutece.database.message.reinit_password.success";
+    private static final String MESSAGE_MINIMUM_PASSWORD_LENGTH = "mylutece.message.password.minimumPasswordLength";
 
     // private fields
     private Plugin _plugin;
     private Locale _locale;
-    private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
-    private DatabaseUserKeyService _userKeyService = DatabaseUserKeyService.getService(  );
-    private CaptchaSecurityService _captchaService = new CaptchaSecurityService(  );
-    private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory(  );
-    private DatabaseService _databaseService = DatabaseService.getService(  );
+    private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService( );
+    private DatabaseUserKeyService _userKeyService = DatabaseUserKeyService.getService( );
+    private CaptchaSecurityService _captchaService = new CaptchaSecurityService( );
+    private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory( );
+    private DatabaseService _databaseService = DatabaseService.getService( );
 
     /**
-     *
+     * 
      * @param request The HTTP request
      * @param plugin The plugin
      */
     public void init( HttpServletRequest request, Plugin plugin )
     {
-        _locale = request.getLocale(  );
+        _locale = request.getLocale( );
         _plugin = plugin;
     }
 
     /**
-     *
+     * 
      * @param request The HTTP request
      * @param nMode The mode (admin, ...)
      * @param plugin The plugin
      * @return The Xpage
      * @throws UserNotSignedException if user not signed
-     * @throws SiteMessageException Occurs when a site message need to be displayed
+     * @throws SiteMessageException Occurs when a site message need to be
+     *             displayed
      */
-    public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin )
-        throws UserNotSignedException, SiteMessageException
+    public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin ) throws UserNotSignedException,
+            SiteMessageException
     {
-        XPage page = new XPage(  );
+        XPage page = new XPage( );
         String strAction = request.getParameter( PARAMETER_ACTION );
         init( request, plugin );
 
@@ -238,11 +260,22 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             page = getReinitPasswordPage( page, request );
         }
+        else if ( ACTION_REACTIVATE_ACCOUNT.equals( strAction ) )
+        {
+            reactivateAccount( request );
+        }
 
-        if ( strAction.equals( ACTION_ACCESS_DENIED ) || ( page == null ) )
+        LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
+
+        if ( luteceUser != null && _databaseService.mustUserChangePassword( luteceUser, plugin ) )
+        {
+            page = getReinitPasswordPage( page, request );
+        }
+
+        if ( strAction == null || strAction.equals( ACTION_ACCESS_DENIED ) || ( page == null ) )
         {
             SiteMessageService.setMessage( request, PROPERTY_ACCESS_DENIED_ERROR_MESSAGE, null,
-                PROPERTY_ACCESS_DENIED_TITLE_MESSAGE, null, null, SiteMessage.TYPE_STOP );
+                    PROPERTY_ACCESS_DENIED_TITLE_MESSAGE, null, null, SiteMessage.TYPE_STOP );
         }
 
         return page;
@@ -252,7 +285,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the NewAccount URL of the Authentication Service
      * @return The URL
      */
-    public static String getChangePasswordUrl(  )
+    public static String getChangePasswordUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_CHANGE_PASSWORD_URL );
     }
@@ -261,7 +294,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the ViewAccount URL of the Authentication Service
      * @return The URL
      */
-    public static String getViewAccountUrl(  )
+    public static String getViewAccountUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_VIEW_ACCOUNT_URL );
     }
@@ -270,7 +303,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the createAccount URL of the Authentication Service
      * @return The URL
      */
-    public static String getNewAccountUrl(  )
+    public static String getNewAccountUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_CREATE_ACCOUNT_URL );
     }
@@ -279,16 +312,25 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the Lost Password URL of the Authentication Service
      * @return The URL
      */
-    public static String getLostPasswordUrl(  )
+    public static String getLostPasswordUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_LOST_PASSWORD_URL );
+    }
+
+    /**
+     * Returns the Reset Password URL of the Authentication Service
+     * @return The URL
+     */
+    public static String getResetPasswordUrl( )
+    {
+        return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_RESET_PASSWORD_URL );
     }
 
     /**
      * Returns the Default redirect URL of the Authentication Service
      * @return The URL
      */
-    public static String getDefaultRedirectUrl(  )
+    public static String getDefaultRedirectUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL );
     }
@@ -297,7 +339,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the NewAccount URL of the Authentication Service
      * @return The URL
      */
-    public static String getAccessDeniedUrl(  )
+    public static String getAccessDeniedUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_ACCESS_DENIED_URL );
     }
@@ -306,7 +348,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the Login page URL of the Authentication Service
      * @return The URL
      */
-    public static String getLoginPageUrl(  )
+    public static String getLoginPageUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_LOGIN_PAGE_URL );
     }
@@ -315,7 +357,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the Reinit password page URL of the Authentication Service
      * @return the URL
      */
-    public static String getReinitPageUrl(  )
+    public static String getReinitPageUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_REINIT_PASSWORD_URL );
     }
@@ -327,9 +369,9 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     public String doLogout( HttpServletRequest request )
     {
-        SecurityService.getInstance(  ).logoutUser( request );
+        SecurityService.getInstance( ).logoutUser( request );
 
-        return getDefaultRedirectUrl(  );
+        return getDefaultRedirectUrl( );
     }
 
     /**
@@ -340,7 +382,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getViewAccountPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
         DatabaseUser user = getRemoteUser( request );
 
         if ( user == null )
@@ -348,7 +390,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             return null;
         }
 
-        LuteceUser luteceUser = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( luteceUser == null )
         {
@@ -356,12 +398,12 @@ public class MyLuteceDatabaseApp implements XPageApplication
         }
 
         model.put( MARK_USER, user );
-        model.put( MARK_ROLES, luteceUser.getRoles(  ) );
-        model.put( MARK_GROUPS, luteceUser.getGroups(  ) );
-        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin(  ) );
+        model.put( MARK_ROLES, luteceUser.getRoles( ) );
+        model.put( MARK_GROUPS, luteceUser.getGroups( ) );
+        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin( ) );
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_VIEW_ACCOUNT_PAGE, _locale, model );
-        page.setContent( t.getHtml(  ) );
+        page.setContent( t.getHtml( ) );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_VIEW_ACCOUNT_LABEL, _locale ) );
         page.setTitle( I18nService.getLocalizedString( PROPERTY_VIEW_ACCOUNT_TITLE, _locale ) );
 
@@ -376,8 +418,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getCreateAccountPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
-        DatabaseUser user = _userFactory.newDatabaseUser(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        DatabaseUser user = _userFactory.newDatabaseUser( );
 
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strLogin = request.getParameter( PARAMETER_LOGIN );
@@ -407,7 +449,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             user.setEmail( strEmail );
         }
-        
+
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
 
         // Specific attributes
@@ -415,27 +457,34 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         for ( IAttribute attribute : listAttributes )
         {
-            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
-                    myLutecePlugin );
+            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute(
+                    attribute.getIdAttribute( ), myLutecePlugin );
             attribute.setListAttributeFields( listAttributeFields );
         }
 
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
-        model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
+        model.put( MARK_PLUGIN_NAME, _plugin.getName( ) );
         model.put( MARK_ERROR_CODE, strErrorCode );
         model.put( MARK_USER, user );
         model.put( MARK_ACTION_SUCCESSFUL, strSuccess );
         model.put( MARK_ACTION_VALIDATION_EMAIL, strValidationEmail );
         model.put( MARK_ACTION_VALIDATION_SUCCESS, strValidationSuccess );
-        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin(  ) );
+        model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin( ) );
+
+        if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
+        {
+            Object[] param = { _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( ) };
+            model.put( MARK_PASSWORD_MINIMUM_LENGTH,
+                    I18nService.getLocalizedString( MESSAGE_MINIMUM_PASSWORD_LENGTH, param, _locale ) );
+        }
 
         if ( _userParamService.isJcaptchaEnable( _plugin ) )
         {
-            model.put( MARK_JCAPTCHA, _captchaService.getHtmlCode(  ) );
+            model.put( MARK_JCAPTCHA, _captchaService.getHtmlCode( ) );
         }
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_CREATE_ACCOUNT_PAGE, _locale, model );
-        page.setContent( t.getHtml(  ) );
+        page.setContent( t.getHtml( ) );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_CREATE_ACCOUNT_LABEL, _locale ) );
         page.setTitle( I18nService.getLocalizedString( PROPERTY_CREATE_ACCOUNT_TITLE, _locale ) );
 
@@ -460,7 +509,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strEmail = request.getParameter( PARAMETER_EMAIL );
         String strLogin = StringUtils.EMPTY;
 
-        if ( _userFactory.isEmailUsedAsLogin(  ) )
+        if ( _userFactory.isEmailUsedAsLogin( ) )
         {
             strLogin = strEmail;
         }
@@ -469,16 +518,16 @@ public class MyLuteceDatabaseApp implements XPageApplication
             strLogin = request.getParameter( PARAMETER_LOGIN );
         }
 
-        if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strPassword ) ||
-                StringUtils.isBlank( strConfirmation ) || StringUtils.isBlank( strFirstName ) ||
-                StringUtils.isBlank( strEmail ) || StringUtils.isBlank( strLastName ) )
+        if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strPassword )
+                || StringUtils.isBlank( strConfirmation ) || StringUtils.isBlank( strFirstName )
+                || StringUtils.isBlank( strEmail ) || StringUtils.isBlank( strLastName ) )
         {
             strError = ERROR_MANDATORY_FIELDS;
         }
 
         // Check login unique code
-        if ( StringUtils.isBlank( strError ) &&
-                !DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).isEmpty(  ) )
+        if ( StringUtils.isBlank( strError )
+                && !DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).isEmpty( ) )
         {
             strError = ERROR_LOGIN_ALREADY_EXISTS;
         }
@@ -489,6 +538,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
             strError = ERROR_CONFIRMATION_PASSWORD;
         }
 
+        strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strPassword, 0 );
+
         // Check email format
         if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
         {
@@ -496,24 +547,24 @@ public class MyLuteceDatabaseApp implements XPageApplication
         }
 
         // Check email attributes
-        if ( StringUtils.isBlank( strError ) && !checkSendingEmailValidation(  ) )
+        if ( StringUtils.isBlank( strError ) && !checkSendingEmailValidation( ) )
         {
             strError = ERROR_SENDING_EMAIL;
         }
 
-        if ( StringUtils.isBlank( strError ) && _userParamService.isJcaptchaEnable( _plugin ) &&
-                !_captchaService.validate( request ) )
+        if ( StringUtils.isBlank( strError ) && _userParamService.isJcaptchaEnable( _plugin )
+                && !_captchaService.validate( request ) )
         {
             strError = ERROR_CAPTCHA;
         }
 
-        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
-        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl( ) );
+        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName( ) );
         url.addParameter( PARAMETER_LAST_NAME, strLastName );
         url.addParameter( PARAMETER_FIRST_NAME, strFirstName );
         url.addParameter( PARAMETER_EMAIL, strEmail );
 
-        if ( !_userFactory.isEmailUsedAsLogin(  ) )
+        if ( !_userFactory.isEmailUsedAsLogin( ) )
         {
             url.addParameter( PARAMETER_LOGIN, strLogin );
         }
@@ -521,34 +572,42 @@ public class MyLuteceDatabaseApp implements XPageApplication
         if ( StringUtils.isBlank( strError ) )
         {
             boolean bAccountCreationValidationEmail = _userParamService.isAccountCreationValidationEmail( _plugin );
-            DatabaseUser databaseUser = _userFactory.newDatabaseUser(  );
+            DatabaseUser databaseUser = _userFactory.newDatabaseUser( );
             databaseUser.setLogin( strLogin );
             databaseUser.setLastName( strLastName );
             databaseUser.setFirstName( strFirstName );
             databaseUser.setEmail( strEmail );
-            databaseUser.setActive( !bAccountCreationValidationEmail );
+            int nStatus = bAccountCreationValidationEmail ? DatabaseUser.STATUS_NOT_ACTIVATED
+                    : DatabaseUser.STATUS_ACTIVATED;
+            databaseUser.setStatus( nStatus );
             databaseUser = _databaseService.doCreateUser( databaseUser, strPassword, _plugin );
-            MyLuteceUserFieldService.doCreateUserFields( databaseUser.getUserId(  ), request, _locale );
+            int nUserId = DatabaseUserHome.findDatabaseUserIdFromLogin( strLogin, _plugin );
+            if ( nUserId > 0 )
+            {
+                _databaseService.doInsertNewPasswordInHistory( strPassword, nUserId, plugin );
+            }
+
+            MyLuteceUserFieldService.doCreateUserFields( databaseUser.getUserId( ), request, _locale );
 
             if ( bAccountCreationValidationEmail )
             {
-                DatabaseUserKey userKey = _userKeyService.create( databaseUser.getUserId(  ) );
+                DatabaseUserKey userKey = _userKeyService.create( databaseUser.getUserId( ) );
 
                 String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
                 String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
                 String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_VALIDATION_OBJECT, _locale );
 
                 // Send validation email
-                Map<String, Object> model = new HashMap<String, Object>(  );
-                model.put( MARK_VALIDATION_URL, _userKeyService.getValidationUrl( userKey.getKey(  ), request ) );
+                Map<String, Object> model = new HashMap<String, Object>( );
+                model.put( MARK_VALIDATION_URL, _userKeyService.getValidationUrl( userKey.getKey( ), request ) );
 
                 HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_VALIDATION, _locale, model );
-                MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml(  ) );
-                url.addParameter( PARAMETER_ACTION_VALIDATION_EMAIL, getDefaultRedirectUrl(  ) );
+                MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml( ) );
+                url.addParameter( PARAMETER_ACTION_VALIDATION_EMAIL, getDefaultRedirectUrl( ) );
             }
             else
             {
-                url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
+                url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl( ) );
             }
         }
         else
@@ -556,7 +615,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             url.addParameter( PARAMETER_ERROR_CODE, strError );
         }
 
-        return url.getUrl(  );
+        return url.getUrl( );
     }
 
     /**
@@ -569,8 +628,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         init( request, plugin );
 
-        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl(  ) );
-        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getNewAccountUrl( ) );
+        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName( ) );
 
         String strKey = request.getParameter( PARAMETER_KEY );
 
@@ -580,19 +639,19 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
             if ( userKey != null )
             {
-                DatabaseUser databaseUser = DatabaseUserHome.findByPrimaryKey( userKey.getUserId(  ), _plugin );
+                DatabaseUser databaseUser = DatabaseUserHome.findByPrimaryKey( userKey.getUserId( ), _plugin );
 
                 if ( databaseUser != null )
                 {
-                    databaseUser.setActive( true );
+                    databaseUser.setStatus( DatabaseUser.STATUS_ACTIVATED );
                     _databaseService.doUpdateUser( databaseUser, _plugin );
                     _userKeyService.remove( strKey );
-                    url.addParameter( PARAMETER_ACTION_VALIDATION_SUCCESS, getDefaultRedirectUrl(  ) );
+                    url.addParameter( PARAMETER_ACTION_VALIDATION_SUCCESS, getDefaultRedirectUrl( ) );
                 }
             }
         }
 
-        return url.getUrl(  );
+        return url.getUrl( );
     }
 
     /**
@@ -602,46 +661,65 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * @return the page
      * @throws SiteMessageException site message if the key is wrong
      */
-    public XPage getReinitPasswordPage( XPage page, HttpServletRequest request )
-        throws SiteMessageException
+    public XPage getReinitPasswordPage( XPage page, HttpServletRequest request ) throws SiteMessageException
     {
         String strActionSuccess = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
 
         if ( StringUtils.isNotBlank( strActionSuccess ) )
         {
             SiteMessageService.setMessage( request, MESSAGE_REINIT_PASSWORD_SUCCESS, SiteMessage.TYPE_INFO,
-                AppPathService.getBaseUrl( request ) + strActionSuccess );
+                    AppPathService.getBaseUrl( request ) + strActionSuccess );
         }
 
         String strKey = request.getParameter( PARAMETER_KEY );
+        DatabaseUserKey key = null;
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            DatabaseUserKey key = _userKeyService.findByPrimaryKey( strKey );
+            key = _userKeyService.findByPrimaryKey( strKey );
+        }
 
-            if ( key != null )
-            {
-                String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
-                Map<String, Object> model = new HashMap<String, Object>(  );
-                model.put( MARK_ERROR_CODE, strErrorCode );
-                model.put( MARK_KEY, strKey );
-                model.put( MARK_ACTION_SUCCESSFUL, request.getParameter( PARAMETER_ACTION_SUCCESSFUL ) );
+        LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
 
-                HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_REINIT_PASSWORD_PAGE, _locale, model );
-                page.setContent( t.getHtml(  ) );
-                page.setPathLabel( I18nService.getLocalizedString( PROPERTY_REINIT_PASSWORD_LABEL, _locale ) );
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_REINIT_PASSWORD_TITLE, _locale ) );
-            }
-            else
+        if ( key == null )
+        {
+            key = _userKeyService.findKeyByLogin( luteceUser.getName( ) );
+        }
+
+        //If the user is logged in, has no key and must change his password, we generate a new key
+        if ( key == null && luteceUser != null && _databaseService.mustUserChangePassword( luteceUser, _plugin ) )
+        {
+            DatabaseUser user = getRemoteUser( request );
+            key = _userKeyService.create( user.getUserId( ) );
+
+        }
+
+        if ( key != null )
+        {
+            strKey = key.getKey( );
+            String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
+            Map<String, Object> model = new HashMap<String, Object>( );
+            model.put( MARK_ERROR_CODE, strErrorCode );
+
+            if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
             {
-                SiteMessageService.setMessage( request, Messages.USER_ACCESS_DENIED, SiteMessage.TYPE_STOP,
-                    AppPathService.getBaseUrl( request ) + getDefaultRedirectUrl(  ) );
+                Object[] param = { _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( ) };
+                model.put( MARK_PASSWORD_MINIMUM_LENGTH,
+                        I18nService.getLocalizedString( MESSAGE_MINIMUM_PASSWORD_LENGTH, param, _locale ) );
             }
+
+            model.put( MARK_KEY, strKey );
+            model.put( MARK_ACTION_SUCCESSFUL, request.getParameter( PARAMETER_ACTION_SUCCESSFUL ) );
+
+            HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_REINIT_PASSWORD_PAGE, _locale, model );
+            page.setContent( t.getHtml( ) );
+            page.setPathLabel( I18nService.getLocalizedString( PROPERTY_REINIT_PASSWORD_LABEL, _locale ) );
+            page.setTitle( I18nService.getLocalizedString( PROPERTY_REINIT_PASSWORD_TITLE, _locale ) );
         }
         else
         {
             SiteMessageService.setMessage( request, Messages.USER_ACCESS_DENIED, SiteMessage.TYPE_STOP,
-                AppPathService.getBaseUrl( request ) + getDefaultRedirectUrl(  ) );
+                    AppPathService.getBaseUrl( request ) + getDefaultRedirectUrl( ) );
         }
 
         return page;
@@ -659,7 +737,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         String strKey = request.getParameter( PARAMETER_KEY );
 
-        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getReinitPageUrl(  ) );
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getReinitPageUrl( ) );
         url.addParameter( PARAMETER_KEY, strKey );
 
         if ( StringUtils.isNotBlank( strKey ) )
@@ -668,29 +746,36 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
             if ( userKey != null )
             {
-                DatabaseUser databaseUser = DatabaseUserHome.findByPrimaryKey( userKey.getUserId(  ), _plugin );
+                DatabaseUser databaseUser = DatabaseUserHome.findByPrimaryKey( userKey.getUserId( ), _plugin );
 
                 if ( databaseUser != null )
                 {
                     String strPassword = request.getParameter( PARAMETER_PASSWORD );
                     String strConfirmationPassword = request.getParameter( PARAMETER_CONFIRMATION_PASSWORD );
 
-                    if ( StringUtils.isNotBlank( strPassword ) && StringUtils.isNotBlank( strConfirmationPassword ) &&
-                            strPassword.equals( strConfirmationPassword ) )
-                    {
-                        _databaseService.doModifyPassword( databaseUser, strPassword, _plugin );
-                        _userKeyService.remove( strKey );
-                        url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
-                    }
-                    else
+                    if ( !( StringUtils.isNotBlank( strPassword ) && StringUtils.isNotBlank( strConfirmationPassword ) && strPassword
+                            .equals( strConfirmationPassword ) ) )
                     {
                         url.addParameter( PARAMETER_ERROR_CODE, ERROR_CONFIRMATION_PASSWORD );
+                        return url.getUrl( );
                     }
+                    String strErrorCode = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin,
+                            strPassword, userKey.getUserId( ) );
+                    if ( strErrorCode != null )
+                    {
+                        url.addParameter( PARAMETER_ERROR_CODE, strErrorCode );
+                        return url.getUrl( );
+                    }
+                    _databaseService.doModifyPassword( databaseUser, strPassword, _plugin );
+                    _databaseService.doModifyResetPassword( databaseUser, Boolean.FALSE, _plugin );
+                    _databaseService.doInsertNewPasswordInHistory( strPassword, databaseUser.getUserId( ), plugin );
+                    _userKeyService.remove( userKey.getKey( ) );
+                    url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl( ) );
                 }
             }
         }
 
-        return url.getUrl(  );
+        return url.getUrl( );
     }
 
     /**
@@ -701,18 +786,18 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getLostPasswordPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strStateSending = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
 
-        model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
+        model.put( MARK_PLUGIN_NAME, _plugin.getName( ) );
         model.put( MARK_ERROR_CODE, strErrorCode );
         model.put( MARK_ACTION_SUCCESSFUL, strStateSending );
         model.put( MARK_EMAIL, strEmail );
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_LOST_PASSWORD_PAGE, _locale, model );
-        page.setContent( t.getHtml(  ) );
+        page.setContent( t.getHtml( ) );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_LOST_PASSWORD_LABEL, _locale ) );
         page.setTitle( I18nService.getLocalizedString( PROPERTY_LOST_PASSWORD_TITLE, _locale ) );
 
@@ -727,16 +812,23 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getChangePasswordPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strSuccess = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
 
-        model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
+        model.put( MARK_PLUGIN_NAME, _plugin.getName( ) );
         model.put( MARK_ERROR_CODE, strErrorCode );
         model.put( MARK_ACTION_SUCCESSFUL, strSuccess );
 
+        if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
+        {
+            Object[] param = { _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( ) };
+            model.put( MARK_PASSWORD_MINIMUM_LENGTH,
+                    I18nService.getLocalizedString( MESSAGE_MINIMUM_PASSWORD_LENGTH, param, _locale ) );
+        }
+
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_CHANGE_PASSWORD_PAGE, _locale, model );
-        page.setContent( t.getHtml(  ) );
+        page.setContent( t.getHtml( ) );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_CHANGE_PASSWORD_LABEL, _locale ) );
         page.setTitle( I18nService.getLocalizedString( PROPERTY_CHANGE_PASSWORD_TITLE, _locale ) );
 
@@ -753,8 +845,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
         Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
         init( request, plugin );
 
-        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getChangePasswordUrl(  ) );
-        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getChangePasswordUrl( ) );
+        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName( ) );
 
         String strError = StringUtils.EMPTY;
         DatabaseUser user = getRemoteUser( request );
@@ -767,7 +859,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             try
             {
                 SiteMessageService.setMessage( request, PROPERTY_ACCESS_DENIED_ERROR_MESSAGE, null,
-                    PROPERTY_ACCESS_DENIED_TITLE_MESSAGE, null, null, SiteMessage.TYPE_STOP );
+                        PROPERTY_ACCESS_DENIED_TITLE_MESSAGE, null, null, SiteMessage.TYPE_STOP );
             }
             catch ( SiteMessageException e )
             {
@@ -775,14 +867,14 @@ public class MyLuteceDatabaseApp implements XPageApplication
             }
         }
 
-        if ( StringUtils.isBlank( strOldPassword ) || StringUtils.isBlank( strNewPassword ) ||
-                StringUtils.isBlank( strConfirmationPassword ) )
+        if ( StringUtils.isBlank( strOldPassword ) || StringUtils.isBlank( strNewPassword )
+                || StringUtils.isBlank( strConfirmationPassword ) )
         {
             strError = ERROR_MANDATORY_FIELDS;
         }
 
-        if ( StringUtils.isBlank( strError ) &&
-                !_databaseService.checkPassword( user.getLogin(  ), strOldPassword, _plugin ) )
+        if ( StringUtils.isBlank( strError )
+                && !_databaseService.checkPassword( user.getLogin( ), strOldPassword, _plugin ) )
         {
             strError = ERROR_OLD_PASSWORD;
         }
@@ -797,23 +889,28 @@ public class MyLuteceDatabaseApp implements XPageApplication
             strError = ERROR_SAME_PASSWORD;
         }
 
+        strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strNewPassword,
+                user.getUserId( ) );
+
         if ( StringUtils.isBlank( strError ) )
         {
             _databaseService.doModifyPassword( user, strNewPassword, _plugin );
-            url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
+            _databaseService.doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
+
+            url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl( ) );
         }
         else
         {
             url.addParameter( PARAMETER_ERROR_CODE, strError );
         }
 
-        return url.getUrl(  );
+        return url.getUrl( );
     }
 
     /**
      * Check the password with the password confirmation string
      * Check if password is empty
-     *
+     * 
      * @param strPassword The password
      * @param strConfirmation The password confirmation
      * @return true if password is equal to confirmation password and not empty
@@ -822,8 +919,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
     {
         boolean bIsPasswordCorrect = false;
 
-        if ( StringUtils.isNotBlank( strPassword ) && StringUtils.isNotBlank( strConfirmation ) &&
-                strPassword.equals( strConfirmation ) )
+        if ( StringUtils.isNotBlank( strPassword ) && StringUtils.isNotBlank( strConfirmation )
+                && strPassword.equals( strConfirmation ) )
         {
             bIsPasswordCorrect = true;
         }
@@ -846,8 +943,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
         Collection<DatabaseUser> listUser = null;
 
         String strEmail = request.getParameter( PARAMETER_EMAIL );
-        url = new UrlItem( AppPathService.getBaseUrl( request ) + getLostPasswordUrl(  ) );
-        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName(  ) );
+        url = new UrlItem( AppPathService.getBaseUrl( request ) + getLostPasswordUrl( ) );
+        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName( ) );
         url.addParameter( PARAMETER_EMAIL, strEmail );
 
         // Check mandatory fields
@@ -864,12 +961,12 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         listUser = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail, _plugin );
 
-        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size(  ) == 0 ) ) )
+        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size( ) == 0 ) ) )
         {
             strError = ERROR_UNKNOWN_EMAIL;
         }
 
-        if ( !checkSendingPasswordEmail(  ) )
+        if ( !checkSendingPasswordEmail( ) )
         {
             strError = ERROR_SENDING_EMAIL;
         }
@@ -878,54 +975,64 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             for ( DatabaseUser user : listUser )
             {
-                if ( user.isActive(  ) )
+                if ( user.isActive( ) )
                 {
-                    Map<String, Object> model = new HashMap<String, Object>(  );
-                    String strHtml = StringUtils.EMPTY;
+                    // make password
+                    String strPassword = PasswordUtil.makePassword( );
 
-                    if ( _userParamService.isPasswordEncrypted( _plugin ) )
+                    // update password
+                    String strEncryptedPassword = strPassword;
+
+                    _databaseService.doModifyPassword( user, strEncryptedPassword, _plugin );
+
+                    if ( SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin,
+                            PARAMETER_FORCE_CHANGE_PASSWORD_REINIT ) )
                     {
-                        // If password is encrypted, then reinit password
-                        DatabaseUserKey key = _userKeyService.create( user.getUserId(  ) );
-                        model.put( MARK_REINIT_URL, _userKeyService.getReinitUrl( key.getKey(  ), request ) );
-
-                        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_REINIT, _locale, model );
-                        strHtml = template.getHtml(  );
+                        _databaseService.doModifyResetPassword( user, Boolean.TRUE, _plugin );
                     }
-                    else
-                    {
-                        // Else send the password
-                        model.put( MARK_USER, user );
-                        model.put( MARK_PASSWORD,
-                            DatabaseUserHome.findPasswordByPrimaryKey( user.getUserId(  ), _plugin ) );
+                    DatabaseUserHome.update( user, _plugin );
 
-                        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_BODY, _locale, model );
-                        strHtml = template.getHtml(  );
-                    }
-
-                    String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
+                    String strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
                     String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
                     String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_OBJECT, _locale );
 
-                    MailService.sendMailHtml( strEmail, strName, strSender, strObject, strHtml );
+                    if ( StringUtils.isBlank( strError )
+                            && ( StringUtils.isBlank( strHost ) || StringUtils.isBlank( strSender ) || StringUtils
+                                    .isBlank( strObject ) ) )
+                    {
+                        strError = ERROR_SENDING_EMAIL;
+                    }
+                    else
+                    {
+                        HashMap<String, Object> model = new HashMap<String, Object>( );
+                        model.put( PARAMETER_NEW_PASSWORD, strPassword );
+
+                        DatabaseUserKey key = _userKeyService.create( user.getUserId( ) );
+                        model.put( MARK_REINIT_URL, _userKeyService.getReinitUrl( key.getKey( ), request ) );
+
+                        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_REINIT, _locale, model );
+
+                        MailService.sendMailHtml( strEmail, PROPERTY_NO_REPLY_EMAIL, strSender, strObject,
+                                template.getHtml( ) );
+                    }
                 }
             }
 
-            url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl(  ) );
+            url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl( ) );
         }
         else
         {
             url.addParameter( PARAMETER_ERROR_CODE, strError );
         }
 
-        return url.getUrl(  );
+        return url.getUrl( );
     }
 
     /**
      * Returns the template for access denied
      * @return The template path
      */
-    public static String getAccessDeniedTemplate(  )
+    public static String getAccessDeniedTemplate( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_TEMPLATE_ACCESS_DENIED );
     }
@@ -934,35 +1041,35 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Returns the template for access controled
      * @return The template path
      */
-    public static String getAccessControledTemplate(  )
+    public static String getAccessControledTemplate( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_TEMPLATE_ACCESS_CONTROLED );
     }
 
     /**
      * Get the remote user
-     *
+     * 
      * @param request The HTTP request
      * @return The Database User
      */
     private DatabaseUser getRemoteUser( HttpServletRequest request )
     {
-        LuteceUser luteceUser = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( luteceUser == null )
         {
             return null;
         }
 
-        Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersListForLogin( luteceUser.getName(  ),
+        Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersListForLogin( luteceUser.getName( ),
                 _plugin );
 
-        if ( listUsers.size(  ) != 1 )
+        if ( listUsers.size( ) != 1 )
         {
             return null;
         }
 
-        DatabaseUser user = (DatabaseUser) listUsers.iterator(  ).next(  );
+        DatabaseUser user = (DatabaseUser) listUsers.iterator( ).next( );
 
         return user;
     }
@@ -971,7 +1078,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Check if the parameters for the email validation are correctly filled
      * @return true if they are correctly filled, false otherwise
      */
-    private boolean checkSendingEmailValidation(  )
+    private boolean checkSendingEmailValidation( )
     {
         boolean bIsCorrect = false;
         boolean bAccountCreationValidationEmail = _userParamService.isAccountCreationValidationEmail( _plugin );
@@ -992,7 +1099,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * Check if the parameters for the password email are correctly filled
      * @return true if they are correctly filled, false otherwise
      */
-    private boolean checkSendingPasswordEmail(  )
+    private boolean checkSendingPasswordEmail( )
     {
         return checkSendingEmail( PROPERTY_EMAIL_OBJECT );
     }
@@ -1009,12 +1116,77 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
         String strObject = I18nService.getLocalizedString( strPropertyObject, _locale );
 
-        if ( StringUtils.isNotBlank( strName ) && StringUtils.isNotBlank( strSender ) &&
-                StringUtils.isNotBlank( strObject ) )
+        if ( StringUtils.isNotBlank( strName ) && StringUtils.isNotBlank( strSender )
+                && StringUtils.isNotBlank( strObject ) )
         {
             bIsCorrect = true;
         }
 
         return bIsCorrect;
+    }
+
+    /**
+     * Reactivate an account if necessary
+     * @param request The request
+     * @throws SiteMessageException A SiteMessageException is ALWAYS thrown
+     */
+    public void reactivateAccount( HttpServletRequest request ) throws SiteMessageException
+    {
+        String strUserId = request.getParameter( MARK_USER_ID );
+        String strRef = request.getParameter( MARK_REF );
+
+        int nUserId = -1;
+        if ( strUserId != null && StringUtils.isNotBlank( strUserId ) )
+        {
+            try
+            {
+                nUserId = Integer.parseInt( strUserId );
+            }
+            catch ( NumberFormatException e )
+            {
+                nUserId = -1;
+            }
+        }
+        if ( nUserId < 0 || StringUtils.isEmpty( strRef ) )
+        {
+            SiteMessageService.setMessage( request, PROPERTY_NO_USER_SELECTED, null, PROPERTY_MESSAGE_LABEL_ERROR,
+                    AppPropertiesService.getProperty( PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL ), null,
+                    SiteMessage.TYPE_ERROR );
+        }
+        else
+        {
+            DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nUserId, _plugin );
+            if ( user == null
+                    || user.getAccountMaxValidDate( ) == null
+                    || !StringUtils.equals( CryptoService.encrypt(
+                            Long.toString( user.getAccountMaxValidDate( ).getTime( ) ),
+                            AppPropertiesService.getProperty( PROPERTY_ACCOUNT_REF_ENCRYPT_ALGO ) ), strRef ) )
+            {
+                SiteMessageService.setMessage( request, PROPERTY_NO_USER_SELECTED, null, PROPERTY_MESSAGE_LABEL_ERROR,
+                        AppPropertiesService.getProperty( PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL ), null,
+                        SiteMessage.TYPE_ERROR );
+            }
+            int nbDaysBeforeFirstAlert = SecurityUtils.getIntegerSecurityParameter( _userParamService, _plugin,
+                    PARAMETER_TIME_BEFORE_ALERT_ACCOUNT );
+            Timestamp firstAlertMaxDate = new Timestamp( new java.util.Date( ).getTime( )
+                    + DateUtil.convertDaysInMiliseconds( nbDaysBeforeFirstAlert ) );
+            // If the account is close to expire but has not expired yet
+            if ( user.getAccountMaxValidDate( ) != null )
+            {
+                if ( user.getAccountMaxValidDate( ).getTime( ) < firstAlertMaxDate.getTime( )
+                        && user.getStatus( ) < DatabaseUser.STATUS_EXPIRED )
+                {
+                    _databaseService.updateUserExpirationDate( nUserId, _plugin );
+                }
+                SiteMessageService.setMessage( request, PROPERTY_ACCOUNT_REACTIVATED, null,
+                        PROPERTY_ACCOUNT_REACTIVATED_TITLE,
+                        AppPropertiesService.getProperty( PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL ), null,
+                        SiteMessage.TYPE_INFO );
+            }
+        }
+        SiteMessageService.setMessage( request, PROPERTY_ERROR_NO_ACCOUNT_TO_REACTIVATE, null,
+                PROPERTY_MESSAGE_LABEL_ERROR,
+                AppPropertiesService.getProperty( PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL ), null,
+                SiteMessage.TYPE_ERROR );
     }
 }

@@ -39,6 +39,7 @@ import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.util.sql.DAOUtil;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +53,7 @@ public class DatabaseDAO implements IDatabaseDAO
 {
     private static final String SQL_QUERY_FIND_USER_BY_LOGIN = "SELECT mylutece_database_user_id, login, name_family, name_given, email" +
         " FROM mylutece_database_user WHERE login like ? ";
+    private static final String SQL_QUERY_FIND_RESET_PASSWORD = "SELECT reset_password FROM mylutece_database_user WHERE login like ? ";
     private static final String SQL_QUERY_FIND_ROLES_FROM_LOGIN = "SELECT b.role_key FROM mylutece_database_user a, mylutece_database_user_role b" +
         " WHERE a.mylutece_database_user_id = b.mylutece_database_user_id AND a.login like ? ";
     private static final String SQL_QUERY_FIND_LOGINS_FROM_ROLE = "SELECT a.login FROM mylutece_database_user a, mylutece_database_user_role b" +
@@ -65,7 +67,10 @@ public class DatabaseDAO implements IDatabaseDAO
     private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user ";
     private static final String SQL_QUERY_FIND_USERS_FROM_GROUP_KEY = "SELECT a.mylutece_database_user_id, a.login, a.name_family, a.name_given, a.email FROM mylutece_database_user a " +
         " INNER JOIN mylutece_database_user_group b ON a.mylutece_database_user_id = b.mylutece_database_user_id WHERE b.group_key = ? ";
-
+    private static final String SQL_QUERY_FIND_PASSWORD_MAX_VALID_DATE = "SELECT password_max_valid_date FROM mylutece_database_user WHERE login like ? ";
+    private static final String SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN = "UPDATE mylutece_database_user SET reset_password = ? WHERE login like ? ";
+    private static final String SQL_QUERY_SELECT_USER_ID_FROM_LOGIN = "SELECT mylutece_database_user_id FROM mylutece_database_user WHERE login like ? ";
+    
     /** This class implements the Singleton design pattern. */
     private static DatabaseDAO _dao = new DatabaseDAO(  );
 
@@ -112,6 +117,55 @@ public class DatabaseDAO implements IDatabaseDAO
         daoUtil.free(  );
 
         return user;
+    }
+
+    /**
+     * Check if a user has reset his password from his login
+     * 
+     * @param strLogin the login
+     * @param plugin The Plugin using this data access service
+     * @return boolean true if the password vhas been reset, false otherwise
+     */
+    public boolean selectResetPasswordFromLogin( String strLogin, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_RESET_PASSWORD, plugin );
+        daoUtil.setString( 1, strLogin );
+        daoUtil.executeQuery( );
+
+        if ( !daoUtil.next( ) )
+        {
+            daoUtil.free( );
+
+            return false;
+        }
+
+        boolean bResult = daoUtil.getBoolean( 1 );
+        daoUtil.free( );
+
+        return bResult;
+    }
+
+    /**
+     * Gets the password max valid date of a user from his login.
+     * @param strLogin the login of the user
+     * @param plugin The plugin
+     * @return The date of end of validity of the password of the user, or null
+     *         if none has been set.
+     */
+    @Override
+    public Timestamp selectPasswordMaxValideDateFromLogin( String strLogin, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_PASSWORD_MAX_VALID_DATE, plugin );
+        daoUtil.setString( 1, strLogin );
+        daoUtil.executeQuery( );
+
+        Timestamp passwordMaxValideDate = null;
+        if ( daoUtil.next( ) )
+        {
+            passwordMaxValideDate = daoUtil.getTimestamp( 1 );
+        }
+        daoUtil.free( );
+        return passwordMaxValideDate;
     }
 
     /**
@@ -298,5 +352,40 @@ public class DatabaseDAO implements IDatabaseDAO
         daoUtil.free(  );
 
         return listUsers;
+    }
+
+    /**
+     * Update the reset password attribut of a user from his login
+     * @param strUserName Login of the user to update
+     * @param bNewValue New value
+     * @param plugin The plugin
+     */
+    public void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN, plugin );
+
+        daoUtil.setBoolean( 1, bNewValue );
+        daoUtil.setString( 2, strUserName );
+        daoUtil.executeUpdate( );
+
+        daoUtil.free( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int findUserIdFromLogin( String strLogin, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_ID_FROM_LOGIN, plugin );
+        daoUtil.setString( 1, strLogin );
+        daoUtil.executeQuery( );
+        int nRes = -1;
+        if ( daoUtil.next( ) )
+        {
+            nRes = daoUtil.getInt( 1 );
+        }
+        daoUtil.free( );
+        return nRes;
     }
 }

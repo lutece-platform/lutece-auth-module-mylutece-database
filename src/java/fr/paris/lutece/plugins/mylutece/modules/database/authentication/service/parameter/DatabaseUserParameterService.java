@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter;
 
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
@@ -40,6 +41,9 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -49,7 +53,7 @@ import org.apache.commons.lang.StringUtils;
  * DatabaseUserParameterService
  *
  */
-public final class DatabaseUserParameterService
+public final class DatabaseUserParameterService implements IDatabaseUserParameterService
 {
     private static final String BEAN_DATABASE_USER_PARAMETER_SERVICE = "mylutece-database.databaseUserParameterService";
 
@@ -181,5 +185,23 @@ public final class DatabaseUserParameterService
         }
 
         return bIsEnable;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int countUserPasswordHistoryFromDate( Timestamp minDate, int nUserId, Plugin plugin )
+    {
+        return DatabaseUserHome.countUserPasswordHistoryFromDate( minDate, nUserId, plugin );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> selectUserPasswordHistory( int nUserID, Plugin plugin )
+    {
+        return DatabaseUserHome.selectUserPasswordHistory( nUserID, plugin );
     }
 }
