@@ -6,6 +6,7 @@
 		</links>
 		<menu name="Overview">
 			<item name="Introduction" href="index.html" />
+			<item name="Security parameters" href="user-security.html" />
 		</menu>
 		<menu ref="reports" />
 	</body>

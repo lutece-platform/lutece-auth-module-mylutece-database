@@ -6,6 +6,7 @@
 		</links>
 		<menu name="Aper&#231;u">
 			<item name="Introduction" href="index.html" />
+			<item name="Paramètres de sécurité" href="user-security.html" />
 		</menu>
 		<menu ref="reports" />
 	</body>

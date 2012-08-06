@@ -27,8 +27,3 @@ INSERT INTO mylutece_database_user_parameter VALUES ('other_alert_mail_sender', 
 INSERT INTO mylutece_database_user_parameter VALUES ('other_alert_mail_subject', 'Votre compte va bientot expirer');
 INSERT INTO mylutece_database_user_parameter VALUES ('account_reactivated_mail_sender', 'lutece@nowhere.com');
 INSERT INTO mylutece_database_user_parameter VALUES ('account_reactivated_mail_subject', 'Votre compte a bien été réactivé');
-
-INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('login', 1);
-INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('name_given', 1);
-INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('name_family', 1);
-INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('email', 1);
