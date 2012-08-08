@@ -420,9 +420,10 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_DIFFERENT_PASSWORD, AdminMessage.TYPE_STOP );
         }
-
-        strError = SecurityUtils.checkPasswordForBackOffice( _userParamService, _plugin, strFirstPassword, request );
-
+        if ( StringUtils.isBlank( strError ) )
+        {
+            strError = SecurityUtils.checkPasswordForBackOffice( _userParamService, _plugin, strFirstPassword, request );
+        }
         if ( StringUtils.isBlank( strError ) )
         {
             strError = MyLuteceUserFieldService.checkUserFields( request, getLocale(  ) );
