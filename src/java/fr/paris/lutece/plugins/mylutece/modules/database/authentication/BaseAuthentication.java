@@ -87,9 +87,6 @@ public class BaseAuthentication extends PortalAuthentication
     private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/database/mylutece-database.png";
 
-    // JSP URL
-    private static final String JSP_URL_GET_REINIT_PASSWORD_PAGE = "jsp/site/Portal.jsp?page=mylutecedatabase&action=getReinitPassordPage";
-
     /**
      * Constructor
      *
@@ -299,7 +296,7 @@ public class BaseAuthentication extends PortalAuthentication
     @Override
     public String getResetPasswordPageUrl( HttpServletRequest request )
     {
-        return AppPathService.getBaseUrl( request ) + JSP_URL_GET_REINIT_PASSWORD_PAGE;
+        return AppPathService.getBaseUrl( request ) + MyLuteceDatabaseApp.getResetPasswordUrl( );
     }
 
     /**

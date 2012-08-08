@@ -545,9 +545,10 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             strError = ERROR_CONFIRMATION_PASSWORD;
         }
-
-        strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strPassword, 0 );
-
+        if ( StringUtils.isBlank( strError ) )
+        {
+            strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strPassword, 0 );
+        }
         // Check email format
         if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
         {
@@ -896,14 +897,17 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             strError = ERROR_SAME_PASSWORD;
         }
-
-        strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strNewPassword,
-                user.getUserId( ) );
+        if ( StringUtils.isBlank( strError ) )
+        {
+            strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strNewPassword,
+                    user.getUserId( ) );
+        }
 
         if ( StringUtils.isBlank( strError ) )
         {
             _databaseService.doModifyPassword( user, strNewPassword, _plugin );
             _databaseService.doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
+            _databaseService.doModifyResetPassword( user, false, _plugin );
 
             url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl( ) );
         }

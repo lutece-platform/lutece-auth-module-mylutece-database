@@ -63,7 +63,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String SQL_QUERY_CHECK_PASSWORD_FOR_USER_ID = " SELECT count(*) FROM mylutece_database_user WHERE login = ? AND password = ? ";
     private static final String SQL_QUERY_SELECT_USER_FROM_SEARCH = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user " +
         " WHERE login LIKE ? AND name_family LIKE ? and name_given LIKE ? AND email LIKE ? ORDER BY name_family ";
-    private static final String SQL_SELECT_USER_ID_FROM_PASSWORD = "SELECT mylutece_database_user_id FROM mylutece_database_user_password_history WHERE login = ?";
+    private static final String SQL_SELECT_USER_ID_FROM_PASSWORD = "SELECT mylutece_database_user_id FROM mylutece_database_user WHERE login = ?";
     private static final String SQL_SELECT_USER_PASSWORD_HISTORY = "SELECT password FROM mylutece_database_user_password_history WHERE mylutece_database_user_id = ? ORDER BY date_password_change desc";
     private static final String SQL_COUNT_USER_PASSWORD_HISTORY = "SELECT COUNT(*) FROM mylutece_database_user_password_history WHERE mylutece_database_user_id = ? AND date_password_change > ?";
     private static final String SQL_INSERT_PASSWORD_HISTORY = "INSERT INTO mylutece_database_user_password_history (mylutece_database_user_id, password) VALUES ( ?, ? ) ";
