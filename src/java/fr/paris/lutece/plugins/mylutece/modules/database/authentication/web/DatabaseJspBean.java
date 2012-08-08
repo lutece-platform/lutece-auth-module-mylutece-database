@@ -1262,6 +1262,10 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
      */
     public String doChangeFieldAnonymizeUsers( HttpServletRequest request )
     {
+        if ( request.getParameter( PARAMETER_CANCEL ) != null )
+        {
+            return JSP_MANAGE_ADVANCED_PARAMETERS;
+        }
         Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         AttributeHome.updateAnonymizationStatusUserStaticField( PARAMETER_LOGIN,
                 Boolean.valueOf( request.getParameter( PARAMETER_LOGIN ) ), pluginMyLutece );
