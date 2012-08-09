@@ -263,11 +263,10 @@
 					account are encrypted, and it can not be used anymore. Attributes
 					to anonymized can be chosen from the the anonymization management
 					page, accessible from the user management page ("Users > Mylutece
-					user management (Database)"). Only text attributes can be
-					anonymized.
+					user management (Database)").
 				</p>
 				<p>
-					It is also possible to anonymize a user from the user management
+					It is also possible to anonymize an account from the user management
 					screen ("Users > Mylutece user management (Database)") by clicking
 					the "anonymize" button. 
 				</p>

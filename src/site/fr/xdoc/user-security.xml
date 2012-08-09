@@ -235,7 +235,7 @@
 					Chaque compte utilisateur possède une durée de vie le faisant
 					expirer en cas de non utilisation prolongée. Lorsqu'un compte
 					arrive à expiration, un mail prévient l'utilisateur afin qu'il
-					puisse le prolongé s'il le souhaite. S'il ne le fait pas dans le
+					puisse le prolonger s'il le souhaite. S'il ne le fait pas dans le
 					délai imparti, alors le compte est définitivement anonymisé, et
 					l'utilisateur ne peut plus l'utiliser.
 				</p>
@@ -286,11 +286,10 @@
 					de Gestion des utilisateurs Database ("Utilisateurs > Gestion des
 					utilisateurs du site (Database)"), permet à un administrateur de
 					choisir les informations d'un compte qui doivent être supprimées
-					lors de l'anonymisation. Seuls les champs de type texte peuvent
-					être anonymisés.
+					lors de l'anonymisation.
 				</p>
 				<p>
-					Il est également possible d'anonymiser un utilisateur depuis
+					Il est également possible d'anonymiser un compte utilisateur depuis
 					l'écran de Gestion des utilisateurs Database (accessible via le
 					menu
 					"Utilisateurs > Gestion des utilisateurs du site (Database)")
