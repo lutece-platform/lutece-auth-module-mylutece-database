@@ -1,12 +1,10 @@
-<div id="content-box-actions">
+<div class="pull-right">
 	<form method="post" action="jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp">
-		<input type="submit" class="button bt-toolbar" value="#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}" />
+		<button type="submit" class="btn btn-primary">#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}</button>
 	</form>
 	<form method="post" action="jsp/admin/plugins/mylutece/modules/database/ChangeFieldAnonymizeUsers.jsp">
-		<input type="submit" class="button bt-toolbar" value="#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}" />
+		<button type="submit" class="btn btn-primary">#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}</button>
 	</form>
 </div>
-<div class="content-box">
-	<h2>#i18n{module.mylutece.database.manage_advanced_parameters.pageTitle}</h2> 
-	<#include "advanced_parameters.html" />
-</div>
+<h2>#i18n{module.mylutece.database.manage_advanced_parameters.pageTitle}</h2> 
+<#include "advanced_parameters.html" />
