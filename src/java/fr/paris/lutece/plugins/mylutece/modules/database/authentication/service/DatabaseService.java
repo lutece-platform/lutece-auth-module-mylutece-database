@@ -78,6 +78,7 @@ import fr.paris.lutece.util.url.UrlItem;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -117,6 +118,7 @@ public final class DatabaseService
 	private static final String MARK_LOGIN_URL = "login_url";
 	private static final String MARK_NEW_PASSWORD = "new_password";
 	private static final String MARK_ENABLE_JCAPTCHA = "enable_jcaptcha";
+	private static final String MARK_SITE_LINK = "site_link";
 
 	// PROPERTIES
 	private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
@@ -547,6 +549,7 @@ public final class DatabaseService
 				Map<String, Object> model = new HashMap<String, Object>( );
 				model.put( MARK_NEW_PASSWORD, strPassword );
 				model.put( MARK_LOGIN_URL, strBaseURL + AdminAuthenticationService.getInstance( ).getLoginPageUrl( ) );
+				model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
 
 				HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_FORGOT_PASSWORD, locale, model );
 
@@ -611,4 +614,15 @@ public final class DatabaseService
 			MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml( ) );
 		}
 	}
+
+	/**
+	 * Update a user last login date.
+	 * @param strLogin Login of the user to update
+	 * @param plugin The plugin
+	 */
+	public void updateUserLastLoginDate( String strLogin, Plugin plugin )
+	{
+		DatabaseUserHome.updateUserLastLoginDate( strLogin, new Date( ), plugin );
+	}
+
 }

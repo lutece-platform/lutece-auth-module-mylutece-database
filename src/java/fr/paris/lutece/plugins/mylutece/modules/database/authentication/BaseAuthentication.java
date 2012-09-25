@@ -65,342 +65,343 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * The Class provides an implementation of the inherited abstract class PortalAuthentication based on
- * a database.
- *
+ * The Class provides an implementation of the inherited abstract class PortalAuthentication based on a database.
+ * 
  * @author Mairie de Paris
  * @version 2.0.0
- *
+ * 
  * @since Lutece v2.0.0
  */
 public class BaseAuthentication extends PortalAuthentication
 {
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Constants
-    private static final String AUTH_SERVICE_NAME = AppPropertiesService.getProperty( "mylutece-database.service.name" );
+	// //////////////////////////////////////////////////////////////////////////////////////////////
+	// Constants
+	private static final String AUTH_SERVICE_NAME = AppPropertiesService.getProperty( "mylutece-database.service.name" );
 
-    // PROPERTIES
-    private static final String PROPERTY_MAX_ACCESS_FAILED = "access_failures_max";
-    private static final String PROPERTY_INTERVAL_MINUTES = "access_failures_interval";
+	// PROPERTIES
+	private static final String PROPERTY_MAX_ACCESS_FAILED = "access_failures_max";
+	private static final String PROPERTY_INTERVAL_MINUTES = "access_failures_interval";
 
-    // Messages properties
-    private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
-    private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/database/mylutece-database.png";
+	// Messages properties
+	private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
+	private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/database/mylutece-database.png";
 
-    /**
-     * Constructor
-     *
-     */
-    public BaseAuthentication(  )
-    {
-        super(  );
-    }
+	/**
+	 * Constructor
+	 * 
+	 */
+	public BaseAuthentication( )
+	{
+		super( );
+	}
 
-    /**
-     * Gets the Authentification service name
-     * @return The name of the authentication service
-     */
-    public String getAuthServiceName(  )
-    {
-        return AUTH_SERVICE_NAME;
-    }
+	/**
+	 * Gets the Authentification service name
+	 * @return The name of the authentication service
+	 */
+	public String getAuthServiceName( )
+	{
+		return AUTH_SERVICE_NAME;
+	}
 
-    /**
-     * Gets the Authentification type
-     * @param request The HTTP request
-     * @return The type of authentication
-     */
-    public String getAuthType( HttpServletRequest request )
-    {
-        return HttpServletRequest.BASIC_AUTH;
-    }
+	/**
+	 * Gets the Authentification type
+	 * @param request The HTTP request
+	 * @return The type of authentication
+	 */
+	public String getAuthType( HttpServletRequest request )
+	{
+		return HttpServletRequest.BASIC_AUTH;
+	}
 
-    /**
-     * This methods checks the login info in the database
-     *
-     * @param strUserName The username
-     * @param strUserPassword The password
-     * @param request The HttpServletRequest
-     * @return A LuteceUser object corresponding to the login
-     * @throws LoginException The LoginException
-     */
-    public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request )
-        throws LoginException
-    {
-        DatabaseService _databaseService = DatabaseService.getService( );
+	/**
+	 * This methods checks the login info in the database
+	 * 
+	 * @param strUserName The username
+	 * @param strUserPassword The password
+	 * @param request The HttpServletRequest
+	 * @return A LuteceUser object corresponding to the login
+	 * @throws LoginException The LoginException
+	 */
+	public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException
+	{
+		DatabaseService _databaseService = DatabaseService.getService( );
 
-        Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        // Creating a record of connections log
-        ConnectionLog connectionLog = new ConnectionLog( );
-        connectionLog.setIpAddress( request.getRemoteAddr( ) );
-        connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+		Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+		// Creating a record of connections log
+		ConnectionLog connectionLog = new ConnectionLog( );
+		connectionLog.setIpAddress( request.getRemoteAddr( ) );
+		connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
 
-        // Test the number of errors during an interval of minutes
-        int nMaxFailed = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_MAX_ACCESS_FAILED, plugin );
-        int nIntervalMinutes = DatabaseUserParameterHome
-                .getIntegerSecurityParameter( PROPERTY_INTERVAL_MINUTES, plugin );
+		// Test the number of errors during an interval of minutes
+		int nMaxFailed = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_MAX_ACCESS_FAILED, plugin );
+		int nIntervalMinutes = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_INTERVAL_MINUTES, plugin );
 
-        if ( nMaxFailed > 0 && nIntervalMinutes > 0 )
-        {
-            int nNbFailed = ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece );
+		if ( nMaxFailed > 0 && nIntervalMinutes > 0 )
+		{
+			int nNbFailed = ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece );
 
-            if ( nNbFailed > nMaxFailed )
-            {
-                throw new FailedLoginException( );
-            }
-        }
+			if ( nNbFailed > nMaxFailed )
+			{
+				throw new FailedLoginException( );
+			}
+		}
 
-        Locale locale = request.getLocale(  );
+		Locale locale = request.getLocale( );
 
-        BaseUser user = DatabaseHome.findLuteceUserByLogin( strUserName, plugin, this );
+		BaseUser user = DatabaseHome.findLuteceUserByLogin( strUserName, plugin, this );
 
-        //Unable to find the user
-        if ( ( user == null ) || !_databaseService.isUserActive( strUserName, plugin ) )
-        {
-            AppLogService.info( "Unable to find user in the database : " + strUserName );
-            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE,
-                    locale ) );
-        }
+		// Unable to find the user
+		if ( ( user == null ) || !_databaseService.isUserActive( strUserName, plugin ) )
+		{
+			AppLogService.info( "Unable to find user in the database : " + strUserName );
+			throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+		}
 
-        //Check password
-        if ( !_databaseService.checkPassword( strUserName, strUserPassword, plugin ) )
-        {
-            AppLogService.info( "User login : Incorrect login or password" + strUserName );
-            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE,
-                    locale ) );
-        }
+		// Check password
+		if ( !_databaseService.checkPassword( strUserName, strUserPassword, plugin ) )
+		{
+			AppLogService.info( "User login : Incorrect login or password" + strUserName );
+			throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+		}
 
-        //Get roles
-        List<String> arrayRoles = DatabaseHome.findUserRolesFromLogin( strUserName, plugin );
+		// Get roles
+		List<String> arrayRoles = DatabaseHome.findUserRolesFromLogin( strUserName, plugin );
 
-        if ( !arrayRoles.isEmpty(  ) )
-        {
-            user.setRoles( arrayRoles );
-        }
+		if ( !arrayRoles.isEmpty( ) )
+		{
+			user.setRoles( arrayRoles );
+		}
 
-        //Get groups
-        List<String> arrayGroups = DatabaseHome.findUserGroupsFromLogin( strUserName, plugin );
+		// Get groups
+		List<String> arrayGroups = DatabaseHome.findUserGroupsFromLogin( strUserName, plugin );
 
-        if ( !arrayGroups.isEmpty(  ) )
-        {
-            user.setGroups( arrayGroups );
-        }
+		if ( !arrayGroups.isEmpty( ) )
+		{
+			user.setGroups( arrayGroups );
+		}
 
-        // We update the status of the user if his password has become obsolete
-        Timestamp passwordMaxValidDate = DatabaseHome.findPasswordMaxValideDateFromLogin( strUserName, plugin );
-        if ( passwordMaxValidDate != null && passwordMaxValidDate.getTime( ) < new java.util.Date( ).getTime( ) )
-        {
-            DatabaseHome.updateResetPasswordFromLogin( strUserName, Boolean.TRUE, plugin );
-        }
-        int nUserId = DatabaseHome.findUserIdFromLogin( strUserName, plugin );
-        _databaseService.updateUserExpirationDate( nUserId, plugin );
+		// We update the status of the user if his password has become obsolete
+		Timestamp passwordMaxValidDate = DatabaseHome.findPasswordMaxValideDateFromLogin( strUserName, plugin );
+		if ( passwordMaxValidDate != null && passwordMaxValidDate.getTime( ) < new java.util.Date( ).getTime( ) )
+		{
+			DatabaseHome.updateResetPasswordFromLogin( strUserName, Boolean.TRUE, plugin );
+		}
+		int nUserId = DatabaseHome.findUserIdFromLogin( strUserName, plugin );
+		_databaseService.updateUserExpirationDate( nUserId, plugin );
 
-        return user;
-    }
+		return user;
+	}
 
-    /**
-     * This methods logout the user
-     * @param user The user
-     */
-    public void logout( LuteceUser user )
-    {
-    }
+	/**
+	 * This methods logout the user
+	 * @param user The user
+	 */
+	public void logout( LuteceUser user )
+	{
+	}
 
-    /**
-     * Find users by login
-     * @param request The request
-     * @param strLogin the login
-     * @return DatabaseUser the user corresponding to the login
-     */
-    public boolean findResetPassword( HttpServletRequest request, String strLogin )
-    {
-        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        return DatabaseHome.findResetPasswordFromLogin( strLogin, plugin );
-    }
+	/**
+	 * Find users by login
+	 * @param request The request
+	 * @param strLogin the login
+	 * @return DatabaseUser the user corresponding to the login
+	 */
+	public boolean findResetPassword( HttpServletRequest request, String strLogin )
+	{
+		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+		return DatabaseHome.findResetPasswordFromLogin( strLogin, plugin );
+	}
 
-    /**
-     * This method returns an anonymous Lutece user
-     * 
-     * @return An anonymous Lutece user
-     */
-    public LuteceUser getAnonymousUser(  )
-    {
-        return new BaseUser( LuteceUser.ANONYMOUS_USERNAME, this );
-    }
+	/**
+	 * This method returns an anonymous Lutece user
+	 * 
+	 * @return An anonymous Lutece user
+	 */
+	public LuteceUser getAnonymousUser( )
+	{
+		return new BaseUser( LuteceUser.ANONYMOUS_USERNAME, this );
+	}
 
-    /**
-     * Checks that the current user is associated to a given role
-     * @param user The user
-     * @param request The HTTP request
-     * @param strRole The role name
-     * @return Returns true if the user is associated to the role, otherwise false
-     */
-    public boolean isUserInRole( LuteceUser user, HttpServletRequest request, String strRole )
-    {
-        String[] roles = getRolesByUser( user );
+	/**
+	 * Checks that the current user is associated to a given role
+	 * @param user The user
+	 * @param request The HTTP request
+	 * @param strRole The role name
+	 * @return Returns true if the user is associated to the role, otherwise false
+	 */
+	public boolean isUserInRole( LuteceUser user, HttpServletRequest request, String strRole )
+	{
+		String[] roles = getRolesByUser( user );
 
-        if ( ( roles != null ) && ( strRole != null ) )
-        {
-            for ( String role : roles )
-            {
-                if ( strRole.equals( role ) )
-                {
-                    return true;
-                }
-            }
-        }
+		if ( ( roles != null ) && ( strRole != null ) )
+		{
+			for ( String role : roles )
+			{
+				if ( strRole.equals( role ) )
+				{
+					return true;
+				}
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * Returns the View account page URL of the Authentication Service
-     * @return The URL
-     */
-    public String getViewAccountPageUrl(  )
-    {
-        return MyLuteceDatabaseApp.getViewAccountUrl(  );
-    }
+	/**
+	 * Returns the View account page URL of the Authentication Service
+	 * @return The URL
+	 */
+	public String getViewAccountPageUrl( )
+	{
+		return MyLuteceDatabaseApp.getViewAccountUrl( );
+	}
 
-    /**
-     * Returns the New account page URL of the Authentication Service
-     * @return The URL
-     */
-    public String getNewAccountPageUrl(  )
-    {
-        return MyLuteceDatabaseApp.getNewAccountUrl(  );
-    }
+	/**
+	 * Returns the New account page URL of the Authentication Service
+	 * @return The URL
+	 */
+	public String getNewAccountPageUrl( )
+	{
+		return MyLuteceDatabaseApp.getNewAccountUrl( );
+	}
 
-    /**
-     * Returns the Change password page URL of the Authentication Service
-     * @return The URL
-     */
-    public String getChangePasswordPageUrl(  )
-    {
-        return MyLuteceDatabaseApp.getChangePasswordUrl(  );
-    }
+	/**
+	 * Returns the Change password page URL of the Authentication Service
+	 * @return The URL
+	 */
+	public String getChangePasswordPageUrl( )
+	{
+		return MyLuteceDatabaseApp.getChangePasswordUrl( );
+	}
 
-    /**
-     * Returns the lost password URL of the Authentication Service
-     * @return The URL
-     */
-    public String getLostPasswordPageUrl(  )
-    {
-        return MyLuteceDatabaseApp.getLostPasswordUrl(  );
-    }
+	/**
+	 * Returns the lost password URL of the Authentication Service
+	 * @return The URL
+	 */
+	public String getLostPasswordPageUrl( )
+	{
+		return MyLuteceDatabaseApp.getLostPasswordUrl( );
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getResetPasswordPageUrl( HttpServletRequest request )
-    {
-        return AppPathService.getBaseUrl( request ) + MyLuteceDatabaseApp.getMessageResetPasswordUrl( );
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getResetPasswordPageUrl( HttpServletRequest request )
+	{
+		return AppPathService.getBaseUrl( request ) + MyLuteceDatabaseApp.getMessageResetPasswordUrl( );
+	}
 
-    /**
-     * Returns all users managed by the authentication service if this feature is
-     * available.
-     * @return A collection of Lutece users or null if the service doesn't provide a users list
-     */
-    public Collection<LuteceUser> getUsers(  )
-    {
-        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+	/**
+	 * Returns all users managed by the authentication service if this feature is available.
+	 * @return A collection of Lutece users or null if the service doesn't provide a users list
+	 */
+	public Collection<LuteceUser> getUsers( )
+	{
+		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
-        Collection<BaseUser> baseUsers = DatabaseHome.findDatabaseUsersList( plugin, this );
-        Collection<LuteceUser> luteceUsers = new ArrayList<LuteceUser>(  );
+		Collection<BaseUser> baseUsers = DatabaseHome.findDatabaseUsersList( plugin, this );
+		Collection<LuteceUser> luteceUsers = new ArrayList<LuteceUser>( );
 
-        for ( BaseUser user : baseUsers )
-        {
-            luteceUsers.add( user );
-        }
+		for ( BaseUser user : baseUsers )
+		{
+			luteceUsers.add( user );
+		}
 
-        return luteceUsers;
-    }
+		return luteceUsers;
+	}
 
-    /**
-     * Returns the user managed by the authentication service if this feature is
-     * available.
-     * @param userLogin the user login
-     * @return A Lutece users or null if the service doesn't provide a user
-     */
-    public LuteceUser getUser( String userLogin )
-    {
-        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+	/**
+	 * Returns the user managed by the authentication service if this feature is available.
+	 * @param userLogin the user login
+	 * @return A Lutece users or null if the service doesn't provide a user
+	 */
+	public LuteceUser getUser( String userLogin )
+	{
+		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
-        BaseUser user = DatabaseHome.findLuteceUserByLogin( userLogin, plugin, this );
+		BaseUser user = DatabaseHome.findLuteceUserByLogin( userLogin, plugin, this );
 
-        return user;
-    }
+		return user;
+	}
 
-    /**
-     * get all roles for this user :
-     *    - user's roles
-     *    - user's groups roles
-     *
-     * @param user The user
-     * @return Array of roles
-     */
-    public String[] getRolesByUser( LuteceUser user )
-    {
-        Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        Set<String> setRoles = new HashSet<String>(  );
-        String[] strGroups = user.getGroups(  );
-        String[] strRoles = user.getRoles(  );
+	/**
+	 * get all roles for this user : - user's roles - user's groups roles
+	 * 
+	 * @param user The user
+	 * @return Array of roles
+	 */
+	public String[] getRolesByUser( LuteceUser user )
+	{
+		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+		Set<String> setRoles = new HashSet<String>( );
+		String[] strGroups = user.getGroups( );
+		String[] strRoles = user.getRoles( );
 
-        if ( strRoles != null )
-        {
-            for ( String strRole : strRoles )
-            {
-                setRoles.add( strRole );
-            }
-        }
+		if ( strRoles != null )
+		{
+			for ( String strRole : strRoles )
+			{
+				setRoles.add( strRole );
+			}
+		}
 
-        if ( strGroups != null )
-        {
-            for ( String strGroupKey : strGroups )
-            {
-                Collection<String> arrayRolesGroup = GroupRoleHome.findGroupRoles( strGroupKey, plugin );
+		if ( strGroups != null )
+		{
+			for ( String strGroupKey : strGroups )
+			{
+				Collection<String> arrayRolesGroup = GroupRoleHome.findGroupRoles( strGroupKey, plugin );
 
-                for ( String strRole : arrayRolesGroup )
-                {
-                    setRoles.add( strRole );
-                }
-            }
-        }
+				for ( String strRole : arrayRolesGroup )
+				{
+					setRoles.add( strRole );
+				}
+			}
+		}
 
-        String[] strReturnRoles = new String[setRoles.size(  )];
-        setRoles.toArray( strReturnRoles );
+		String[] strReturnRoles = new String[setRoles.size( )];
+		setRoles.toArray( strReturnRoles );
 
-        return strReturnRoles;
-    }
+		return strReturnRoles;
+	}
 
-    /**
-     *
-     *{@inheritDoc}
-     */
-    public String getIconUrl(  )
-    {
-        return CONSTANT_PATH_ICON;
-    }
+	/**
+	 * 
+	 *{@inheritDoc}
+	 */
+	public String getIconUrl( )
+	{
+		return CONSTANT_PATH_ICON;
+	}
 
-    /**
-     *
-     * Returns {@link DatabasePlugin#PLUGIN_NAME}.
-     * @return {@link DatabasePlugin#PLUGIN_NAME}
-     */
-    public String getName(  )
-    {
-        return DatabasePlugin.PLUGIN_NAME;
-    }
+	/**
+	 * 
+	 * Returns {@link DatabasePlugin#PLUGIN_NAME}.
+	 * @return {@link DatabasePlugin#PLUGIN_NAME}
+	 */
+	public String getName( )
+	{
+		return DatabasePlugin.PLUGIN_NAME;
+	}
 
-    /**
-     *
-     *{@inheritDoc}
-     */
-    public String getPluginName(  )
-    {
-        return DatabasePlugin.PLUGIN_NAME;
-    }
+	/**
+	 *{@inheritDoc}
+	 */
+	public String getPluginName( )
+	{
+		return DatabasePlugin.PLUGIN_NAME;
+	}
+
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
+	public void updateDateLastLogin( LuteceUser user, HttpServletRequest request )
+	{
+		DatabaseService _databaseService = DatabaseService.getService( );
+		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+		_databaseService.updateUserLastLoginDate( user.getName( ), plugin );
+	}
 }

@@ -14,7 +14,8 @@ CREATE TABLE mylutece_database_user (
   password_max_valid_date TIMESTAMP NULL,
   account_max_valid_date BIGINT NULL,
   nb_alerts_sent INTEGER DEFAULT 0 NOT NULL,
-  PRIMARY KEY  (mylutece_database_user_id)
+  last_login TIMESTAMP DEFAULT '1980-01-01',
+  PRIMARY KEY (mylutece_database_user_id)
 );
 
 
