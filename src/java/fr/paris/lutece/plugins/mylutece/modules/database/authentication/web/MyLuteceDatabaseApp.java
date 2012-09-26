@@ -551,8 +551,9 @@ public class MyLuteceDatabaseApp implements XPageApplication
 		{
 			strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strPassword, 0 );
 		}
+
 		// Check email format
-		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
+		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, plugin ) ) )
 		{
 			strError = ERROR_SYNTAX_EMAIL;
 		}

@@ -405,7 +405,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             strError = AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-        if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
+		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, _plugin ) ) )
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
         }
@@ -568,7 +568,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             {
                 strError = AdminMessageService.getMessageUrl( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP );
             }
-            else if ( !StringUtil.checkEmail( strEmail ) )
+			else if ( !StringUtil.checkEmail( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, _plugin ) ) )
             {
                 strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
             }
