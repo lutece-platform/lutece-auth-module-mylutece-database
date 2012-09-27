@@ -109,6 +109,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	private static final String MARK_USER_ID = "user_id";
 	private static final String MARK_REF = "ref";
 	private static final String MARK_SITE_LINK = "site_link";
+	private static final String MARK_LOGIN = "login";
+	private static final String MARK_LOGIN_URL = "login_url";
 
 	// Parameters
 	private static final String PARAMETER_ACTION = "action";
@@ -133,6 +135,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	private static final String ACTION_CHANGE_PASSWORD = "changePassword";
 	private static final String ACTION_VIEW_ACCOUNT = "viewAccount";
 	private static final String ACTION_LOST_PASSWORD = "lostPassword";
+	private static final String ACTION_LOST_LOGIN = "lostLogin";
 	private static final String ACTION_ACCESS_DENIED = "accessDenied";
 	private static final String ACTION_CREATE_ACCOUNT = "createAccount";
 	private static final String ACTION_REINIT_PASSWORD = "reinitPassword";
@@ -153,18 +156,21 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
 	// Templates
 	private static final String TEMPLATE_LOST_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/lost_password.html";
+	private static final String TEMPLATE_LOST_LOGIN_PAGE = "skin/plugins/mylutece/modules/database/lost_login.html";
 	private static final String TEMPLATE_VIEW_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/view_account.html";
 	private static final String TEMPLATE_CHANGE_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/change_password.html";
 	private static final String TEMPLATE_CREATE_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/create_account.html";
 	private static final String TEMPLATE_EMAIL_VALIDATION = "skin/plugins/mylutece/modules/database/email_validation.html";
 	private static final String TEMPLATE_REINIT_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/reinit_password.html";
 	private static final String TEMPLATE_EMAIL_REINIT = "skin/plugins/mylutece/email_reinit.html";
+	private static final String TEMPLATE_EMAIL_LOST_LOGIN = "skin/plugins/mylutece/email_lost_login.html";
 
 	// Properties
 	private static final String PROPERTY_MYLUTECE_CHANGE_PASSWORD_URL = "mylutece-database.url.changePassword.page";
 	private static final String PROPERTY_MYLUTECE_VIEW_ACCOUNT_URL = "mylutece-database.url.viewAccount.page";
 	private static final String PROPERTY_MYLUTECE_CREATE_ACCOUNT_URL = "mylutece-database.url.createAccount.page";
 	private static final String PROPERTY_MYLUTECE_LOST_PASSWORD_URL = "mylutece-database.url.lostPassword.page";
+	private static final String PROPERTY_MYLUTECE_LOST_LOGIN_URL = "mylutece-database.url.lostLogin.page";
 	private static final String PROPERTY_MYLUTECE_RESET_PASSWORD_URL = "mylutece-database.url.resetPassword.page";
 	private static final String PROPERTY_MYLUTECE_ACCESS_DENIED_URL = "mylutece-database.url.accessDenied.page";
 	private static final String PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL = "mylutece-database.url.default.redirect";
@@ -185,9 +191,12 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	private static final String PROPERTY_VIEW_ACCOUNT_TITLE = "module.mylutece.database.xpage.viewAccount.title";
 	private static final String PROPERTY_LOST_PASSWORD_LABEL = "module.mylutece.database.xpage.lostPassword.label";
 	private static final String PROPERTY_LOST_PASSWORD_TITLE = "module.mylutece.database.xpage.lostPassword.title";
+	private static final String PROPERTY_LOST_LOGIN_LABEL = "module.mylutece.database.xpage.lostLogin.label";
+	private static final String PROPERTY_LOST_LOGIN_TITLE = "module.mylutece.database.xpage.lostLogin.title";
 	private static final String PROPERTY_CREATE_ACCOUNT_LABEL = "module.mylutece.database.xpage.createAccount.label";
 	private static final String PROPERTY_CREATE_ACCOUNT_TITLE = "module.mylutece.database.xpage.createAccount.title";
 	private static final String PROPERTY_EMAIL_OBJECT = "module.mylutece.database.email.object";
+	private static final String PROPERTY_EMAIL_OBJECT_LOST_LOGIN = "module.mylutece.database.email_lost_login.object";
 	private static final String PROPERTY_EMAIL_VALIDATION_OBJECT = "module.mylutece.database.email_validation.object";
 	private static final String PROPERTY_ACCESS_DENIED_ERROR_MESSAGE = "module.mylutece.database.siteMessage.access_denied.errorMessage";
 	private static final String PROPERTY_ACCESS_DENIED_TITLE_MESSAGE = "module.mylutece.database.siteMessage.access_denied.title";
@@ -207,6 +216,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
 	// JSP URL
 	private static final String JSP_URL_GET_RESET_PASSWORD_PAGE = "jsp/site/Portal.jsp?page=mylutecedatabase&action=getResetPassordPage";
+	private static final String JSP_URL_MYLUTECE_LOGIN = "jsp/site/Portal.jsp?page=mylutece&action=login";
 
 	// private fields
 	private Plugin _plugin;
@@ -262,6 +272,10 @@ public class MyLuteceDatabaseApp implements XPageApplication
 			else if ( ACTION_LOST_PASSWORD.equals( strAction ) )
 			{
 				page = getLostPasswordPage( page, request );
+			}
+			else if ( ACTION_LOST_LOGIN.equals( strAction ) )
+			{
+				page = getLostLoginPage( page, request );
 			}
 			else if ( ACTION_CREATE_ACCOUNT.equals( strAction ) )
 			{
@@ -323,6 +337,15 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	public static String getLostPasswordUrl( )
 	{
 		return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_LOST_PASSWORD_URL );
+	}
+
+	/**
+	 * Returns the Lost Password URL of the Authentication Service
+	 * @return The URL
+	 */
+	public static String getLostLoginUrl( )
+	{
+		return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_LOST_LOGIN_URL );
 	}
 
 	/**
@@ -812,6 +835,32 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	}
 
 	/**
+	 * Build the default Lost login page
+	 * @param page The XPage object to fill
+	 * @param request The HTTP request
+	 * @return The XPage object containing the page content
+	 */
+	private XPage getLostLoginPage( XPage page, HttpServletRequest request )
+	{
+		Map<String, Object> model = new HashMap<String, Object>( );
+		String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
+		String strStateSending = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
+		String strEmail = request.getParameter( PARAMETER_EMAIL );
+
+		model.put( MARK_PLUGIN_NAME, _plugin.getName( ) );
+		model.put( MARK_ERROR_CODE, strErrorCode );
+		model.put( MARK_ACTION_SUCCESSFUL, strStateSending );
+		model.put( MARK_EMAIL, strEmail );
+
+		HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_LOST_LOGIN_PAGE, _locale, model );
+		page.setContent( t.getHtml( ) );
+		page.setPathLabel( I18nService.getLocalizedString( PROPERTY_LOST_LOGIN_LABEL, _locale ) );
+		page.setTitle( I18nService.getLocalizedString( PROPERTY_LOST_LOGIN_TITLE, _locale ) );
+
+		return page;
+	}
+
+	/**
 	 * Build the default Change password page
 	 * @param page The XPage object to fill
 	 * @param request The HTTP request
@@ -1014,6 +1063,86 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
 						HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_REINIT, _locale, model );
 						MailService.sendMailHtml( strEmail, PROPERTY_NO_REPLY_EMAIL, strSender, strObject, template.getHtml( ) );
+					}
+				}
+			}
+
+			url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl( ) );
+		}
+		else
+		{
+			url.addParameter( PARAMETER_ERROR_CODE, strError );
+		}
+
+		return url.getUrl( );
+	}
+
+	/**
+	 * This method is call by the JSP named DoSendLogin.jsp
+	 * @param request The HTTP request
+	 * @return The URL to forward depending of the result of the sending.
+	 */
+	public String doSendLogin( HttpServletRequest request )
+	{
+		Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+		init( request, plugin );
+
+		String strError = null;
+		UrlItem url = null;
+		Collection<DatabaseUser> listUser = null;
+
+		String strEmail = request.getParameter( PARAMETER_EMAIL );
+		url = new UrlItem( AppPathService.getBaseUrl( request ) + getLostLoginUrl( ) );
+		url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName( ) );
+		url.addParameter( PARAMETER_EMAIL, strEmail );
+
+		// Check mandatory fields
+		if ( StringUtils.isBlank( strEmail ) )
+		{
+			strError = ERROR_MANDATORY_FIELDS;
+		}
+
+		// Check email format
+		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail ) )
+		{
+			strError = ERROR_SYNTAX_EMAIL;
+		}
+
+		listUser = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail, _plugin );
+
+		if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size( ) == 0 ) ) )
+		{
+			strError = ERROR_UNKNOWN_EMAIL;
+		}
+
+		if ( !checkSendingEmail( PROPERTY_EMAIL_OBJECT_LOST_LOGIN ) )
+		{
+			strError = ERROR_SENDING_EMAIL;
+		}
+
+		if ( StringUtils.isBlank( strError ) )
+		{
+			for ( DatabaseUser user : listUser )
+			{
+				if ( user.isActive( ) )
+				{
+					String strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
+					String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
+					String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_OBJECT_LOST_LOGIN, _locale );
+
+					if ( StringUtils.isBlank( strError ) && ( StringUtils.isBlank( strHost ) || StringUtils.isBlank( strSender ) || StringUtils.isBlank( strObject ) ) )
+					{
+						strError = ERROR_SENDING_EMAIL;
+					}
+					else
+					{
+						HashMap<String, Object> model = new HashMap<String, Object>( );
+						model.put( MARK_LOGIN, user.getLogin( ) );
+						model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
+						model.put( MARK_LOGIN_URL, AppPathService.getBaseUrl( request ) + JSP_URL_MYLUTECE_LOGIN );
+
+						HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_LOST_LOGIN, _locale, model );
+						MailService.sendMailHtml( strEmail, strSender, strSender, strObject, template.getHtml( ) );
 					}
 				}
 			}

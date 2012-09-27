@@ -289,6 +289,15 @@ public class BaseAuthentication extends PortalAuthentication
 	 * {@inheritDoc}
 	 */
 	@Override
+	public String getLostLoginPageUrl( )
+	{
+		return MyLuteceDatabaseApp.getLostLoginUrl( );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String getResetPasswordPageUrl( HttpServletRequest request )
 	{
 		return AppPathService.getBaseUrl( request ) + MyLuteceDatabaseApp.getMessageResetPasswordUrl( );
