@@ -48,6 +48,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAnonymizationService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseResourceIdService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService;
@@ -190,6 +191,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_OTHER_ALERT_MAIL = "mylutece_database_other_alert_mail";
     private static final String PARAMETER_EXPIRATION_MAIL = "mylutece_database_expiration_mail";
     private static final String PARAMETER_ACCOUNT_REACTIVATED = "mylutece_database_account_reactivated_mail";
+	private static final String PARAMETER_BANNED_DOMAIN_NAMES = "banned_domain_names";
 
     // Marks FreeMarker
     private static final String MARK_USERS_LIST = "user_list";
@@ -405,7 +407,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             strError = AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, _plugin ) ) )
+		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmailAndDomainName( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, _plugin ) ) )
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
         }
@@ -568,7 +570,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             {
                 strError = AdminMessageService.getMessageUrl( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP );
             }
-			else if ( !StringUtil.checkEmail( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, _plugin ) ) )
+			else if ( !StringUtil.checkEmailAndDomainName( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, _plugin ) ) )
             {
                 strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
             }
@@ -1066,12 +1068,12 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         return doChangeUserStatus( request, false );
     }
 
-    /**
-     * Do modify the database user parameters
-     * @param request the HTTP request
-     * @return the JSP return
-     * @throws AccessDeniedException access denied if the user does have the right
-     */
+	/**
+	 * Do modify the database user parameters
+	 * @param request the HTTP request
+	 * @return the JSP return
+	 * @throws AccessDeniedException access denied if the user does not have the right
+	 */
     public String doModifyDatabaseUserParameters( HttpServletRequest request )
         throws AccessDeniedException
     {
@@ -1082,6 +1084,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         SecurityUtils.updateSecurityParameters( _userParamService, request, getPlugin( ) );
+		SecurityUtils.updateLargeParameterValue( _userParamService, getPlugin( ), PARAMETER_BANNED_DOMAIN_NAMES, request.getParameter( PARAMETER_BANNED_DOMAIN_NAMES ) );
+
         SecurityUtils.updateParameterValue( _userParamService, getPlugin( ),
                 PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL,
                 request.getParameter( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL ) );
@@ -1446,4 +1450,18 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         return JSP_MANAGE_ADVANCED_PARAMETERS;
     }
+
+	/**
+	 * {@inheritDoc}
+	 */
+    @Override
+	public Plugin getPlugin( )
+	{
+		Plugin plugin = super.getPlugin( );
+		if ( plugin == null )
+		{
+			plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+		}
+		return plugin;
+	}
 }

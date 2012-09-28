@@ -119,6 +119,7 @@ public final class DatabaseService
 	private static final String MARK_NEW_PASSWORD = "new_password";
 	private static final String MARK_ENABLE_JCAPTCHA = "enable_jcaptcha";
 	private static final String MARK_SITE_LINK = "site_link";
+	private static final String MARK_BANNED_DOMAIN_NAMES = "banned_domain_names";
 
 	// PROPERTIES
 	private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
@@ -215,8 +216,10 @@ public final class DatabaseService
 				}
 			}
 			model.put( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL, SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin, PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL ) );
+			model.put( MARK_BANNED_DOMAIN_NAMES, SecurityUtils.getLargeSecurityParameter( _userParamService, plugin, MARK_BANNED_DOMAIN_NAMES ) );
 
 			model = SecurityUtils.checkSecurityParameters( _userParamService, model, plugin );
+
 		}
 
 		return model;

@@ -1,0 +1,1 @@
+INSERT INTO core_datastore VALUES ('mylutece-database_banned_domain_names', 'yopmail.com');

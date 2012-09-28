@@ -2,18 +2,18 @@
 	<fieldset>
 		<legend>#i18n{module.mylutece.database.manage_advanced_parameters.pageTitle}
 			<div class="btn-group pull-right">
-			<#if use_advanced_security_parameters>
-				<button type="submit" class="btn btn-primary">#i18n{mylutece.manage_advanced_parameters.removeAdvancedSecurityParameters}</button>
-			<#else>
-				<button type="submit" class="btn btn-primary">#i18n{mylutece.manage_advanced_parameters.useAdvancedSecurityParameters}</button>
-			</#if>
-			<a class="btn btn-primary" href="jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp" >
-				#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}
-			</a>
-			<a class="btn btn-primary" href="jsp/admin/plugins/mylutece/modules/database/ChangeFieldAnonymizeUsers.jsp" >
-				#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}
-			</a>
-		</div>
+				<#if use_advanced_security_parameters>
+					<button type="submit" class="btn btn-primary">#i18n{mylutece.manage_advanced_parameters.removeAdvancedSecurityParameters}</button>
+				<#else>
+					<button type="submit" class="btn btn-primary">#i18n{mylutece.manage_advanced_parameters.useAdvancedSecurityParameters}</button>
+				</#if>
+				<a class="btn btn-primary" href="jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp" >
+					#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}
+				</a>
+				<a class="btn btn-primary" href="jsp/admin/plugins/mylutece/modules/database/ChangeFieldAnonymizeUsers.jsp" >
+					#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}
+				</a>
+			</div>
 		</legend>
 	</fieldset>
 </form>
@@ -65,12 +65,6 @@
 				<div class="controls">
 					<input type="checkbox" class="checkbox"	name="account_creation_validation_email" value="true" <#if account_creation_validation_email?? && account_creation_validation_email>checked="checked"</#if> />
 				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="banned_domain_names">#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmail}</label>
-				<div class="controls">
-					<input type="checkbox" class="checkbox"	name="banned_domain_names" id="banned_domain_names" value="${banned_domain_names!}" />
-				</div>
 				<span class="help-block">
 					#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmailComment}
 				</span>
@@ -87,7 +81,7 @@
 			<div class="control-group">
 				<label class="control-label" for="banned_domain_names">#i18n{mylutece.message.email.labelBannedDomainNames} : </label>
 				<div class="controls">
-					<input type="text" name="banned_domain_names" id="banned_domain_names" value="${banned_domain_names!}" />
+					<textarea rows="4" cols="30" name="banned_domain_names" id="banned_domain_names" >${banned_domain_names!}</textarea>
 				</div>
 			</div>
 			<div class="control-group">
@@ -117,12 +111,6 @@
 				 </div>
 			</div>
 			<#if use_advanced_security_parameters>
-				<div class="control-group" class="control-group">
-					<label for="email" class="control-label" >#i18n{portal.admin.admin_forgot_login.emailLabel} * :</label>
-					<div class="controls">
-						<input type="text" name="email" id="email" autocomplete="off" required="required" tabindex="1" />
-					</div>
-				</div>
 				<div class="control-group">
 					<label class="control-label" for="password_history_size">#i18n{mylutece.message.password.labelPasswordHistorySize} : </label>
 					<div class="controls">

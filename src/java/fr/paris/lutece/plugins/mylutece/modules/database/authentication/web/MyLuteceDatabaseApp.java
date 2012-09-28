@@ -576,7 +576,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 		}
 
 		// Check email format
-		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmail( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, plugin ) ) )
+		if ( StringUtils.isBlank( strError ) && !StringUtil.checkEmailAndDomainName( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, plugin ) ) )
 		{
 			strError = ERROR_SYNTAX_EMAIL;
 		}
