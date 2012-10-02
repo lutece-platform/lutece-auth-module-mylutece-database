@@ -1,196 +1,207 @@
-<form action="jsp/admin/plugins/mylutece/modules/database/GetChangeUseAdvancedSecurityParameters.jsp" >
+<form class="form-horizontal" action="jsp/admin/plugins/mylutece/modules/database/GetChangeUseAdvancedSecurityParameters.jsp" >
 	<fieldset>
 		<legend>#i18n{module.mylutece.database.manage_advanced_parameters.pageTitle}
 			<div class="btn-group pull-right">
 				<#if use_advanced_security_parameters>
-					<button type="submit" class="btn btn-primary">#i18n{mylutece.manage_advanced_parameters.removeAdvancedSecurityParameters}</button>
+					<button type="submit" class="btn btn-danger">
+						<i class="icon-remove icon-white"></i>&nbsp;#i18n{mylutece.manage_advanced_parameters.removeAdvancedSecurityParameters}
+					</button>
 				<#else>
-					<button type="submit" class="btn btn-primary">#i18n{mylutece.manage_advanced_parameters.useAdvancedSecurityParameters}</button>
+					<button type="submit" class="btn btn-success">
+						<i class="icon-ok icon-white"></i>&nbsp;#i18n{mylutece.manage_advanced_parameters.useAdvancedSecurityParameters}
+					</button>
 				</#if>
 				<a class="btn btn-primary" href="jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp" >
-					#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}
+					<i class="icon-wrench icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}
 				</a>
 				<a class="btn btn-primary" href="jsp/admin/plugins/mylutece/modules/database/ChangeFieldAnonymizeUsers.jsp" >
-					#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}
+					<i class="icon-eye-close icon-white"></i>&nbsp;#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}
 				</a>
 			</div>
 		</legend>
 	</fieldset>
 </form>
 <!-- PASSWORD ENCRYPTION -->
-<div class="well">
-	<form method="post" class="form-horizontal" name="password_encryption" action="jsp/admin/plugins/mylutece/modules/database/ModifyPasswordEncryption.jsp">
-		<div class="control-group">
-			<label class="control-label" for="enable_password_encryption">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnablePasswordEncryption}</label>
-			<div class="controls">
-				<input type="checkbox" class="checkbox" name="enable_password_encryption" value="true" <#if use_advanced_security_parameters>disabled="disabled"</#if> <#if enable_password_encryption>checked="checked"</#if> />
-			</div>
-		</div>
-		<#if use_advanced_security_parameters>
-			<input type="hidden" name="enable_password_encryption" value="<#if enable_password_encryption!>true<#else>false</#if>"/>
+<fieldset>
+<legend>#i18n{portal.users.manage_advanced_parameters.passwordEncryption}</legend>
+<form class="form-horizontal" method="post" class="form-horizontal" name="password_encryption" action="jsp/admin/plugins/mylutece/modules/database/ModifyPasswordEncryption.jsp">
+<div class="control-group">
+<label class="control-label" for=""></label>
+	<div class="controls">
+		<label for="enable_password_encryption" class="checkbox">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnablePasswordEncryption}
+			<input type="checkbox" class="checkbox" name="enable_password_encryption" value="true" <#if use_advanced_security_parameters>disabled="disabled"</#if> <#if enable_password_encryption>checked="checked"</#if> />
+		</label>
+	</div>
+</div>
+<#if use_advanced_security_parameters>
+	<input type="hidden" name="enable_password_encryption" value="<#if enable_password_encryption!>true<#else>false</#if>"/>
+</#if>
+<div class="control-group">
+<label class="control-label" for="encryption_algorithm">#i18n{module.mylutece.database.manage_advanced_parameters.labelEncryptionAlgorithm} : </label>
+	<div class="controls">
+		<select name="encryption_algorithm" <#if use_advanced_security_parameters>disabled="disabled"</#if>>
+		<#if !encryption_algorithm?has_content>
+			<option value="" selected="selected">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
+		<#else>
+			<option value="">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
 		</#if>
-		<div class="control-group">
-			<label class="control-label" for="encryption_algorithm">#i18n{module.mylutece.database.manage_advanced_parameters.labelEncryptionAlgorithm} : </label>
-			<div class="controls">
-				<select name="encryption_algorithm" <#if use_advanced_security_parameters>disabled="disabled"</#if>>
-					<#if !encryption_algorithm?has_content>
-						<option value="" selected="selected">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
-					<#else>
-						<option value="">#i18n{module.mylutece.database.manage_advanced_parameters.labelNoAlgorithm}</option>
-					</#if>
-					<#list encryption_algorithms_list as algorithm>
-						<#if algorithm = encryption_algorithm>
-							<option value="${algorithm}" selected="selected">${algorithm}</option>
-						<#else>
-							<option value=${algorithm}>${algorithm}</option>
-						</#if>
-					</#list>
-					<#if use_advanced_security_parameters>
-						<input type="hidden" name="encryption_algorithm" value="${encryption_algorithm!}"/>
-					</#if>
-				</select>
-			</div>
-		</div>
-		<div class="form-actions">
-			<button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}</button>
-		</div>
-	</form>
+		<#list encryption_algorithms_list as algorithm>
+			<#if algorithm = encryption_algorithm>
+				<option value="${algorithm}" selected="selected">${algorithm}</option>
+			<#else>
+				<option value=${algorithm}>${algorithm}</option>
+			</#if>
+		</#list>
+		<#if use_advanced_security_parameters>
+			<input type="hidden" name="encryption_algorithm" value="${encryption_algorithm!}"/>
+		</#if>
+		</select>
+	</div>
 </div>
-<div class="well">
-	<form method="post" class="form-horizontal" name="password_global_security" action="jsp/admin/plugins/mylutece/modules/database/DoModifyDatabaseUserParameters.jsp">
-		<fieldset>
-			<legend>#i18n{portal.users.manage_advanced_parameters.securityParameters}</legend>
-			<div class="control-group">
-				<label class="control-label" for="account_creation_validation_email">#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmail}</label>
-				<div class="controls">
-					<input type="checkbox" class="checkbox"	name="account_creation_validation_email" value="true" <#if account_creation_validation_email?? && account_creation_validation_email>checked="checked"</#if> />
-				</div>
-				<span class="help-block">
-					#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmailComment}
-				</span>
-			</div>
-			<#if is_plugin_jcatpcha_enable>
-				<div class="control-group">
-					<label class="control-label" for="enable_jcaptcha">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnableCaptcha} :</label>
-					<div class="controls">
-						<input class="checkbox" type="checkbox" name="enable_jcaptcha" value="true" <#if enable_jcaptcha?? && enable_jcaptcha>checked="checked"</#if> />
-					</div>
-					<span class="help-block">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnableCaptchaComment}</span>
-				</div>
-			</#if>
-			<div class="control-group">
-				<label class="control-label" for="banned_domain_names">#i18n{mylutece.message.email.labelBannedDomainNames} : </label>
-				<div class="controls">
-					<textarea rows="4" cols="30" name="banned_domain_names" id="banned_domain_names" >${banned_domain_names!}</textarea>
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="password_minimum_length">#i18n{mylutece.message.password.labelMinimumPasswordLength} * : </label>
-				<div class="controls">
-					<input type="text" name="password_minimum_length" value="${password_minimum_length!}" />
-				</div>
-			</div>
-			<#if use_advanced_security_parameters>
-			<div class="control-group">
-				<label class="control-label" for="password_format">#i18n{mylutece.message.password.labelPasswordFormat}</label>
-				<div class="controls">
-					<input class="checkbox" type="checkbox" name="password_format" id="password_format" value="true" <#if password_format?? && password_format>checked="checked"</#if> />
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="password_duration">#i18n{mylutece.message.password.labelPasswordDuration} : </label>
-				<div class="controls">
-					<input type="text" name="password_duration" value="${password_duration!}" />
-				</div>
-			</div>
-			</#if>
-			<div class="control-group">
-				<label class="control-label" for="force_change_password_reinit">#i18n{mylutece.message.password.labelForceChangePasswordReinit}</label>
-				<div class="controls">
-					<input class="checkbox" type="checkbox" name="force_change_password_reinit" id="force_change_password_reinit" value="true" <#if force_change_password_reinit?? && force_change_password_reinit>checked="checked"</#if> />
-				 </div>
-			</div>
-			<#if use_advanced_security_parameters>
-				<div class="control-group">
-					<label class="control-label" for="password_history_size">#i18n{mylutece.message.password.labelPasswordHistorySize} : </label>
-					<div class="controls">
-						<input type="text" name="password_history_size" value="${password_history_size!}" />
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="maximum_number_password_change">#i18n{mylutece.message.password.labelMaxNumberPasswordChange} : </label>
-					<div class="controls">
-						<input type="text" name="maximum_number_password_change" value="${maximum_number_password_change!}" />
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="tsw_size_password_change">#i18n{mylutece.message.password.labelPasswordChangeTSWSize} : </label>
-					<div class="controls">
-						<input type="text" name="tsw_size_password_change" value="${tsw_size_password_change!}" />
-					</div>
-				</div>
-			</#if>
-			<div class="control-group">
-				<label class="control-label" for="access_failures_max">#i18n{mylutece.manage_advanced_parameters.labelAccesFailuresMax} : </label>
-				<div class="controls">
-					<input type="text" name="access_failures_max" value="${access_failures_max!}" /><br />
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="access_failures_interval">#i18n{mylutece.manage_advanced_parameters.labelAccesFailuresInterval} : </label>
-				<div class="controls">
-					<input type="text" name="access_failures_interval" value="${access_failures_interval!}" />
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="account_life_time">#i18n{mylutece.manage_advanced_parameters.labelAccountLifeTime} : </label>
-				<div class="controls">
-					<input type="text" name="account_life_time" value="${account_life_time!}" />
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="time_before_alert_account">#i18n{mylutece.manage_advanced_parameters.labelTimeBeforeAlert} : </label>
-				<div class="controls">
-					<input type="text" name="time_before_alert_account" value="${time_before_alert_account!}" />
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="nb_alert_account">#i18n{mylutece.manage_advanced_parameters.labelNbAlert} : </label>
-				<div class="controls">
-					<input type="text" name="nb_alert_account" value="${nb_alert_account!}" />
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="time_between_alerts_account">#i18n{mylutece.manage_advanced_parameters.labelTimeBetweenAlerts} : </label>
-				<div class="controls">
-					<input type="text" name="time_between_alerts_account" value="${time_between_alerts_account!}" />
-				</div>
-			</div>
-			<div class="form-actions">
-				<input class="btn btn-primary" type="submit" class="button" value="#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}" />
-			</div>
-		</fieldset>
-	</form>
+<div class="form-actions">
+	<button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}</button>
 </div>
-<div class="well">
-	<form method="post" class="form-horizontal" action="jsp/admin/plugins/mylutece/modules/database/ModifyAccountLifeTimeEmails.jsp">
-		<fieldset>
-			<legend>#i18n{mylutece.accountLifeTime.labelLifeTimeNotifications}</legend>
-			<div class="control-group">
-				<label class="control-label" for="email_type">#i18n{mylutece.accountLifeTime.labelSelectEmail} :</label>
-				<div class="controls">
-					<select name="email_type" >
-						<option value="first" selected="selected" >#i18n{mylutece.accountLifeTime.labelFirstEmail}</option>
-						<option value="other" >#i18n{mylutece.accountLifeTime.labelOtherEmail}</option>
-						<option value="expired" >#i18n{mylutece.accountLifeTime.labelAccountDeactivatedEmail}</option>
-						<option value="reactivated" >#i18n{mylutece.accountLifeTime.labelAccountUpdatedEmail}</option>
-					</select>
-				</div>
-			</div>
-			<div class="form-actions">
-				<input type="submit" class="btn btn-primary" value="#i18n{mylutece.accountLifeTime.labelEditEmail}" />
-			</div>
-		</fieldset>
-	</form>
+</fieldset>
+</form>
+<fieldset>
+<legend>#i18n{portal.users.manage_advanced_parameters.securityParameters}</legend>
+<form class="form-horizontal" method="post" class="form-horizontal" name="password_global_security" action="jsp/admin/plugins/mylutece/modules/database/DoModifyDatabaseUserParameters.jsp">
+<div class="control-group">
+<label class="control-label" for=""></label>
+	<div class="controls">
+		<label class="checkbox" for="account_creation_validation_email">
+			#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmail}
+			<input type="checkbox" class="checkbox"	name="account_creation_validation_email" value="true" <#if account_creation_validation_email?? && account_creation_validation_email>checked="checked"</#if> />
+		</label>
+		<span class="help-block">#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmailComment}</span>
+	</div>
+</div>
+<#if is_plugin_jcatpcha_enable>
+<div class="control-group">
+<label class="control-label" for=""></label>
+	<div class="controls">
+		<label class="checkbox" for="enable_jcaptcha">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnableCaptcha}
+			<input class="checkbox" type="checkbox" name="enable_jcaptcha" value="true" <#if enable_jcaptcha?? && enable_jcaptcha>checked="checked"</#if> />
+		</label>
+		<span class="help-block">#i18n{module.mylutece.database.manage_advanced_parameters.labelEnableCaptchaComment}</span>
+	</div>
+</div>
+</#if>
+<div class="control-group">
+<label class="control-label" for="banned_domain_names">#i18n{mylutece.message.email.labelBannedDomainNames} : </label>
+	<div class="controls">
+		<textarea rows="4" class="span10" name="banned_domain_names" id="banned_domain_names" >${banned_domain_names!}</textarea>
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="password_minimum_length">#i18n{mylutece.message.password.labelMinimumPasswordLength} * : </label>
+	<div class="controls">
+		<input type="text" name="password_minimum_length" value="${password_minimum_length!}" />
+	</div>
+</div>
+<#if use_advanced_security_parameters>
+<div class="control-group">
+<label class="control-label" for=""></label>
+	<div class="controls">
+		<label class="checkbox" for="password_format">#i18n{mylutece.message.password.labelPasswordFormat}
+			<input class="checkbox" type="checkbox" name="password_format" id="password_format" value="true" <#if password_format?? && password_format>checked="checked"</#if> />
+		</label>
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="password_duration">#i18n{mylutece.message.password.labelPasswordDuration} : </label>
+	<div class="controls">
+		<input type="text" name="password_duration" value="${password_duration!}" />
+	</div>
+</div>
+</#if>
+<div class="control-group">
+<label class="control-label" for="force_change_password_reinit">#i18n{mylutece.message.password.labelForceChangePasswordReinit}</label>
+	<div class="controls">
+		<label class="checkbox" for="force_change_password_reinit">
+			<input class="checkbox" type="checkbox" name="force_change_password_reinit" id="force_change_password_reinit" value="true" <#if force_change_password_reinit?? && force_change_password_reinit>checked="checked"</#if> />
+		</label>
+	</div>
+</div>
+<#if use_advanced_security_parameters>
+<div class="control-group">
+<label class="control-label" for="password_history_size">#i18n{mylutece.message.password.labelPasswordHistorySize} : </label>
+	<div class="controls">
+		<input type="text" name="password_history_size" value="${password_history_size!}" />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="maximum_number_password_change">#i18n{mylutece.message.password.labelMaxNumberPasswordChange} : </label>
+	<div class="controls">
+		<input type="text" name="maximum_number_password_change" value="${maximum_number_password_change!}" />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="tsw_size_password_change">#i18n{mylutece.message.password.labelPasswordChangeTSWSize} : </label>
+	<div class="controls">
+		<input type="text" name="tsw_size_password_change" value="${tsw_size_password_change!}" />
+	</div>
+</div>
+</#if>
+<div class="control-group">
+<label class="control-label" for="access_failures_max">#i18n{mylutece.manage_advanced_parameters.labelAccesFailuresMax} : </label>
+	<div class="controls">
+		<input type="text" name="access_failures_max" value="${access_failures_max!}" />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="access_failures_interval">#i18n{mylutece.manage_advanced_parameters.labelAccesFailuresInterval} : </label>
+	<div class="controls">
+		<input type="text" name="access_failures_interval" value="${access_failures_interval!}" />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="account_life_time">#i18n{mylutece.manage_advanced_parameters.labelAccountLifeTime} : </label>
+	<div class="controls">
+		<input type="text" name="account_life_time" value="${account_life_time!}" />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="time_before_alert_account">#i18n{mylutece.manage_advanced_parameters.labelTimeBeforeAlert} : </label>
+	<div class="controls">
+		<input type="text" name="time_before_alert_account" value="${time_before_alert_account!}" />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="nb_alert_account">#i18n{mylutece.manage_advanced_parameters.labelNbAlert} : </label>
+	<div class="controls">
+		<input type="text" name="nb_alert_account" value="${nb_alert_account!}" />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" for="time_between_alerts_account">#i18n{mylutece.manage_advanced_parameters.labelTimeBetweenAlerts} : </label>
+	<div class="controls">
+		<input type="text" name="time_between_alerts_account" value="${time_between_alerts_account!}" />
+	</div>
+</div>
+<div class="form-actions">
+	<button class="btn btn-primary" type="submit" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}</button>
+</div>
+</fieldset>
+</form>
+<fieldset>
+<legend>#i18n{mylutece.accountLifeTime.labelLifeTimeNotifications}</legend>
+<form class="form-horizontal" method="post" class="form-horizontal" action="jsp/admin/plugins/mylutece/modules/database/ModifyAccountLifeTimeEmails.jsp">
+<div class="control-group">
+<label class="control-label" for="email_type">#i18n{mylutece.accountLifeTime.labelSelectEmail} :</label>
+	<div class="controls">
+		<select name="email_type" >
+			<option value="first" selected="selected" >#i18n{mylutece.accountLifeTime.labelFirstEmail}</option>
+			<option value="other" >#i18n{mylutece.accountLifeTime.labelOtherEmail}</option>
+			<option value="expired" >#i18n{mylutece.accountLifeTime.labelAccountDeactivatedEmail}</option>
+			<option value="reactivated" >#i18n{mylutece.accountLifeTime.labelAccountUpdatedEmail}</option>
+		</select>
+	</div>
+</div>
+<div class="form-actions">
+	<button class="btn btn-primary" type="submit" ><i class="icon-email icon-white"></i>&nbsp;#i18n{mylutece.accountLifeTime.labelEditEmail}</button>
+</div>
+</fieldset>
+</form>
 </div>
 

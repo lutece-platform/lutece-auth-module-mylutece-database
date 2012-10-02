@@ -1,73 +1,74 @@
-<div id="left">
-    <div class="content-box" >
-	    <h2>#i18n{module.mylutece.database.manage_groups_user.titleUser}</h2>
-	    <p class="title">
-	     #i18n{module.mylutece.database.manage_groups_user.lastName} - #i18n{module.mylutece.database.manage_groups_user.firstName}
-	    </p>
-	    <p>${user.lastName} ${user.firstName}</p>
-	    <p class="title">#i18n{module.mylutece.database.manage_groups_user.login}</p>
-		<p>
-			<#assign userLogin = user.login>
-			<#if userLogin?length <= 20 >
-				${userLogin?right_pad(20, " ")}
-			<#else>
-				${userLogin[0..17]}...
+<div class="row-fluid">
+   <div class="span12" >
+	    <fieldset>
+	    <legend>
+		<#if user.status = 10>
+			#i18n{module.mylutece.database.manage_groups_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}
+		<#else>
+			#i18n{module.mylutece.database.manage_groups_user.titleUser} ${user.lastName} ${user.firstName}
+		</#if>
+		</legend>
+	    <ul class="nav nav-tabs">
+			<#if user.status != 10>
+			<li>
+				<a href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}" >
+					#i18n{module.mylutece.database.modify_user.labelIdentity}
+				</a>
+			</li>
 			</#if>
-	    </p>
-	    <p class="title">#i18n{module.mylutece.database.manage_groups_user.actions}</p>
-	    <@item_navigation item_navigator=item_navigator />
-	    <p>
-	    	<a href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}" >
-                <img src="images/admin/skin/actions/modify.png" alt="#i18n{module.mylutece.database.manage_groups_user.linkModifyUser}" title="#i18n{module.mylutece.database.manage_groups_user.linkModifyUser}" />
-            </a>
-	    	<#if external_application_exist >
-	        	<a href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}">
-	                <img src="images/admin/skin/actions/publish.png" class="icon" alt="#i18n{module.mylutece.database.manage_groups_user.linkManageExternalApplication}" title="#i18n{module.mylutece.database.manage_groups_user.linkManageExternalApplication}" />
-	            </a>
-	        </#if>
-			<a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">
-                <img src="images/admin/skin/actions/rbac.png" class="icon" alt="#i18n{module.mylutece.database.manage_groups_user.linkManageRoles}" title="#i18n{module.mylutece.database.manage_groups_user.linkManageRoles}" />
-            </a>
-	    </p>
-	</div>
-</div>
-
-<div id="right">
-	<div class="content-box" >
-	    <h2>#i18n{module.mylutece.database.manage_groups_user.tableTitle}</h2>
-	    
-	    <form method="post" action="jsp/admin/plugins/mylutece/modules/database/DoAssignGroupsUser.jsp">
-	        <input type="hidden" name="mylutece_database_user_id" value="${user.userId}" />
-	        <table>
-	            <tr>
-	                <th>#i18n{module.mylutece.database.manage_groups_user.colName}</th>
-	                <th>#i18n{module.mylutece.database.manage_groups_user.colLabel}</th>
-	                <th></th>
-	            </tr>
-	            <#list group_list as group >
-	            <tr>
-	                <td>${group.groupKey}</td>
-	                <td>${group.groupDescription}</td>
-	                <td>
-	                    <#assign checkedString = '' > 
-	                    <#list user_group_list as user_group >
-	                    <#if user_group.groupKey = group.groupKey >
-	                    <#assign checkedString >
-	                    checked="checked"
-	                    </#assign>
-	                    <#break>
-	                    </#if>
-	                    </#list>
-	                    <input type="checkbox" class="checkbox" name="mylutece_database_group_key" value="${group.groupKey}" ${checkedString} />
-	                       </td>
-	            </tr>
-	            </#list>
-	        </table>
-	        <p>
-	            <input type="hidden" name="plugin_name" value="${plugin_name}" />
-	            <input type="submit" class="button" value="#i18n{module.mylutece.database.manage_groups_user.btnAssign}" />
-	            <input type="submit" value="#i18n{portal.admin.message.buttonCancel}" class="button" name="cancel" />
-	        </p>
-	    </form>
+			<li class="active">
+				<a href="#">#i18n{module.mylutece.database.manage_users.linkManageGroups}</a>
+			</li>
+			
+			<li>
+				<a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkManageRoles}" >
+				#i18n{module.mylutece.database.manage_users.linkManageRoles}
+				</a>
+			</li>
+			<#if external_application_exist >
+			<li>
+				<a href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}"  title="#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}" >
+					#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}
+				</a>
+			</li>
+			</#if>
+			<li class="pull-right">
+				<@item_navigation item_navigator=item_navigator />
+			</li>
+		</ul>
+		<form class="form-horizontal" method="post" action="jsp/admin/plugins/mylutece/modules/database/DoAssignGroupsUser.jsp">
+		<input type="hidden" name="mylutece_database_user_id" value="${user.userId}" />
+		<input type="hidden" name="plugin_name" value="${plugin_name}" />
+	    <table class="table table-striped table-condensed">
+			<tr>
+				<th>#i18n{module.mylutece.database.manage_groups_user.colName}</th>
+				<th>#i18n{module.mylutece.database.manage_groups_user.colLabel}</th>
+				<th></th>
+			</tr>
+			<#list group_list as group >
+			<tr>
+				<td>${group.groupKey}</td>
+				<td>${group.groupDescription}</td>
+				<td>
+					<#assign checkedString = '' > 
+					<#list user_group_list as user_group >
+						<#if user_group.groupKey = group.groupKey ><#assign checkedString >checked="checked"</#assign>
+							<#break>
+						</#if>
+					</#list>
+					<input type="checkbox" class="checkbox" name="mylutece_database_group_key" value="${group.groupKey}" ${checkedString} />
+				</td>
+			</tr>
+			</#list>
+	    </table>
+		<div class="form-actions">
+			<button class="btn btn-primary" type="submit" >
+				<i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_groups_user.btnAssign}
+			</button>
+			<button class="btn btn-primary" type="button" onclick="javascript:window.history.back();">
+				<i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{portal.admin.message.buttonCancel}
+			</button>
+		</div>
+		</form>
 	</div>
 </div>

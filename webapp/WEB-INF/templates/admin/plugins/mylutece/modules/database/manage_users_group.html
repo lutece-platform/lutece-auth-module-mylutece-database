@@ -1,153 +1,123 @@
-<div id="left">
-    <div class="content-box" >
-    	<h2>#i18n{module.mylutece.database.manage_users_group.titleGroup} : ${group.groupKey}</h2>
-	    <p class="title">
-			#i18n{module.mylutece.database.manage_users_group.labelDescription}
-	    </p>
-	    <p>${group.groupDescription}</p>
-	    <p class="title">
-	    	#i18n{module.mylutece.database.manage_users_group.labelAssignedUsersNumber}
-	    </p>
-	    <p>${assigned_users_number}</p>
-	    <p class="title">#i18n{module.mylutece.database.manage_users_group.actions}</p>
-	    <@item_navigation item_navigator=item_navigator />
-	    <p>
-	    	<a href="jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}">
-                <img src="images/admin/skin/actions/modify.png" class="icon" alt="#i18n{module.mylutece.database.manage_users_group.linkModifyGroup}" title="#i18n{module.mylutece.database.manage_users_group.linkModifyGroup}" />
-            </a>
-            <a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesGroup.jsp?group_key=${group.groupKey}">
-                <img src="images/admin/skin/actions/roles.png" class="icon" alt="#i18n{module.mylutece.database.manage_users_group.linkManageRoles}" title="#i18n{module.mylutece.database.manage_users_group.linkManageRoles}" />
-            </a>
-	    </p>
-    </div>
-</div>
-<div id="right">
-	<div class="content-box">
-	    <h2>#i18n{module.mylutece.database.manage_users_group.pageTitle}</h2>
-	    <div class="multibox"  width="100%">
-		     <#if available_users?size &gt; 0 >
-		     	<form name="assignUser" method="post" action="jsp/admin/plugins/mylutece/modules/database/DoAssignUsersGroup.jsp">		
-		        	<table width="100%" >
-			            <tr>
-			                <th>
-			                    #i18n{module.mylutece.database.manage_users_group.labelAvailableUser}
-			                </th>			
-			            </tr>
-		                                   
-		                <tr>
-		                 	<td>
-		                    	<@comboWithParamsAndLength name="available_users" default_value="" additionalParameters="multiple='multiple' size='10' style='width:100%;'" items=available_users max_length=175 />		    
-		                    </td>					
-		                </tr>
-		                <tr>
-		                    <td align="center">
-		                        <input type="hidden" name="group_key" value="${group.groupKey}" />
-		                        <input type="submit" value="#i18n{module.mylutece.database.manage_users_group.labelButtonValidate}" class="button" />
-							    <input type="submit" name="cancel" value="#i18n{portal.admin.message.buttonCancel}" class="button"/>
-		                    </td>
-		                </tr>
-			        </table>	
-		    	</form>
-	    	<#else>
-	    		<p>
-	          		#i18n{module.mylutece.database.manage_users_group.noUserToAssign}
-	          	</p>
-	          	<br />
-	        </#if>
-	    </div>	
+<div class="row-fluid">
+   <div class="span12" >
+	    <fieldset>
+	    <legend>#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey}</legend>
+	    <ul class="nav nav-tabs">
+			<li>
+				<a href="jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}">
+					#i18n{module.mylutece.database.modify_group.boxTitle}
+				</a>
+			</li>
+			<li>
+				<a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesGroup.jsp?group_key=${group.groupKey}">
+					#i18n{module.mylutece.database.modify_group.linkManageRoles}
+				</a>
+			</li>
+			<li class="active">
+				<a href="#">
+					#i18n{module.mylutece.database.modify_group.linkLabelManageUsers}
+				</a>
+			</li>
+			<li class="pull-right">
+				<@item_navigation item_navigator=item_navigator />
+			</li>
+		</ul>
 	</div>
-	
-	<div class="content-box"> 
-		<h2>
-		    #i18n{module.mylutece.database.manage_users_group.labelAssignedUser}
-		</h2>
-		        
+	<div class="span3">
+		<#if assigned_users?size &gt; 0 || search_is_search >
+		<fieldset>
+	    <legend>#i18n{module.mylutece.database.manage_users_group.labelAssignedUser}</legend>
+		<form class="form" method="post" name="search_users" action="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp"  >
+			<input type="hidden" name="group_key" value="${group.groupKey}" />
+			<label for="login" >#i18n{module.mylutece.database.manage_users_group.labelLogin} :</label>
+			<input type="text" id="access_code" name="search_login" value="${search_user_filter.login}" />
+			<label for="last_name" >#i18n{module.mylutece.database.manage_users_group.labelLastName} :</label>
+			<input type="text"  id="last_name" name="search_last_name" value="${search_user_filter.lastName}" maxlength="100" tabindex="2" />
+			<label for="first_name">#i18n{module.mylutece.database.manage_users_group.labelFirstName} :</label>
+			<input type="text" id="first_name" name="search_first_name" value="${search_user_filter.firstName}" maxlength="100" tabindex="3" />
+			<label for="email">#i18n{module.mylutece.database.manage_users_group.labelEmail} :</label>
+			<input type="text" id="email" name="search_email" value="${search_user_filter.email}" maxlength="100"  tabindex="4" />
+			<button class="btn btn-primary" type="submit" name="search_is_search" tabindex="5"><i class="icon-search icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_users_group.labelButtonSearch}</button>
+	   	</form>
+		</fieldset>
+		</#if>
+	</div>
+	<div class="span8">
+		<fieldset>
+		<legend>#i18n{module.mylutece.database.manage_users_group.pageTitle}</legend>
+	    <#if available_users?size &gt; 0 >
+			<form class="form" name="assignUser" method="post" action="jsp/admin/plugins/mylutece/modules/database/DoAssignUsersGroup.jsp">
+			<input type="hidden" name="group_key" value="${group.groupKey}" />
+			<label>#i18n{module.mylutece.database.manage_users_group.labelAvailableUser}</label>
+			<@comboWithParamsAndLength name="available_users" default_value="" additionalParameters="multiple='multiple' class='span10'" items=available_users max_length=175 />
+			<div class="form-actions">
+				<button class="btn btn-primary" type="submit" name="save" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_roles_group.btnAssign}</button>
+				<button class="btn btn-primary" type="button" onclick="javascript:window.history.back();"><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{portal.admin.message.buttonCancel}</button>
+			</div>
+			</form>
+		<#else>
+	    	<p class="label label-warning">#i18n{module.mylutece.database.manage_users_group.noUserToAssign}</p>
+        </#if>
+		</fieldset>
 	    <#if assigned_users?size &gt; 0 || search_is_search >
-	    	<div class="highlight-box">
-				<div id="search-users">
-					<form method="post" name="search_users" action="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp"  >
-						<p>
-							<label for="login" >#i18n{module.mylutece.database.manage_users_group.labelLogin} :</label>
-							<input type="text" id="access_code" name="search_login" value="${search_user_filter.login}" />
-						</p>
-						<p>
-							<label for="last_name" >#i18n{module.mylutece.database.manage_users_group.labelLastName} :</label>
-							<input type="text"  id="last_name" name="search_last_name" value="${search_user_filter.lastName}" maxlength="100" size="35" tabindex="2" />
-						</p>
-						<p>
-							<label for="first_name">#i18n{module.mylutece.database.manage_users_group.labelFirstName} :</label>
-							<input type="text" id="first_name" name="search_first_name" value="${search_user_filter.firstName}" maxlength="100" size="35" tabindex="3" />
-						</p>
-						<p>
-							<label for="email">#i18n{module.mylutece.database.manage_users_group.labelEmail} :</label>
-							<input type="text" id="email" name="search_email" value="${search_user_filter.email}" maxlength="100" size="35" tabindex="4" />
-						</p>
-						<p>
-							<input type="hidden" name="group_key" value="${group.groupKey}" />
-				           	<input type="submit" value="#i18n{module.mylutece.database.manage_users_group.labelButtonSearch}" tabindex="6" class="button" name="search_is_search"/>   
-				        </p>
-					</form>
-		    	</div>
-		    </div>
-		    <form method="post" action="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp">
-		        <@paginationAdmin paginator=paginator combo=1 form=0 />
-		        <#if search_is_search >
-		   			<input type="hidden" name="search_is_search" value="true"/>
-		   			<input type="hidden" name="search_login" value="${search_user_filter.login}"/>
-		   			<input type="hidden" name="search_last_name" value="${search_user_filter.lastName}"/>
-		   			<input type="hidden" name="search_first_name" value="${search_user_filter.firstName}"/>
-		   			<input type="hidden" name="search_email" value="${search_user_filter.email}"/>
-		        </#if>
-		        <input type="hidden" name="group_key" value="${group.groupKey}" />
-		    </form>
-	    	<table width="80%">
-	    		 <tr>
-		            <th>
-		            	#i18n{module.mylutece.database.manage_users_group.labelLastName}
-		            	<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="lastName&group_key=${group.groupKey}${sort_search_attribute}" />
-		            </th>
-		            <th>
-		            	#i18n{module.mylutece.database.manage_users_group.labelFirstName}
-		            	<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="firstName&group_key=${group.groupKey}${sort_search_attribute}" />
-		            </th> 
-		            <th>
-		            	#i18n{module.mylutece.database.manage_users_group.labelLogin}
-		            	<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="login&group_key=${group.groupKey}${sort_search_attribute}" />
-		            </th>        
-		            <th>
-		            	#i18n{module.mylutece.database.manage_users_group.labelEmail}
-		            	<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="email&group_key=${group.groupKey}${sort_search_attribute}" />
-		            </th>
-		            <th>#i18n{module.mylutece.database.manage_users_group.actions}</th>
-		        </tr>
-	        	<#list assigned_users as assigned_user>
-	        		<#if assigned_user_has_next>
-	        			<#assign anchor = assigned_user_index>
-	        		<#else>
-	        			<#assign anchor = assigned_user_index - 1 >
-	        		</#if>
-		            <tr id="anchor-${assigned_user_index}">
-		                <td>${assigned_user.lastName}</td>
-		                <td>${assigned_user.firstName}</td>
-		                <td>${assigned_user.login}</td>
-		                <td>${assigned_user.email}</td>	                
-	                    <td>
-		                    <a href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?mylutece_database_user_id=${assigned_user.userId}" >
-			                    <img src="images/admin/skin/actions/modify.png" alt="#i18n{module.mylutece.database.manage_users_group.actionModify}" title="#i18n{module.mylutece.database.manage_users_group.actionModify}" />
-			                </a>
-			                <a href="jsp/admin/plugins/mylutece/modules/database/DoUnassignUserGroup.jsp?mylutece_database_user_id=${assigned_user.userId}&group_key=${group.groupKey}&anchor=anchor-${anchor}" >
-			                    <img src="images/admin/skin/actions/delete.png" alt="#i18n{module.mylutece.database.manage_users_group.actionUnassign}" title="#i18n{module.mylutece.database.manage_users_group.actionUnassign}" />
-			                </a>
-	               		</td>
-		            </tr>            
-	        	</#list>
-	   		</table>
+			<form class="form-inline" method="post" action="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp">
+			<@paginationAdmin paginator=paginator combo=1 form=0 />
+			<#if search_is_search >
+				<input type="hidden" name="search_is_search" value="true"/>
+				<input type="hidden" name="search_login" value="${search_user_filter.login}"/>
+				<input type="hidden" name="search_last_name" value="${search_user_filter.lastName}"/>
+				<input type="hidden" name="search_first_name" value="${search_user_filter.firstName}"/>
+				<input type="hidden" name="search_email" value="${search_user_filter.email}"/>
+			</#if>
+			<input type="hidden" name="group_key" value="${group.groupKey}" />
+			</form>
+			<table class="table table-striped table-condensed">
+				<tr>
+					<th>
+						#i18n{module.mylutece.database.manage_users_group.labelLogin}
+						<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="login&group_key=${group.groupKey}${sort_search_attribute}" />
+					</th>        
+					<th>
+						#i18n{module.mylutece.database.manage_users_group.labelLastName}
+						<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="lastName&group_key=${group.groupKey}${sort_search_attribute}" />
+					</th>
+					<th>
+						#i18n{module.mylutece.database.manage_users_group.labelFirstName}
+						<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="firstName&group_key=${group.groupKey}${sort_search_attribute}" />
+					</th> 
+					<th>
+						#i18n{module.mylutece.database.manage_users_group.labelEmail}
+						<@sort jsp_url="jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp" attribute="email&group_key=${group.groupKey}${sort_search_attribute}" />
+					</th>
+					<th>#i18n{module.mylutece.database.manage_users_group.actions}</th>
+				</tr>
+				<#list assigned_users as assigned_user>
+				<#if assigned_user_has_next>
+					<#assign anchor = assigned_user_index>
+				<#else>
+					<#assign anchor = assigned_user_index - 1 >
+				</#if>
+				<tr id="anchor-${assigned_user_index}">
+					<!-- TO FIX: STATUS always 0 -->
+					<td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.login}</#if></td>
+					<td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.lastName}</#if></td>
+					<td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.firstName}</#if></td>
+					<td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.email}</#if></td>	                
+					
+					<td>
+						<a class="btn btn-primary btn-mini" href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?mylutece_database_user_id=${assigned_user.userId}"  title="#i18n{module.mylutece.database.manage_users_group.actionModify}" >
+							<i class="icon-edit icon-white"></i>
+						</a>
+						<a class="btn btn-danger btn-mini" href="jsp/admin/plugins/mylutece/modules/database/DoUnassignUserGroup.jsp?mylutece_database_user_id=${assigned_user.userId}&group_key=${group.groupKey}&anchor=anchor-${anchor}"  title="#i18n{module.mylutece.database.manage_users_group.actionUnassign}" >
+							<i class="icon-trash icon-white"></i>
+						</a>
+					</td>
+				</tr>            
+				</#list>
+			</table>
 			<@paginationAdmin paginator=paginator />
 	    <#else>
-	    	<p>
-	    		#i18n{module.mylutece.database.manage_users_group.noAssignedList}
-	    	</p>
-	    	<br />
+	    	<p class="label label-warning">#i18n{module.mylutece.database.manage_users_group.noAssignedList}</p>
 	    </#if>	    
 	</div>
 </div>

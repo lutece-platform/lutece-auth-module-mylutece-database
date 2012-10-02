@@ -1,92 +1,82 @@
-<div id="left">
-    <div class="content-box" >
-	    <h2>#i18n{module.mylutece.database.modify_user.titleUser}</h2>
-	    <p class="title">
-	     #i18n{module.mylutece.database.modify_user.lastName} - #i18n{module.mylutece.database.modify_user.firstName}
-	    </p>
-	    <p>${user.lastName} ${user.firstName}</p>
-	    <p class="title">#i18n{module.mylutece.database.modify_user.login}</p>
-		<p>
-			<#assign userLogin = user.login>
-			<#if userLogin?length <= 20 >
-				${userLogin?right_pad(20, " ")}
-			<#else>
-				${userLogin[0..17]}...
+<div class="row-fluid">
+   <div class="span12" >
+	    <fieldset>
+	    <legend>
+			<#if user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${user.lastName} ${user.firstName}</#if>
+		</legend>
+	    <ul class="nav nav-tabs">
+			<li class="active">
+				<a href="#">#i18n{module.mylutece.database.modify_user.labelIdentity}</a>
+			</li>
+			<li>
+				<a href="jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkManageGroups}" >
+				#i18n{module.mylutece.database.manage_users.linkManageGroups}
+				</a>
+			</li>
+			<li>
+				<a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkManageRoles}" >
+				#i18n{module.mylutece.database.manage_users.linkManageRoles}
+				</a>
+			</li>
+			<#if external_application_exist >
+			<li>
+				<a href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}"  title="#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}" >
+					#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}
+				</a>
+			</li>
 			</#if>
-	    </p>
-	    <p class="title">#i18n{module.mylutece.database.modify_user.actions}</p>
-	    <@item_navigation item_navigator=item_navigator />
-	    <p>
-	    	<#if external_application_exist >
-	        	<a href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}">
-	                <img src="images/admin/skin/actions/publish.png" class="icon" alt="#i18n{module.mylutece.database.manage_groups_user.linkManageExternalApplication}" title="#i18n{module.mylutece.database.manage_groups_user.linkManageExternalApplication}" />
-	            </a>
-	        </#if>
-			<a href="jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">
-                <img src="images/admin/skin/actions/group.png" class="icon" alt="#i18n{module.mylutece.database.modify_user.linkManageGroups}" title="#i18n{module.mylutece.database.modify_user.linkManageGroups}" />
-            </a>
-            <a href="jsp/admin/plugins/mylutece/modules/database/ManageRolesUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">
-                <img src="images/admin/skin/actions/rbac.png" class="icon" alt="#i18n{module.mylutece.database.modify_user.linkManageRoles}" title="#i18n{module.mylutece.database.modify_user.linkManageRoles}" />
-            </a>
-	    </p>
-	</div>
-</div>
-
-<div id="right">
-	<div class="content-box" >
-	    
-	    <h2>#i18n{module.mylutece.database.modify_user.tableTitle}</h2>
-	    
-	    <form method="post" name="create_user" action="jsp/admin/plugins/mylutece/modules/database/DoModifyUser.jsp">
-	    	<div class="highlight-box">
-				<div class="highlight-box-content">
-					<p>
-						#i18n{module.mylutece.database.modify_user.labelIdentity}
-					</p>
-					<#if show_input_login>
-				        <p>
-				            <label for="login">#i18n{module.mylutece.database.modify_user.login} * : </label>
-				            <input type="text"  name="login" maxlength="100" size="35" tabindex="1" value="${user.login}" />
-				        </p>
-				    </#if>
-			        
-			        <p>
-			            <label for="email">#i18n{module.mylutece.database.modify_user.eMail} * : </label>
-			            <input type="text"  name="email" maxlength="100" size="35" tabindex="2" value="${user.email}" />
-			        </p>
-			
-			        <p>
-			            <label for="last_name">#i18n{module.mylutece.database.modify_user.lastName} * : </label>
-			            <input type="text" name="last_name" maxlength="100" size="35" tabindex="3"  value="${user.lastName}" />
-			        </p>
-			
-			        <p>
-			            <label for="first_name">#i18n{module.mylutece.database.modify_user.firstName} * : </label>
-			            <input type="text"  name="first_name" maxlength="100" size="35" tabindex="4" value="${user.firstName}" />
-			        </p>
-	        	</div>
-	        </div>
-	        
-	        <#if attributes_list?has_content>
-				<div class="highlight-box">
-					<div class="highlight-box-content">
-						<p>
-							#i18n{module.mylutece.database.modify_user.labelComplementaryAttributes}
-						</p>
-			            <#list attributes_list as attribute>
-			            	<#assign idAttribute = "" + attribute.idAttribute>
-							${attribute.getHtmlFormAttribute( locale, map_list_attribute_default_values[idAttribute] )}
-						</#list>
-					</div>
-				</div>
-			</#if>
-	
-	        <p>
-	            <input type="hidden" name="plugin_name" value="${plugin_name}" />
-	            <input type="hidden" name="mylutece_database_user_id" value="${user.userId}" />
-	            <input type="submit" class="button" value="#i18n{module.mylutece.database.modify_user.btnModify}" tabindex="5" />
-	            <input type="submit" value="#i18n{portal.admin.message.buttonCancel}" class="button" name="cancel" />
-	        </p>
-	    </form>
+			<li class="pull-right">
+				<@item_navigation item_navigator=item_navigator />
+			</li>
+		</ul>
+		<#if user.status = 10>
+		<div class="span5 offset1">
+			<p class="label label-warning">
+				#i18n{module.mylutece.database.modify_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}
+			</p>
+		</div>
+		<#else>
+		<form class="form-horizontal" method="post" name="create_user" action="jsp/admin/plugins/mylutece/modules/database/DoModifyUser.jsp">
+		<input type="hidden" name="plugin_name" value="${plugin_name}" />
+		<input type="hidden" name="mylutece_database_user_id" value="${user.userId}" />
+		<#if show_input_login>
+		<div class="control-group">
+		<label class="control-label" for="login">#i18n{module.mylutece.database.modify_user.login} * : </label>
+			<div class="controls">
+				<input type="text"  name="login" maxlength="100" size="35" tabindex="1" value="${user.login}" />
+			</div>
+		</div>
+		</#if>
+		<div class="control-group">
+		<label class="control-label" for="email">#i18n{module.mylutece.database.modify_user.eMail} * : </label>
+			<div class="controls">
+				<input type="text"  name="email" maxlength="100" size="35" tabindex="2" value="${user.email}" />
+			</div>
+		</div>
+		<div class="control-group">
+		<label class="control-label" for="last_name">#i18n{module.mylutece.database.modify_user.lastName} * : </label>
+			<div class="controls">
+				<input type="text" name="last_name" maxlength="100" size="35" tabindex="3"  value="${user.lastName}" />
+			</div>
+		</div>
+		<div class="control-group">
+		<label class="control-label" for="first_name">#i18n{module.mylutece.database.modify_user.firstName} * : </label>
+			<div class="controls">
+				<input type="text"  name="first_name" maxlength="100" size="35" tabindex="4" value="${user.firstName}" />
+			</div>
+		</div>
+		<#if attributes_list?has_content>
+		<p class="lead">#i18n{module.mylutece.database.modify_user.labelComplementaryAttributes}</p>
+		<#list attributes_list as attribute>
+			<#assign idAttribute = "" + attribute.idAttribute>
+				${attribute.getHtmlFormAttribute( locale, map_list_attribute_default_values[idAttribute] )}
+		</#list>
+		</#if>
+		<div class="form-actions">
+			<button class="btn btn-primary" type="submit" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.modify_user.btnModify}</button>
+			<button class="btn btn-primary" type="button" type="button" onclick="javascript:window.history.back();"><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{portal.admin.message.buttonCancel}</button>
+		</div>
+		</form>
+		</#if>
 	</div>
 </div>
