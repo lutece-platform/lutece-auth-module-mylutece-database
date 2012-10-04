@@ -46,6 +46,7 @@ import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.security.FailedLoginCaptchaException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -77,9 +78,11 @@ public class BaseAuthentication extends PortalAuthentication
 	// //////////////////////////////////////////////////////////////////////////////////////////////
 	// Constants
 	private static final String AUTH_SERVICE_NAME = AppPropertiesService.getProperty( "mylutece-database.service.name" );
+	private static final String PLUGIN_JCAPTCHA = "jcaptcha";
 
 	// PROPERTIES
 	private static final String PROPERTY_MAX_ACCESS_FAILED = "access_failures_max";
+	private static final String PROPERTY_ACCESS_FAILED_CAPTCHA = "access_failures_captcha";
 	private static final String PROPERTY_INTERVAL_MINUTES = "access_failures_interval";
 
 	// Messages properties
@@ -136,15 +139,33 @@ public class BaseAuthentication extends PortalAuthentication
 
 		// Test the number of errors during an interval of minutes
 		int nMaxFailed = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_MAX_ACCESS_FAILED, plugin );
+		int nMaxFailedCaptcha = 0;
 		int nIntervalMinutes = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_INTERVAL_MINUTES, plugin );
+		boolean bEnableCaptcha = false;
 
-		if ( nMaxFailed > 0 && nIntervalMinutes > 0 )
+		if ( PluginService.isPluginEnable( PLUGIN_JCAPTCHA ) )
+		{
+			nMaxFailedCaptcha = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_ACCESS_FAILED_CAPTCHA, plugin );
+		}
+
+		if ( ( nMaxFailed > 0 || nMaxFailedCaptcha > 0 ) && nIntervalMinutes > 0 )
 		{
 			int nNbFailed = ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece );
 
-			if ( nNbFailed > nMaxFailed )
+			if ( nMaxFailedCaptcha > 0 && nNbFailed >= nMaxFailedCaptcha )
 			{
-				throw new FailedLoginException( );
+				bEnableCaptcha = true;
+			}
+			if ( nMaxFailed > 0 && nNbFailed > nMaxFailed )
+			{
+				if ( bEnableCaptcha )
+				{
+					throw new FailedLoginCaptchaException( bEnableCaptcha );
+				}
+				else
+				{
+					throw new FailedLoginException( );
+				}
 			}
 		}
 
@@ -156,14 +177,28 @@ public class BaseAuthentication extends PortalAuthentication
 		if ( ( user == null ) || !_databaseService.isUserActive( strUserName, plugin ) )
 		{
 			AppLogService.info( "Unable to find user in the database : " + strUserName );
-			throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+			if ( bEnableCaptcha )
+			{
+				throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
+			}
+			else
+			{
+				throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+			}
 		}
 
 		// Check password
 		if ( !_databaseService.checkPassword( strUserName, strUserPassword, plugin ) )
 		{
 			AppLogService.info( "User login : Incorrect login or password" + strUserName );
-			throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+			if ( bEnableCaptcha )
+			{
+				throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
+			}
+			else
+			{
+				throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+			}
 		}
 
 		// Get roles
