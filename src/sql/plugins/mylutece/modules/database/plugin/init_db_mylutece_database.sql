@@ -28,3 +28,5 @@ INSERT INTO mylutece_database_user_parameter VALUES ('other_alert_mail_subject',
 INSERT INTO mylutece_database_user_parameter VALUES ('account_reactivated_mail_sender', 'lutece@nowhere.com');
 INSERT INTO mylutece_database_user_parameter VALUES ('account_reactivated_mail_subject', 'Votre compte a bien été réactivé');
 INSERT INTO mylutece_database_user_parameter VALUES ('access_failures_captcha', '1');
+INSERT INTO mylutece_database_user_parameter VALUES ('unblock_user_mail_sender', 'lutece@nowhere.com');
+INSERT INTO mylutece_database_user_parameter VALUES ('unblock_user_mail_subject', 'Votre IP a été bloquée');

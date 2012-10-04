@@ -627,5 +627,4 @@ public final class DatabaseService
 	{
 		DatabaseUserHome.updateUserLastLoginDate( strLogin, new Date( ), plugin );
 	}
-
 }

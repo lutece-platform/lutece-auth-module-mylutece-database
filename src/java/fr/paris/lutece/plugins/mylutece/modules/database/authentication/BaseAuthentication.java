@@ -37,32 +37,44 @@ import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLog;
 import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLogHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAccountLifeTimeService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
+import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
+import fr.paris.lutece.portal.business.template.DatabaseTemplateHome;
 import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.FailedLoginCaptchaException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.html.HtmlTemplate;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -84,6 +96,16 @@ public class BaseAuthentication extends PortalAuthentication
 	private static final String PROPERTY_MAX_ACCESS_FAILED = "access_failures_max";
 	private static final String PROPERTY_ACCESS_FAILED_CAPTCHA = "access_failures_captcha";
 	private static final String PROPERTY_INTERVAL_MINUTES = "access_failures_interval";
+	private static final String PROPERTY_UNBLOCK_USER = "mylutece_database_unblock_user";
+
+	// PARAMETERS
+	private static final String PARAMETER_UNBLOCK_USER_MAIL_SENDER = "unblock_user_mail_sender";
+	private static final String PARAMETER_UNBLOCK_USER_MAIL_SUBJECT = "unblock_user_mail_subject";
+	private static final String PROPERTY_TOO_MANY_FAILURES = "mylutece.ip.labelTooManyLoginTrials";
+
+	// MARK
+	private static final String MARK_URL = "url";
+	private static final String MARK_SITE_LINK = "site_link";
 
 	// Messages properties
 	private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
@@ -128,7 +150,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 */
 	public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException
 	{
-		DatabaseService _databaseService = DatabaseService.getService( );
+		DatabaseService databaseService = DatabaseService.getService( );
 
 		Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
 		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -148,6 +170,8 @@ public class BaseAuthentication extends PortalAuthentication
 			nMaxFailedCaptcha = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_ACCESS_FAILED_CAPTCHA, plugin );
 		}
 
+		Locale locale = request.getLocale( );
+
 		if ( ( nMaxFailed > 0 || nMaxFailedCaptcha > 0 ) && nIntervalMinutes > 0 )
 		{
 			int nNbFailed = ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece );
@@ -156,25 +180,30 @@ public class BaseAuthentication extends PortalAuthentication
 			{
 				bEnableCaptcha = true;
 			}
-			if ( nMaxFailed > 0 && nNbFailed > nMaxFailed )
+			if ( nMaxFailed > 0 && nNbFailed >= nMaxFailed )
 			{
+				if ( nNbFailed == nMaxFailed )
+				{
+					sendUnlockLinkToUser( strUserName, nIntervalMinutes, request, plugin );
+				}
+				Object[] args =
+				{ Integer.toString( nIntervalMinutes ) };
+				String strMessage = I18nService.getLocalizedString( PROPERTY_TOO_MANY_FAILURES, args, locale );
 				if ( bEnableCaptcha )
 				{
-					throw new FailedLoginCaptchaException( bEnableCaptcha );
+					throw new FailedLoginCaptchaException( strMessage, bEnableCaptcha );
 				}
 				else
 				{
-					throw new FailedLoginException( );
+					throw new FailedLoginException( strMessage );
 				}
 			}
 		}
 
-		Locale locale = request.getLocale( );
-
 		BaseUser user = DatabaseHome.findLuteceUserByLogin( strUserName, plugin, this );
 
 		// Unable to find the user
-		if ( ( user == null ) || !_databaseService.isUserActive( strUserName, plugin ) )
+		if ( ( user == null ) || !databaseService.isUserActive( strUserName, plugin ) )
 		{
 			AppLogService.info( "Unable to find user in the database : " + strUserName );
 			if ( bEnableCaptcha )
@@ -188,7 +217,7 @@ public class BaseAuthentication extends PortalAuthentication
 		}
 
 		// Check password
-		if ( !_databaseService.checkPassword( strUserName, strUserPassword, plugin ) )
+		if ( !databaseService.checkPassword( strUserName, strUserPassword, plugin ) )
 		{
 			AppLogService.info( "User login : Incorrect login or password" + strUserName );
 			if ( bEnableCaptcha )
@@ -224,7 +253,7 @@ public class BaseAuthentication extends PortalAuthentication
 			DatabaseHome.updateResetPasswordFromLogin( strUserName, Boolean.TRUE, plugin );
 		}
 		int nUserId = DatabaseHome.findUserIdFromLogin( strUserName, plugin );
-		_databaseService.updateUserExpirationDate( nUserId, plugin );
+		databaseService.updateUserExpirationDate( nUserId, plugin );
 
 		return user;
 	}
@@ -447,5 +476,36 @@ public class BaseAuthentication extends PortalAuthentication
 		DatabaseService _databaseService = DatabaseService.getService( );
 		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 		_databaseService.updateUserLastLoginDate( user.getName( ), plugin );
+	}
+
+	@SuppressWarnings( "deprecation" )
+	private void sendUnlockLinkToUser( String strLogin, int nIntervalMinutes, HttpServletRequest request, Plugin plugin )
+	{
+		int nIdUser = DatabaseUserHome.findDatabaseUserIdFromLogin( strLogin, plugin );
+		if ( nIdUser > 0 )
+		{
+			ReferenceItem referenceItem = DatabaseUserParameterHome.findByKey( PARAMETER_UNBLOCK_USER_MAIL_SENDER, plugin );
+			String strSender = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+
+			referenceItem = DatabaseUserParameterHome.findByKey( PARAMETER_UNBLOCK_USER_MAIL_SUBJECT, plugin );
+			String strSubject = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+
+			String strLink = SecurityUtils.buildResetConnectionLogUrl( nIntervalMinutes, request );
+
+			Map<String, Object> model = new HashMap<String, Object>( );
+			model.put( MARK_URL, strLink );
+			model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
+
+			String strTemplate = DatabaseTemplateHome.getTemplateFromKey( PROPERTY_UNBLOCK_USER );
+			HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strTemplate, request.getLocale( ), model );
+
+			DatabaseAccountLifeTimeService accountLifeTimeService = new DatabaseAccountLifeTimeService( );
+
+			String strUserMail = accountLifeTimeService.getUserMainEmail( nIdUser );
+			if ( strUserMail != null && StringUtils.isNotBlank( strUserMail ) )
+			{
+				MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml( ) );
+			}
+		}
 	}
 }
