@@ -10,6 +10,7 @@ import fr.paris.lutece.plugins.mylutece.service.IAnonymizationService;
  */
 public class DatabaseAnonymizationDaemon extends AbstractAnonymizationDaemon
 {
+	private static final String DAEMON_NAME = "DatabaseAnonymizationDaemon";
 
     /**
      * Default constructor of the daemon
@@ -29,4 +30,12 @@ public class DatabaseAnonymizationDaemon extends AbstractAnonymizationDaemon
         return DatabaseAnonymizationService.getService( );
     }
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getDaemonName( )
+	{
+		return DAEMON_NAME;
+	}
 }

@@ -28,9 +28,10 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 
 	public static final String BEAN_DATABASE_ACCOUNT_LIFE_TIME_SERVICE = "mylutece-database.databaseAccountLifeTimeService";
 
-	private static final String PARAMETER_MYLUTECE_DIRECTORY_EXPIRATION_MAIL = "mylutece_database_expiration_mail";
-	private static final String PARAMETER_MYLUTECE_DIRECTORY_FIRST_ALERT_MAIL = "mylutece_database_first_alert_mail";
-	private static final String PARAMETER_MYLUTECE_DIRECTORY_OTHER_ALERT_MAIL = "mylutece_database_other_alert_mail";
+	private static final String PARAMETER_MYLUTECE_DATABASE_EXPIRATION_MAIL = "mylutece_database_expiration_mail";
+	private static final String PARAMETER_MYLUTECE_DATABASE_FIRST_ALERT_MAIL = "mylutece_database_first_alert_mail";
+	private static final String PARAMETER_MYLUTECE_DATABASE_OTHER_ALERT_MAIL = "mylutece_database_other_alert_mail";
+	private static final String PARAMETER_NOTIFY_PASSWORD_EXPIRED = "mylutece_database_password_expired";
 
 	private static final String MARK_LAST_NAME = "last_name";
 	private static final String MARK_FIRST_NAME = "first_name";
@@ -106,6 +107,15 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void updateChangePassword( List<Integer> listIdUser )
+	{
+		DatabaseUserHome.updateChangePassword( listIdUser, _plugin );
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setUserStatusExpired( List<Integer> listIdUser )
 	{
 		DatabaseUserHome.updateUserStatus( listIdUser, DatabaseUser.STATUS_EXPIRED, _plugin );
@@ -117,7 +127,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 	@Override
 	public String getExpirationtMailBody( )
 	{
-		return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DIRECTORY_EXPIRATION_MAIL );
+		return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DATABASE_EXPIRATION_MAIL );
 	}
 
 	/**
@@ -126,7 +136,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 	@Override
 	public String getFirstAlertMailBody( )
 	{
-		return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DIRECTORY_FIRST_ALERT_MAIL );
+		return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DATABASE_FIRST_ALERT_MAIL );
 	}
 
 	/**
@@ -135,7 +145,16 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 	@Override
 	public String getOtherAlertMailBody( )
 	{
-		return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DIRECTORY_OTHER_ALERT_MAIL );
+		return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DATABASE_OTHER_ALERT_MAIL );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getPasswordExpiredMailBody( )
+	{
+		return DatabaseTemplateService.getTemplateFromKey( PARAMETER_NOTIFY_PASSWORD_EXPIRED );
 	}
 
 	/**
@@ -177,6 +196,12 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 	{
 		DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nIdUser, _plugin );
 		return user.getEmail( );
+	}
+
+	@Override
+	public List<Integer> getIdUsersWithExpiredPasswordsList( Timestamp currentTimestamp )
+	{
+		return DatabaseUserHome.getIdUsersWithExpiredPasswordsList( currentTimestamp, _plugin );
 	}
 
 }

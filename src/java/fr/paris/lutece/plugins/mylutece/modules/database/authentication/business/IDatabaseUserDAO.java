@@ -225,6 +225,14 @@ public interface IDatabaseUserDAO
 	List<Integer> getIdUsersToSendOtherAlert( Timestamp alertMaxDate, Timestamp timeBetweenAlerts, int maxNumberAlerts, Plugin plugin );
 
 	/**
+	 * Get the list of id of users that have an expired password but not the change password flag
+	 * @param currentTimestamp Timestamp describing the current time.
+	 * @param plugin The plugin
+	 * @return the list of id of users with expired passwords
+	 */
+	List<Integer> getIdUsersWithExpiredPasswordsList( Timestamp currentTimestamp, Plugin plugin );
+
+	/**
 	 * Update status of a list of user accounts
 	 * @param listIdUser List of user accounts to update
 	 * @param nNewStatus New status of the user
@@ -238,6 +246,13 @@ public interface IDatabaseUserDAO
 	 * @param plugin The plugin
 	 */
 	void updateNbAlert( List<Integer> listIdUser, Plugin plugin );
+
+	/**
+	 * Set the "change password" flag of users to true
+	 * @param listIdUser The list of users to update
+	 * @param plugin The plugin
+	 */
+	void updateChangePassword( List<Integer> listIdUser, Plugin plugin );
 
 	/**
 	 * Update the user expiration date with the new values. Also update his alert account to 0

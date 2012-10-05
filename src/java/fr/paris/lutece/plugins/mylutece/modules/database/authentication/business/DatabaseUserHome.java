@@ -313,6 +313,17 @@ public final class DatabaseUserHome
 	}
 
 	/**
+	 * Get the list of id of users that have an expired password but not the change password flag
+	 * @param currentTimestamp Timestamp describing the current time.
+	 * @param plugin The plugin
+	 * @return the list of id of users with expired passwords
+	 */
+	public static List<Integer> getIdUsersWithExpiredPasswordsList( Timestamp currentTimestamp, Plugin plugin )
+	{
+		return _dao.getIdUsersWithExpiredPasswordsList( currentTimestamp, plugin );
+	}
+
+	/**
 	 * Update status of a list of user accounts
 	 * @param listIdUser List of user accounts to update
 	 * @param nNewStatus New status of the user
@@ -331,6 +342,16 @@ public final class DatabaseUserHome
 	public static void updateNbAlert( List<Integer> listIdUser, Plugin plugin )
 	{
 		_dao.updateNbAlert( listIdUser, plugin );
+	}
+
+	/**
+	 * Set the "change password" flag of users to true
+	 * @param nIdUserList The list of users to update
+	 * @param plugin The plugin
+	 */
+	public static void updateChangePassword( List<Integer> idUserList, Plugin plugin )
+	{
+		_dao.updateChangePassword( idUserList, plugin );
 	}
 
 	/**

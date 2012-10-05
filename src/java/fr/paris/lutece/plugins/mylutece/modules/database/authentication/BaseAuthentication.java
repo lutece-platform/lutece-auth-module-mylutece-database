@@ -97,11 +97,12 @@ public class BaseAuthentication extends PortalAuthentication
 	private static final String PROPERTY_ACCESS_FAILED_CAPTCHA = "access_failures_captcha";
 	private static final String PROPERTY_INTERVAL_MINUTES = "access_failures_interval";
 	private static final String PROPERTY_UNBLOCK_USER = "mylutece_database_unblock_user";
+	private static final String PROPERTY_TOO_MANY_FAILURES = "mylutece.ip.labelTooManyLoginTrials";
 
 	// PARAMETERS
 	private static final String PARAMETER_UNBLOCK_USER_MAIL_SENDER = "unblock_user_mail_sender";
 	private static final String PARAMETER_UNBLOCK_USER_MAIL_SUBJECT = "unblock_user_mail_subject";
-	private static final String PROPERTY_TOO_MANY_FAILURES = "mylutece.ip.labelTooManyLoginTrials";
+	private static final String PARAMETER_ENABLE_UNBLOCK_IP = "enable_unblock_ip";
 
 	// MARK
 	private static final String MARK_URL = "url";
@@ -184,7 +185,11 @@ public class BaseAuthentication extends PortalAuthentication
 			{
 				if ( nNbFailed == nMaxFailed )
 				{
-					sendUnlockLinkToUser( strUserName, nIntervalMinutes, request, plugin );
+					ReferenceItem item = DatabaseUserParameterHome.findByKey( PARAMETER_ENABLE_UNBLOCK_IP, plugin );
+					if ( item != null && item.isChecked( ) )
+					{
+						sendUnlockLinkToUser( strUserName, nIntervalMinutes, request, plugin );
+					}
 				}
 				Object[] args =
 				{ Integer.toString( nIntervalMinutes ) };

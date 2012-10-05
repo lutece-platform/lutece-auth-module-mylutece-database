@@ -145,6 +145,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PROPERTY_ACCOUNT_DEACTIVATES_EMAIL = "mylutece.accountLifeTime.labelAccountDeactivatedEmail";
     private static final String PROPERTY_ACCOUNT_UPDATED_EMAIL = "mylutece.accountLifeTime.labelAccountUpdatedEmail";
 	private static final String PROPERTY_UNBLOCK_USER = "mylutece.ip.unblockUser";
+	private static final String PROPERTY_NOTIFY_PASSWORD_EXPIRED = "mylutece.accountLifeTime.labelPasswordExpired";
 
     //Messages
     private static final String MESSAGE_CONFIRM_REMOVE_USER = "module.mylutece.database.message.confirmRemoveUser";
@@ -196,6 +197,9 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 	private static final String PARAMETER_UNBLOCK_USER_MAIL_SENDER = "unblock_user_mail_sender";
 	private static final String PARAMETER_UNBLOCK_USER_MAIL_SUBJECT = "unblock_user_mail_subject";
 	private static final String PARAMETER_UNBLOCK_USER = "mylutece_database_unblock_user";
+	private static final String PARAMETER_PASSWORD_EXPIRED_MAIL_SENDER = "password_expired_mail_sender";
+	private static final String PARAMETER_PASSWORD_EXPIRED_MAIL_SUBJECT = "password_expired_mail_subject";
+	private static final String PARAMETER_NOTIFY_PASSWORD_EXPIRED = "mylutece_database_password_expired";
 
 	
     // Marks FreeMarker
@@ -241,6 +245,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String CONSTANT_EMAIL_TYPE_EXPIRED = "expired";
     private static final String CONSTANT_EMAIL_TYPE_REACTIVATED = "reactivated";
 	private static final String CONSTANT_EMAIL_TYPE_IP_BLOCKED = "ip_blocked";
+	private static final String CONSTANT_EMAIL_PASSWORD_EXPIRED = "password_expired";
 
     // Variables
     private static Plugin _plugin;
@@ -1397,6 +1402,13 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 			strBodyKey = PARAMETER_UNBLOCK_USER;
 			strTitle = PROPERTY_UNBLOCK_USER;
         }
+		else if ( CONSTANT_EMAIL_PASSWORD_EXPIRED.equalsIgnoreCase( strEmailType ) )
+		{
+			strSenderKey = PARAMETER_PASSWORD_EXPIRED_MAIL_SENDER;
+			strSubjectKey = PARAMETER_PASSWORD_EXPIRED_MAIL_SUBJECT;
+			strBodyKey = PARAMETER_NOTIFY_PASSWORD_EXPIRED;
+			strTitle = PROPERTY_NOTIFY_PASSWORD_EXPIRED;
+		}
 
         ReferenceItem referenceItem = _userParamService.findByKey( strSenderKey, getPlugin( ) );
         String strSender = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
@@ -1459,6 +1471,12 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 			strSenderKey = PARAMETER_UNBLOCK_USER_MAIL_SENDER;
 			strSubjectKey = PARAMETER_UNBLOCK_USER_MAIL_SUBJECT;
 			strBodyKey = PARAMETER_UNBLOCK_USER;
+		}
+		else if ( CONSTANT_EMAIL_PASSWORD_EXPIRED.equalsIgnoreCase( strEmailType ) )
+		{
+			strSenderKey = PARAMETER_PASSWORD_EXPIRED_MAIL_SENDER;
+			strSubjectKey = PARAMETER_PASSWORD_EXPIRED_MAIL_SUBJECT;
+			strBodyKey = PARAMETER_NOTIFY_PASSWORD_EXPIRED;
 		}
 
         SecurityUtils.updateParameterValue( _userParamService, getPlugin( ), strSenderKey,

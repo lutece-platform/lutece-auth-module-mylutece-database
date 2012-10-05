@@ -11,6 +11,8 @@ import fr.paris.lutece.plugins.mylutece.service.IUserParameterService;
  */
 public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
 {
+	private static final String DAEMON_NAME = "DatabaseAccountLifeTimeDaemon";
+
     private DatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService( );
 
     /**
@@ -39,4 +41,12 @@ public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
         return _parameterService;
     }
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getDaemonName( )
+	{
+		return DAEMON_NAME;
+	}
 }
