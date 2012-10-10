@@ -105,10 +105,10 @@
 					<td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.email}</#if></td>	                
 					
 					<td>
-						<a class="btn btn-primary btn-mini" href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?mylutece_database_user_id=${assigned_user.userId}"  title="#i18n{module.mylutece.database.manage_users_group.actionModify}" >
+						<a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?mylutece_database_user_id=${assigned_user.userId}"  title="#i18n{module.mylutece.database.manage_users_group.actionModify}" >
 							<i class="icon-edit icon-white"></i>
 						</a>
-						<a class="btn btn-danger btn-mini" href="jsp/admin/plugins/mylutece/modules/database/DoUnassignUserGroup.jsp?mylutece_database_user_id=${assigned_user.userId}&group_key=${group.groupKey}&anchor=anchor-${anchor}"  title="#i18n{module.mylutece.database.manage_users_group.actionUnassign}" >
+						<a class="btn btn-danger btn-small" href="jsp/admin/plugins/mylutece/modules/database/DoUnassignUserGroup.jsp?mylutece_database_user_id=${assigned_user.userId}&group_key=${group.groupKey}&anchor=anchor-${anchor}"  title="#i18n{module.mylutece.database.manage_users_group.actionUnassign}" >
 							<i class="icon-trash icon-white"></i>
 						</a>
 					</td>

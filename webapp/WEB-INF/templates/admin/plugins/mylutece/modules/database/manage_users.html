@@ -96,42 +96,42 @@
 	        <td><#if user.status = 10>#i18n{mylutece.anonymize_user.statusLabelAnonymize}<#else>${user.email}</#if></td>
 	        <td>
 				<#if user.status != 10>
-				<a class="btn btn-primary btn-mini" href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="null" >
+				<a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="null" >
 					<i class="icon-edit icon-white"></i>
 				</a>
 				</#if>
 	        	<#if external_application_exist >
-	        	<a class="btn btn-primary btn-mini" href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}"  title="#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}" >
+	        	<a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}"  title="#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}" >
 					<i class="icon-wrench icon-white"></i>
 				</a>
 				</#if>
 	            <#if user.status = 10>
-					<a class="btn btn-success btn-mini disabled" href="javascript:return false;"  alt="#i18n{mylutece.anonymize_user.statusLabelAnonymize}" title="#i18n{mylutece.anonymize_user.statusLabelAnonymize}">
+					<a class="btn btn-success btn-small disabled" href="javascript:return false;"  alt="#i18n{mylutece.anonymize_user.statusLabelAnonymize}" title="#i18n{mylutece.anonymize_user.statusLabelAnonymize}">
 						<i class="icon-ok icon-white" ></i>
 					</a>
 	            <#else>
 		            <#if user.isActive(  )>
-		            	<a class="btn btn-danger btn-mini" href="jsp/admin/plugins/mylutece/modules/database/DoDeactivateUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkDeactivateUser}" >
+		            	<a class="btn btn-danger btn-small" href="jsp/admin/plugins/mylutece/modules/database/DoDeactivateUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkDeactivateUser}" >
 							<i class="icon-remove icon-white"></i>
 						</a>
 		            <#else>
-			            <a class="btn btn-success btn-mini" href="jsp/admin/plugins/mylutece/modules/database/DoActivateUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkActivateUser}" >
+			            <a class="btn btn-success btn-small" href="jsp/admin/plugins/mylutece/modules/database/DoActivateUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkActivateUser}" >
 							<i class="icon-ok icon-white"></i>
 						</a>
 			        </#if>
 			    </#if>
-	            <a class="btn btn-primary btn-mini" href="jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkManageGroups}" >
+	            <a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkManageGroups}" >
 					<i class="icon-folder-close icon-white"></i>
 				</a>
-				<a class="btn btn-primary btn-mini" href="jsp/admin/plugins/mylutece/modules/database/ManageRolesUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkManageRoles}" >
+				<a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/modules/database/ManageRolesUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkManageRoles}" >
 					<i class="icon-list-alt icon-white"></i>
 				</a>
 				<#if user.status != 10>
-		            <a class="btn btn-primary btn-mini" href="jsp/admin/plugins/mylutece/modules/database/GetAnonymizeUser.jsp?plugin_name=${plugin_name}&user_id=${user.userId}"  title="#i18n{mylutece.anonymize_user.labelAnonymizeUser}" >
+		            <a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/modules/database/GetAnonymizeUser.jsp?plugin_name=${plugin_name}&user_id=${user.userId}"  title="#i18n{mylutece.anonymize_user.labelAnonymizeUser}" >
 						<i class="icon-eye-close icon-white"></i>
 					</a>
 		        </#if>
-	            <a class="btn btn-danger btn-mini" href="jsp/admin/plugins/mylutece/modules/database/RemoveUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkRemoveUser}" >
+	            <a class="btn btn-danger btn-small" href="jsp/admin/plugins/mylutece/modules/database/RemoveUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkRemoveUser}" >
 					<i class="icon-trash icon-white"></i>
 				</a>
 	           
