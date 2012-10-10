@@ -5,7 +5,7 @@
 		#i18n{module.mylutece.database.manage_users.tableTitle}
 		<#if permission_advanced_parameter?? && permission_advanced_parameter>
 		<form class="form-inline pull-right spaced" method="post" action="jsp/admin/plugins/mylutece/modules/database/ManageAdvancedParameters.jsp">
-			<button class="btn btn-primary" type="submit" >
+			<button class="btn btn-primary btn-small" type="submit" >
 			<i class="icon-cog icon-white" ></i>
 			<span class="hidden-phone" >#i18n{module.mylutece.database.manage_users.buttonLabelManageAdvancedParameters}</span>
 			</button>
@@ -13,7 +13,7 @@
 		</#if>
 		<form class="form-inline pull-right" action="jsp/admin/plugins/mylutece/modules/database/CreateUser.jsp">
 		<input type="hidden" name="plugin_name" value="${plugin_name}" />
-			<button class="btn btn-primary" type="submit" >
+			<button class="btn btn-primary btn-small" type="submit" >
 			<i class="icon-plus icon-white" ></i>
 			<span class="hidden-phone" >#i18n{module.mylutece.database.manage_users.btnCreateUser}</span>
 			</button>
@@ -36,7 +36,7 @@
 					${attribute.getHtmlFormSearchAttribute( search_mylutece_user_field_filter, locale )}
 				</#if>
 			</#list>
-			<button class="btn btn-primary" type="submit" name="search_is_search" tabindex="5" >
+			<button class="btn btn-primary btn-small" type="submit" name="search_is_search" tabindex="5" >
 				<i class="icon-search icon-white"></i>&nbsp;#i18n{module.mylutece.database.user_filter.buttonSearch}
 			</button>
 		</form>

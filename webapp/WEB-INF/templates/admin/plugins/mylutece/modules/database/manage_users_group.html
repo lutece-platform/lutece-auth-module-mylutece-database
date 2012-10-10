@@ -37,7 +37,7 @@
 			<input type="text" id="first_name" name="search_first_name" value="${search_user_filter.firstName}" maxlength="100" tabindex="3" />
 			<label for="email">#i18n{module.mylutece.database.manage_users_group.labelEmail} :</label>
 			<input type="text" id="email" name="search_email" value="${search_user_filter.email}" maxlength="100"  tabindex="4" />
-			<button class="btn btn-primary" type="submit" name="search_is_search" tabindex="5"><i class="icon-search icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_users_group.labelButtonSearch}</button>
+			<button class="btn btn-primary btn-small" type="submit" name="search_is_search" tabindex="5"><i class="icon-search icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_users_group.labelButtonSearch}</button>
 	   	</form>
 		</fieldset>
 		</#if>
@@ -51,8 +51,8 @@
 			<label>#i18n{module.mylutece.database.manage_users_group.labelAvailableUser}</label>
 			<@comboWithParamsAndLength name="available_users" default_value="" additionalParameters="multiple='multiple' class='span10'" items=available_users max_length=175 />
 			<div class="form-actions">
-				<button class="btn btn-primary" type="submit" name="save" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_roles_group.btnAssign}</button>
-				<button class="btn btn-primary" type="button" onclick="javascript:window.history.back();"><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{portal.admin.message.buttonCancel}</button>
+				<button class="btn btn-primary btn-small" type="submit" name="save" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_roles_group.btnAssign}</button>
+				<button class="btn btn-primary btn-small" type="button" onclick="javascript:window.history.back();"><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{portal.admin.message.buttonCancel}</button>
 			</div>
 			</form>
 		<#else>
