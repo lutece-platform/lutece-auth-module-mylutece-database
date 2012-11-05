@@ -66,6 +66,7 @@ import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.portal.web.xpages.XPageApplication;
+import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.password.PasswordUtil;
@@ -130,6 +131,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	private static final String PARAMETER_ACTION_VALIDATION_SUCCESS = "action_validation_success";
 	private static final String PARAMETER_FORCE_CHANGE_PASSWORD_REINIT = "force_change_password_reinit";
 	private static final String PARAMETER_TIME_BEFORE_ALERT_ACCOUNT = "time_before_alert_account";
+    private static final String PARAMETER_MAIL_LOST_PASSWORD_SENDER = "mail_lost_password_sender";
+    private static final String PARAMETER_MAIL_LOST_PASSWORD_SUBJECT = "mail_lost_password_subject";
 
 	// Actions
 	private static final String ACTION_CHANGE_PASSWORD = "changePassword";
@@ -162,7 +165,6 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	private static final String TEMPLATE_CREATE_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/create_account.html";
 	private static final String TEMPLATE_EMAIL_VALIDATION = "skin/plugins/mylutece/modules/database/email_validation.html";
 	private static final String TEMPLATE_REINIT_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/reinit_password.html";
-	private static final String TEMPLATE_EMAIL_REINIT = "skin/plugins/mylutece/email_reinit.html";
 	private static final String TEMPLATE_EMAIL_LOST_LOGIN = "skin/plugins/mylutece/email_lost_login.html";
 
 	// Properties
@@ -183,6 +185,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	private static final String PROPERTY_MAIL_HOST = "mail.server";
 	private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
 	private static final String PROPERTY_ACCOUNT_REF_ENCRYPT_ALGO = "mylutece-database.account_life_time.refEncryptionAlgorythm";
+    private static final String PROPERTY_DATABASE_MAIL_LOST_PASSWORD = "mylutece_database_mailLostPassword";
 
 	// i18n Properties
 	private static final String PROPERTY_CHANGE_PASSWORD_LABEL = "module.mylutece.database.xpage.changePassword.label";
@@ -1045,10 +1048,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
 					DatabaseUserHome.update( user, _plugin );
 
 					String strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
-					String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
-					String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_OBJECT, _locale );
 
-					if ( StringUtils.isBlank( strError ) && ( StringUtils.isBlank( strHost ) || StringUtils.isBlank( strSender ) || StringUtils.isBlank( strObject ) ) )
+                    if ( StringUtils.isBlank( strError ) && StringUtils.isBlank( strHost ) )
 					{
 						strError = ERROR_SENDING_EMAIL;
 					}
@@ -1061,8 +1062,18 @@ public class MyLuteceDatabaseApp implements XPageApplication
 						DatabaseUserKey key = _userKeyService.create( user.getUserId( ) );
 						model.put( MARK_REINIT_URL, _userKeyService.getReinitUrl( key.getKey( ), request ) );
 
-						HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_REINIT, _locale, model );
-						MailService.sendMailHtml( strEmail, PROPERTY_NO_REPLY_EMAIL, strSender, strObject, template.getHtml( ) );
+                        HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl(
+                                PROPERTY_DATABASE_MAIL_LOST_PASSWORD, _locale, model );
+
+                        ReferenceItem referenceItem = _userParamService.findByKey( PARAMETER_MAIL_LOST_PASSWORD_SENDER,
+                                plugin );
+                        String strSender = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+
+                        referenceItem = _userParamService.findByKey( PARAMETER_MAIL_LOST_PASSWORD_SUBJECT, plugin );
+                        String strSubject = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+
+                        MailService.sendMailHtml( strEmail, PROPERTY_NO_REPLY_EMAIL, strSender, strSubject,
+                                template.getHtml( ) );
 					}
 				}
 			}

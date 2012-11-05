@@ -13,7 +13,7 @@ INSERT INTO mylutece_database_user_parameter VALUES ('password_history_size', ''
 INSERT INTO mylutece_database_user_parameter VALUES ('maximum_number_password_change', '');
 INSERT INTO mylutece_database_user_parameter VALUES ('tsw_size_password_change', '');
 INSERT INTO mylutece_database_user_parameter VALUES ('use_advanced_security_parameters', 'false');
-INSERT INTO mylutece_database_user_parameter VALUES ('account_life_time', '12');
+INSERT INTO mylutece_database_user_parameter VALUES ('account_life_time', '360');
 INSERT INTO mylutece_database_user_parameter VALUES ('time_before_alert_account', '30');
 INSERT INTO mylutece_database_user_parameter VALUES ('nb_alert_account', '2');
 INSERT INTO mylutece_database_user_parameter VALUES ('time_between_alerts_account', '10');
@@ -34,3 +34,7 @@ INSERT INTO mylutece_database_user_parameter VALUES ('enable_unblock_ip', 'false
 INSERT INTO mylutece_database_user_parameter VALUES ('notify_user_password_expired', '');
 INSERT INTO mylutece_database_user_parameter VALUES ('password_expired_mail_sender', 'lutece@nowhere.com');
 INSERT INTO mylutece_database_user_parameter VALUES ('password_expired_mail_subject', 'Votre mot de passe a expiré');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_lost_password_sender', 'lutece@nowhere.com');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_lost_password_subject', 'Votre mot de passe a été réinitialisé');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_password_encryption_changed_sender', 'lutece@nowhere.com');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_password_encryption_changed_subject', 'Votre mot de passe a été réinitialisé');

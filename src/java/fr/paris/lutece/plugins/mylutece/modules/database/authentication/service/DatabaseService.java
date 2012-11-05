@@ -56,7 +56,6 @@ import fr.paris.lutece.portal.business.role.Role;
 import fr.paris.lutece.portal.business.role.RoleHome;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminAuthenticationService;
-import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -104,9 +103,6 @@ public final class DatabaseService
 	private static final String AMPERSAND = "&";
 	private static final String PLUGIN_JCAPTCHA = "jcaptcha";
 
-	// MESSAGES
-	private static final String MESSAGE_EMAIL_SUBJECT = "module.mylutece.database.forgot_password.email.subject";
-
 	// MARKS
 	private static final String MARK_ENCRYPTION_ALGORITHMS_LIST = "encryption_algorithms_list";
 	private static final String MARK_SEARCH_IS_SEARCH = "search_is_search";
@@ -123,19 +119,18 @@ public final class DatabaseService
 
 	// PROPERTIES
 	private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
-	private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
 
 	// PARAMETERS
 	private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
 	private static final String PARAMETER_ACCOUNT_REACTIVATED_MAIL_SENDER = "account_reactivated_mail_sender";
 	private static final String PARAMETER_ACCOUNT_REACTIVATED_MAIL_SUBJECT = "account_reactivated_mail_subject";
 	private static final String PARAMETER_ACCOUNT_REACTIVATED_MAIL_BODY = "mylutece_database_account_reactivated_mail";
+    private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED = "mylutece_database_mailPasswordEncryptionChanged";
+    private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER = "mail_password_encryption_changed_sender";
+    private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT = "mail_password_encryption_changed_subject";
 
 	// VARIABLES
 	private DatabaseUserParameterService _userParamService;
-
-	// TEMPLATES
-	private static final String TEMPLATE_EMAIL_FORGOT_PASSWORD = "admin/plugins/mylutece/modules/database/email_forgot_password.html";
 
 	private static DatabaseService _singleton;
 
@@ -547,14 +542,22 @@ public final class DatabaseService
 			if ( StringUtils.isNotBlank( user.getEmail( ) ) )
 			{
 				// Sends password by e-mail
-				String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_NO_REPLY_EMAIL );
-				String strEmailSubject = I18nService.getLocalizedString( MESSAGE_EMAIL_SUBJECT, locale );
+                ReferenceItem referenceItem = _userParamService.findByKey(
+                        PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER, plugin );
+                String strSenderEmail = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+                referenceItem = _userParamService
+                        .findByKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT, plugin );
+                String strEmailSubject = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+
 				Map<String, Object> model = new HashMap<String, Object>( );
 				model.put( MARK_NEW_PASSWORD, strPassword );
 				model.put( MARK_LOGIN_URL, strBaseURL + AdminAuthenticationService.getInstance( ).getLoginPageUrl( ) );
 				model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
 
-				HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_FORGOT_PASSWORD, locale, model );
+                String strTemplate = DatabaseTemplateService
+                        .getTemplateFromKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED );
+
+                HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strTemplate, locale, model );
 
 				MailService.sendMailHtml( user.getEmail( ), strSenderEmail, strSenderEmail, strEmailSubject, template.getHtml( ) );
 			}

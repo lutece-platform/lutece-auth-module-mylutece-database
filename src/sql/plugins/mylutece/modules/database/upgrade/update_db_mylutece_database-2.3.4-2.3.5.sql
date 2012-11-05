@@ -7,3 +7,7 @@ INSERT INTO mylutece_database_user_parameter VALUES ('enable_unblock_ip', 'false
 INSERT INTO mylutece_database_user_parameter VALUES ('notify_user_password_expired', '');
 INSERT INTO mylutece_database_user_parameter VALUES ('password_expired_mail_sender', 'lutece@nowhere.com');
 INSERT INTO mylutece_database_user_parameter VALUES ('password_expired_mail_subject', 'Votre mot de passe a expiré');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_lost_password_sender', 'lutece@nowhere.com');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_lost_password_subject', 'Votre mot de passe a été réinitialisé');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_password_encryption_changed_sender', 'lutece@nowhere.com');
+INSERT INTO mylutece_database_user_parameter VALUES ('mail_password_encryption_changed_subject', 'Votre mot de passe a été réinitialisé');
