@@ -8,6 +8,10 @@
 			<item name="Introduction" href="index.html" />
 			<item name="Security parameters" href="user-security.html" />
 		</menu>
+		<menu name="Downloads" inherit="bottom">
+			<item name="Released versions" href="../../stable_builds/plugins/module-mylutece-database/" />
+			<item name="Nightly builds" href="../../nightly_builds/plugins/module-mylutece-database/" />
+		</menu>
 		<menu ref="reports" />
 	</body>
 </project>
