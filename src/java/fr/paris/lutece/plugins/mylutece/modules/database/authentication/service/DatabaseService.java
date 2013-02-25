@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
+import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldFilter;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication;
@@ -73,6 +74,7 @@ import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.password.PasswordUtil;
 import fr.paris.lutece.util.url.UrlItem;
+import fr.paris.lutece.util.xml.XmlUtil;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -102,6 +104,25 @@ public final class DatabaseService
 	private static final String COMMA = ",";
 	private static final String AMPERSAND = "&";
 	private static final String PLUGIN_JCAPTCHA = "jcaptcha";
+    private static final String CONSTANT_XML_USER = "user";
+    private static final String CONSTANT_XML_ACCESS_CODE = "access_code";
+    private static final String CONSTANT_XML_LAST_NAME = "last_name";
+    private static final String CONSTANT_XML_FIRST_NAME = "first_name";
+    private static final String CONSTANT_XML_EMAIL = "email";
+    private static final String CONSTANT_XML_STATUS = "status";
+    private static final String CONSTANT_XML_PASSWORD_MAX_VALID_DATE = "password_max_valid_date";
+    private static final String CONSTANT_XML_ACCOUNT_MAX_VALID_DATE = "account_max_valid_date";
+    private static final String CONSTANT_XML_DATE_LAST_LOGIN = "date_last_login";
+    private static final String CONSTANT_XML_ROLES = "roles";
+    private static final String CONSTANT_XML_RIGHTS = "rights";
+    private static final String CONSTANT_XML_GROUPS = "groups";
+    private static final String CONSTANT_XML_ROLE = "role";
+    private static final String CONSTANT_XML_GROUP = "group";
+    private static final String CONSTANT_XML_ATTRIBUTES = "attributes";
+    private static final String CONSTANT_XML_ATTRIBUTE = "attribute";
+    private static final String CONSTANT_XML_ATTRIBUTE_ID = "attribute-id";
+    private static final String CONSTANT_XML_ATTRIBUTE_FIELD_ID = "attribute-field-id";
+    private static final String CONSTANT_XML_ATTRIBUTE_VALUE = "attribute-value";
 
 	// MARKS
 	private static final String MARK_ENCRYPTION_ALGORITHMS_LIST = "encryption_algorithms_list";
@@ -630,4 +651,78 @@ public final class DatabaseService
 	{
 		DatabaseUserHome.updateUserLastLoginDate( strLogin, new Date( ), plugin );
 	}
+
+    public String getXmlFromUser( DatabaseUser user, boolean bExportRoles, boolean bExportGroups,
+            boolean bExportAttributes, List<IAttribute> listAttributes, Locale locale )
+    {
+        Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+        Plugin mylutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+        StringBuffer sbXml = new StringBuffer( );
+
+        XmlUtil.beginElement( sbXml, CONSTANT_XML_USER );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_ACCESS_CODE, user.getLogin( ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_LAST_NAME, user.getLastName( ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_FIRST_NAME, user.getFirstName( ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_EMAIL, user.getEmail( ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_STATUS, Integer.toString( user.getStatus( ) ) );
+
+        String strPasswordMaxValidDate = StringUtils.EMPTY;
+        if ( user.getPasswordMaxValidDate( ) != null )
+        {
+            strPasswordMaxValidDate = Long.toString( user.getPasswordMaxValidDate( ).getTime( ) );
+        }
+        XmlUtil.addElement( sbXml, CONSTANT_XML_PASSWORD_MAX_VALID_DATE, strPasswordMaxValidDate );
+
+        String strAccountMaxValidDate = StringUtils.EMPTY;
+        if ( user.getAccountMaxValidDate( ) != null )
+        {
+            strAccountMaxValidDate = Long.toString( user.getAccountMaxValidDate( ).getTime( ) );
+        }
+        XmlUtil.addElement( sbXml, CONSTANT_XML_ACCOUNT_MAX_VALID_DATE, strAccountMaxValidDate );
+
+        if ( bExportRoles )
+        {
+            List<String> listRoles = DatabaseHome.findUserRolesFromLogin( user.getLogin( ), databasePlugin );
+            XmlUtil.beginElement( sbXml, CONSTANT_XML_ROLES );
+            for ( String strRole : listRoles )
+            {
+                XmlUtil.addElement( sbXml, CONSTANT_XML_ROLE, strRole );
+            }
+            XmlUtil.endElement( sbXml, CONSTANT_XML_ROLES );
+        }
+        if ( bExportGroups )
+        {
+            List<String> listGroups = DatabaseHome.findUserGroupsFromLogin( user.getLogin( ), databasePlugin );
+            XmlUtil.beginElement( sbXml, CONSTANT_XML_GROUPS );
+            for ( String strGoup : listGroups )
+            {
+                XmlUtil.addElement( sbXml, CONSTANT_XML_GROUP, strGoup );
+            }
+            XmlUtil.endElement( sbXml, CONSTANT_XML_GROUPS );
+        }
+
+        if ( bExportAttributes )
+        {
+            XmlUtil.beginElement( sbXml, CONSTANT_XML_ATTRIBUTES );
+            for ( IAttribute attribute : listAttributes )
+            {
+                List<MyLuteceUserField> listUserFields = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute(
+                        user.getUserId( ), attribute.getIdAttribute( ), mylutecePlugin );
+                for ( MyLuteceUserField userField : listUserFields )
+                {
+                    XmlUtil.beginElement( sbXml, CONSTANT_XML_ATTRIBUTE );
+                    XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_ID,
+                            Integer.toString( attribute.getIdAttribute( ) ) );
+                    XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_FIELD_ID, userField.getAttributeField( )
+                            .getIdField( ) );
+                    XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_VALUE, userField.getValue( ) );
+                    XmlUtil.endElement( sbXml, CONSTANT_XML_ATTRIBUTE );
+                }
+            }
+            XmlUtil.endElement( sbXml, CONSTANT_XML_ATTRIBUTES );
+        }
+
+        XmlUtil.endElement( sbXml, CONSTANT_XML_USER );
+        return sbXml.toString( );
+    }
 }

@@ -39,9 +39,9 @@ import fr.paris.lutece.portal.service.rbac.ResourceType;
 import fr.paris.lutece.portal.service.rbac.ResourceTypeManager;
 import fr.paris.lutece.util.ReferenceList;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -50,9 +50,11 @@ import java.util.Locale;
 public class DatabaseResourceIdService extends ResourceIdService
 {
     public static final String PERMISSION_MANAGE = "MANAGE";
+    public static final String PERMISSION_IMPORT_EXPORT_DATABASE_USERS = "IMPORT_EXPORT_DATABASE_USERS";
     public static final String RESOURCE_TYPE = "DATABASE";
     private static final String PROPERTY_LABEL_RESOURCE_TYPE = "module.mylutece.database.databaseService.ressourceType";
     private static final String PROPERTY_LABEL_MANAGE = "module.mylutece.database.databaseService.permission.manageAdvancedParameters";
+    private static final String PROPERTY_LABEL_IMPORT_EXPORT_DATABASE_USERS = "module.mylutece.database.databaseService.permission.importExportDatabaseUsers";
 
     /**
      * Initializes the service
@@ -67,6 +69,11 @@ public class DatabaseResourceIdService extends ResourceIdService
         Permission p = new Permission(  );
         p.setPermissionKey( PERMISSION_MANAGE );
         p.setPermissionTitleKey( PROPERTY_LABEL_MANAGE );
+        rt.registerPermission( p );
+
+        p = new Permission( );
+        p.setPermissionKey( PERMISSION_IMPORT_EXPORT_DATABASE_USERS );
+        p.setPermissionTitleKey( PROPERTY_LABEL_IMPORT_EXPORT_DATABASE_USERS );
         rt.registerPermission( p );
 
         ResourceTypeManager.registerResourceType( rt );
