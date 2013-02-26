@@ -60,14 +60,10 @@ public class DatabaseUserFieldListener implements MyLuteceUserFieldListener
     // Constantes
     private static final String EMPTY_STRING = "";
 
-    // Properties
-
     /**
-     * Create user fields
-     * @param nIdUser the id user
-     * @param request HttpServletRequest
-     * @param locale Locale
+     * {@inheritDoc}
      */
+    @Override
     public void doCreateUserFields( int nIdUser, HttpServletRequest request, Locale locale )
     {
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
@@ -77,28 +73,35 @@ public class DatabaseUserFieldListener implements MyLuteceUserFieldListener
         for ( IAttribute attribute : listAttributes )
         {
             List<MyLuteceUserField> userFields = attribute.getUserFieldsData( request, nIdUser );
+            doCreateUserFields( nIdUser, userFields, locale );
+        }
+    }
 
-            for ( MyLuteceUserField userField : userFields )
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doCreateUserFields( int nIdUser, List<MyLuteceUserField> listUserFields, Locale locale )
+    {
+        Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+
+        for ( MyLuteceUserField userField : listUserFields )
+        {
+            if ( ( userField != null ) && !userField.getValue( ).equals( EMPTY_STRING ) )
             {
-                if ( ( userField != null ) && !userField.getValue(  ).equals( EMPTY_STRING ) )
-                {
-                    // Change the value of the user field
-                    // Instead of having the ID of the attribute field, we put the attribute field title
-                    // which represents the locale
-                    userField.setValue( userField.getAttributeField(  ).getTitle(  ) );
-                    MyLuteceUserFieldHome.create( userField, myLutecePlugin );
-                }
+                // Change the value of the user field
+                // Instead of having the ID of the attribute field, we put the attribute field title
+                // which represents the locale
+                userField.setValue( userField.getAttributeField( ).getTitle( ) );
+                MyLuteceUserFieldHome.create( userField, myLutecePlugin );
             }
         }
     }
 
     /**
-     * Modify user fields
-     * @param nIdUser the id suer
-     * @param request HttpServletRequest
-     * @param locale Locale
-     * @param currentUser current user
+     * {@inheritDoc}
      */
+    @Override
     public void doModifyUserFields( int nIdUser, HttpServletRequest request, Locale locale, AdminUser currentUser )
     {
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
@@ -108,28 +111,46 @@ public class DatabaseUserFieldListener implements MyLuteceUserFieldListener
         for ( IAttribute attribute : listAttributes )
         {
             List<MyLuteceUserField> userFields = attribute.getUserFieldsData( request, nIdUser );
+            doModifyUserFields( nIdUser, userFields, locale, currentUser );
+        }
+    }
 
-            for ( MyLuteceUserField userField : userFields )
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doModifyUserFields( int nIdUser, List<MyLuteceUserField> listUserFields, Locale locale,
+            AdminUser currentUser )
+    {
+        Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+
+        for ( MyLuteceUserField userField : listUserFields )
+        {
+            if ( ( userField != null ) && !userField.getValue( ).equals( EMPTY_STRING ) )
             {
-                if ( ( userField != null ) && !userField.getValue(  ).equals( EMPTY_STRING ) )
-                {
-                    // Change the value of the user field
-                    // Instead of having the ID of the attribute field, we put the attribute field title
-                    // which represents the locale
-                    userField.setValue( userField.getAttributeField(  ).getTitle(  ) );
-                    MyLuteceUserFieldHome.create( userField, myLutecePlugin );
-                }
+                // Change the value of the user field
+                // Instead of having the ID of the attribute field, we put the attribute field title
+                // which represents the locale
+                userField.setValue( userField.getAttributeField( ).getTitle( ) );
+                MyLuteceUserFieldHome.create( userField, myLutecePlugin );
             }
         }
     }
 
     /**
-     * Remove user fields
-     * @param nIdUser the id user
-     * @param request HttpServletRequest
-     * @param locale locale
+     * {@inheritDoc}
      */
+    @Override
     public void doRemoveUserFields( int nIdUser, HttpServletRequest request, Locale locale )
+    {
+        // No action
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doRemoveUserFields( int nIdUser, Locale locale )
     {
         // No action
     }

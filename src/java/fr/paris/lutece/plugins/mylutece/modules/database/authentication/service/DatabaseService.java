@@ -307,14 +307,16 @@ public final class DatabaseService
 		return authorizedUserList;
 	}
 
-	/**
-	 * Get the filtered list of database users
-	 * @param listUsers the initial list to filter
-	 * @param request HttpServletRequest
-	 * @param model Map
-	 * @param url UrlItem
-	 * @return the filtered list
-	 */
+    /**
+     * Get the filtered list of database users
+     * @param duFilter The filter
+     * @param bIsSearch True if the user used search filters, false otherwise
+     * @param listUsers the initial list to filter
+     * @param request HttpServletRequest
+     * @param model Map
+     * @param url UrlItem
+     * @return the filtered list
+     */
 	public List<DatabaseUser> getFilteredUsersInterface( DatabaseUserFilter duFilter, boolean bIsSearch, List<DatabaseUser> listUsers, HttpServletRequest request, Map<String, Object> model,
 			UrlItem url )
 	{
@@ -650,6 +652,17 @@ public final class DatabaseService
 		DatabaseUserHome.updateUserLastLoginDate( strLogin, new Date( ), plugin );
 	}
 
+    /**
+     * Get a XML string describing a given user
+     * @param user The user to get the XML of.
+     * @param bExportRoles True to export roles of the user, false otherwise.
+     * @param bExportGroups True to export groups of the user, false otherwise.
+     * @param bExportAttributes True to export attributes of the user, false
+     *            otherwise.
+     * @param listAttributes The list of attributes to export.
+     * @param locale The locale
+     * @return A string of XML with the information of the user.
+     */
     public String getXmlFromUser( DatabaseUser user, boolean bExportRoles, boolean bExportGroups,
             boolean bExportAttributes, List<IAttribute> listAttributes, Locale locale )
     {

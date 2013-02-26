@@ -117,13 +117,18 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DatabaseJspBean extends PluginAdminPageJspBean
 {
+
+    // Right
+    /**
+     * Right to manage database users
+     */
+    public static final String RIGHT_MANAGE_DATABASE_USERS = "DATABASE_MANAGEMENT_USERS";
+
     /**
      * Serial version UID
      */
     private static final long serialVersionUID = -8867524349892775919L;
 
-    // Right
-    public static final String RIGHT_MANAGE_DATABASE_USERS = "DATABASE_MANAGEMENT_USERS";
 
     private static final String ATTRIBUTE_IMPORT_USERS_LIST_MESSAGES = "importUsersListMessages";
 
@@ -394,7 +399,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             url.addParameter( Parameters.SORTED_ASC, strAscSort );
         }
 
-        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( (List<DatabaseUser>) listFilteredUsers,
+        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( listFilteredUsers,
                 _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
 
         boolean bPermissionAdvancedParameter = RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE,
@@ -632,14 +637,14 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strLastName ) ||
                     StringUtils.isBlank( strFirstName ) || StringUtils.isBlank( strEmail ) )
             {
-                strError = AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+                return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
             }
 
             DatabaseUser databaseUser = getDatabaseUserFromRequest( request );
 
             if ( databaseUser == null )
             {
-                strError = AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MODIFY_USER,
+                return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MODIFY_USER,
                         AdminMessage.TYPE_ERROR );
             }
             else if ( !databaseUser.getLogin(  ).equalsIgnoreCase( strLogin ) &&
@@ -1195,11 +1200,13 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         return MANAGE_USERS + "?" + PARAMETER_PLUGIN_NAME + "=" + _plugin.getName(  );
     }
-    
+
     /**
-     * Get the item navigator
-     * @param strLogin the role key
+     * Set the item navigator
+     * @param strItemNavigatorKey The item navigator
+     * @param nIdDatabaseUser The id of the database user
      * @param strUrl the url
+     * @param request The request
      */
     private void setItemNavigator( String strItemNavigatorKey, int nIdDatabaseUser, String strUrl, HttpServletRequest request )
     {
@@ -1267,11 +1274,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             return AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_CONFIRM_REMOVE_ASP,
                     JSP_URL_REMOVE_ADVANCED_SECUR_PARAM, AdminMessage.TYPE_CONFIRMATION );
         }
-        else
-        {
-            return AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_CONFIRM_USE_ASP,
-                    JSP_URL_USE_ADVANCED_SECUR_PARAM, AdminMessage.TYPE_CONFIRMATION );
-        }
+        return AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_CONFIRM_USE_ASP,
+                JSP_URL_USE_ADVANCED_SECUR_PARAM, AdminMessage.TYPE_CONFIRMATION );
     }
 
     /**
