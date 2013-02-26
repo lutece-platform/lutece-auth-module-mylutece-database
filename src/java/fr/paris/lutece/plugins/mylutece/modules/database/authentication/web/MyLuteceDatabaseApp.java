@@ -1308,7 +1308,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 			int nbDaysBeforeFirstAlert = SecurityUtils.getIntegerSecurityParameter( _userParamService, _plugin, PARAMETER_TIME_BEFORE_ALERT_ACCOUNT );
 			Timestamp firstAlertMaxDate = new Timestamp( new java.util.Date( ).getTime( ) + DateUtil.convertDaysInMiliseconds( nbDaysBeforeFirstAlert ) );
 			// If the account is close to expire but has not expired yet
-			if ( user.getAccountMaxValidDate( ) != null )
+            if ( user.getAccountMaxValidDate( ) != null )
 			{
 				if ( user.getAccountMaxValidDate( ).getTime( ) < firstAlertMaxDate.getTime( ) && user.getStatus( ) < DatabaseUser.STATUS_EXPIRED )
 				{

@@ -349,8 +349,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     {
         if ( _plugin == null )
         {
-            String strPluginName = request.getParameter( PARAMETER_PLUGIN_NAME );
-            _plugin = PluginService.getPlugin( strPluginName );
+            _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         }
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_USERS );

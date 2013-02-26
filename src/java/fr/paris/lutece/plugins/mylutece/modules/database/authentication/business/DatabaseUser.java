@@ -33,14 +33,19 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 
 /**
  * This class represents the business object DatabaseUser
  */
-public class DatabaseUser
+public class DatabaseUser implements Serializable
 {
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 8073247646404231859L;
     // Variables declarations
     /**
      * Status of not activated users.
