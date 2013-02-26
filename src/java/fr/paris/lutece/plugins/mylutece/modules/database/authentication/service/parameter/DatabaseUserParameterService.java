@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -76,8 +75,7 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
      */
     public static DatabaseUserParameterService getService(  )
     {
-        return (DatabaseUserParameterService) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
-            BEAN_DATABASE_USER_PARAMETER_SERVICE );
+        return SpringContextService.getBean( BEAN_DATABASE_USER_PARAMETER_SERVICE );
     }
 
     /**

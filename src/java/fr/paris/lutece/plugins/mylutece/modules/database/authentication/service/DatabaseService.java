@@ -112,9 +112,7 @@ public final class DatabaseService
     private static final String CONSTANT_XML_STATUS = "status";
     private static final String CONSTANT_XML_PASSWORD_MAX_VALID_DATE = "password_max_valid_date";
     private static final String CONSTANT_XML_ACCOUNT_MAX_VALID_DATE = "account_max_valid_date";
-    private static final String CONSTANT_XML_DATE_LAST_LOGIN = "date_last_login";
     private static final String CONSTANT_XML_ROLES = "roles";
-    private static final String CONSTANT_XML_RIGHTS = "rights";
     private static final String CONSTANT_XML_GROUPS = "groups";
     private static final String CONSTANT_XML_ROLE = "role";
     private static final String CONSTANT_XML_GROUP = "group";
@@ -180,7 +178,7 @@ public final class DatabaseService
 		RoleRemovalListenerService.getService( ).registerListener( new DatabaseUserRoleRemovalListener( ) );
 		DatabaseMyLuteceUserFieldListenerService.getService( ).registerListener( new DatabaseUserFieldListener( ) );
 
-		BaseAuthentication baseAuthentication = ( BaseAuthentication ) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME, AUTHENTICATION_BEAN_NAME );
+        BaseAuthentication baseAuthentication = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
 
 		if ( baseAuthentication != null )
 		{

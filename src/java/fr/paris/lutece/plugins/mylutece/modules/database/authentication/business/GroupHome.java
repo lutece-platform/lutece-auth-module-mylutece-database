@@ -47,8 +47,7 @@ import java.util.List;
 public final class GroupHome
 {
     // Static variable pointed at the DAO instance
-    private static IGroupDAO _dao = (IGroupDAO) SpringContextService.getPluginBean( "mylutece-database",
-            "mylutece-database.databaseGroupDAO" );
+    private static IGroupDAO _dao = SpringContextService.getBean( "mylutece-database.databaseGroupDAO" );
 
     /**
      * Creates a new GroupHome object.

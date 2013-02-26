@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
@@ -66,8 +65,7 @@ public final class DatabaseUserFactory
      */
     public static DatabaseUserFactory getFactory(  )
     {
-        return (DatabaseUserFactory) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
-            BEAN_DATABASE_USER_FACTORY );
+        return (DatabaseUserFactory) SpringContextService.getBean( BEAN_DATABASE_USER_FACTORY );
     }
 
     /**
@@ -107,8 +105,7 @@ public final class DatabaseUserFactory
 
         try
         {
-            databaseUser = (DatabaseUser) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
-                    _strBeanDatabaseUser );
+            databaseUser = (DatabaseUser) SpringContextService.getBean( _strBeanDatabaseUser );
         }
         catch ( BeanDefinitionStoreException e )
         {

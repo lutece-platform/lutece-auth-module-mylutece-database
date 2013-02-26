@@ -49,8 +49,7 @@ import java.util.List;
 public final class DatabaseHome
 {
     // Static variable pointed at the DAO instance
-    private static IDatabaseDAO _dao = (IDatabaseDAO) SpringContextService.getPluginBean( "mylutece-database",
-            "mylutece-database.databaseDAO" );
+    private static IDatabaseDAO _dao = SpringContextService.getBean( "mylutece-database.databaseDAO" );
 
     /**
      * Private constructor - this class need not be instantiated

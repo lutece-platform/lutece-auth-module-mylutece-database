@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKey;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKeyHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.util.DatabaseUtils;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -76,8 +75,7 @@ public final class DatabaseUserKeyService
      */
     public static DatabaseUserKeyService getService(  )
     {
-        return (DatabaseUserKeyService) SpringContextService.getPluginBean( DatabasePlugin.PLUGIN_NAME,
-            BEAN_DATABASE_USER_KEY_SERVICE );
+        return SpringContextService.getBean( BEAN_DATABASE_USER_KEY_SERVICE );
     }
 
     // CRUD
