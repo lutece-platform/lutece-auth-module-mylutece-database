@@ -104,17 +104,14 @@ public final class DatabaseUserParameterHome
         {
             return 0;
         }
-        else
+        try
         {
-            try
-            {
-                int nValue = Integer.parseInt( refItem.getName( ) );
-                return nValue;
-            }
-            catch ( NumberFormatException e )
-            {
-                return 0;
-            }
+            int nValue = Integer.parseInt( refItem.getName( ) );
+            return nValue;
+        }
+        catch ( NumberFormatException e )
+        {
+            return 0;
         }
     }
 }

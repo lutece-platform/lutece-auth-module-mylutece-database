@@ -101,14 +101,15 @@ public final class DatabaseUserHome
 		return databaseUser;
 	}
 
-	/**
-	 * Update of the databaseUser which is specified in parameter
-	 * 
-	 * @param databaseUser The instance of the DatabaseUser which contains the data to store
-	 * @param strNewPassword The new password to store
-	 * @param plugin The current plugin using this method
-	 * @return The instance of the DatabaseUser which has been updated
-	 */
+    /**
+     * Update of the databaseUser which is specified in parameter
+     * 
+     * @param user The instance of the DatabaseUser which contains the data to
+     *            store
+     * @param bNewValue The new value of the reset password attribute
+     * @param plugin The current plugin using this method
+     * @return The instance of the DatabaseUser which has been updated
+     */
 	public static DatabaseUser updateResetPassword( DatabaseUser user, boolean bNewValue, Plugin plugin )
 	{
 		_dao.updateResetPassword( user, bNewValue, plugin );
@@ -344,14 +345,14 @@ public final class DatabaseUserHome
 		_dao.updateNbAlert( listIdUser, plugin );
 	}
 
-	/**
-	 * Set the "change password" flag of users to true
-	 * @param nIdUserList The list of users to update
-	 * @param plugin The plugin
-	 */
-	public static void updateChangePassword( List<Integer> idUserList, Plugin plugin )
+    /**
+     * Set the "change password" flag of users to true
+     * @param listIdUser The list of users to update
+     * @param plugin The plugin
+     */
+	public static void updateChangePassword( List<Integer> listIdUser, Plugin plugin )
 	{
-		_dao.updateChangePassword( idUserList, plugin );
+        _dao.updateChangePassword( listIdUser, plugin );
 	}
 
 	/**

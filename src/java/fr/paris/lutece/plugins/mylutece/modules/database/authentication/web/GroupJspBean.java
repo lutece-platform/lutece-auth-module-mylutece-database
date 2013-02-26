@@ -62,8 +62,6 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.sort.AttributeComparator;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,6 +70,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -238,7 +238,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
         		_nDefaultItemsPerPage );
-        LocalizedPaginator<Group> paginator = new LocalizedPaginator<Group>( (List<Group>) listAvailableGroups,
+        LocalizedPaginator<Group> paginator = new LocalizedPaginator<Group>( listAvailableGroups,
                 _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
@@ -626,7 +626,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         // ITEM NAVIGATION
         setItemNavigator( PARAMETER_ASSIGN_USER, selectedGroup.getGroupKey(  ), url.getUrl(  ) );
 
-        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( (List<DatabaseUser>) listFilteredUsers,
+        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( listFilteredUsers,
                 _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
 
         model.put( MARK_GROUP, selectedGroup );
@@ -772,8 +772,9 @@ public class GroupJspBean extends PluginAdminPageJspBean
     }
 
     /**
-     * Get the item navigator
-     * @param strLogin the role key
+     * Set the item navigator
+     * @param strItemNavigatorKey The item navigator key
+     * @param strGroupKey the group key
      * @param strUrl the url
      */
     private void setItemNavigator( String strItemNavigatorKey, String strGroupKey, String strUrl )

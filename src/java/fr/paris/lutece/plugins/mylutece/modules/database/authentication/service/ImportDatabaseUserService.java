@@ -119,13 +119,13 @@ public class ImportDatabaseUserService extends CSVReaderService
             // We create the user
             DatabaseService.getService( ).doCreateUser( user, PasswordUtil.makePassword( ), databasePlugin );
         }
+        // We remove old roles, groups and attributes of the user
         DatabaseHome.removeRolesForUser( user.getUserId( ), databasePlugin );
         DatabaseHome.removeGroupsForUser( user.getUserId( ), databasePlugin );
         MyLuteceUserFieldService.doRemoveUserFields( user.getUserId( ), locale );
 
+        // We get every attributes, roles and groups of the user
         Map<Integer, List<String>> mapAttributesValues = new HashMap<Integer, List<String>>( );
-
-        // We get every attributes of the user
         List<String> listRoles = new ArrayList<String>( );
         List<String> listGroups = new ArrayList<String>( );
         while ( nIndex < strLineDataArray.length )
@@ -163,18 +163,20 @@ public class ImportDatabaseUserService extends CSVReaderService
             nIndex++;
         }
 
+        // We create roles
         for ( String strRole : listRoles )
         {
             DatabaseHome.addRoleForUser( user.getUserId( ), strRole, databasePlugin );
         }
 
+        // We create groups
         for ( String strGoup : listGroups )
         {
             DatabaseHome.addGroupForUser( user.getUserId( ), strGoup, databasePlugin );
         }
 
-        List<IAttribute> listAttributes = AttributeHome.findAll( locale, mylutecePlugin );
         // We save the attributes found
+        List<IAttribute> listAttributes = AttributeHome.findAll( locale, mylutecePlugin );
         for ( IAttribute attribute : listAttributes )
         {
             List<String> listValues = mapAttributesValues.get( attribute.getIdAttribute( ) );
@@ -182,8 +184,7 @@ public class ImportDatabaseUserService extends CSVReaderService
             {
                 int nIdField = 0;
                 boolean bMyLuteceAttribute = attribute.getPlugin( ) == null
-                        || StringUtils.equals( attribute.getPlugin( ).getName( ),
-                        MyLutecePlugin.PLUGIN_NAME );
+                        || StringUtils.equals( attribute.getPlugin( ).getName( ), MyLutecePlugin.PLUGIN_NAME );
                 for ( String strValue : listValues )
                 {
                     int nSeparatorIndex = strValue.indexOf( getAttributesSeparator( ) );

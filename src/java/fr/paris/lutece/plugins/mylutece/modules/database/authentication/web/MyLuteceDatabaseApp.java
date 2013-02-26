@@ -360,6 +360,10 @@ public class MyLuteceDatabaseApp implements XPageApplication
 		return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_RESET_PASSWORD_URL );
 	}
 
+    /**
+     * Get the reset password Url
+     * @return the reset password Url
+     */
 	public static String getMessageResetPasswordUrl( )
 	{
 		return JSP_URL_GET_RESET_PASSWORD_PAGE;
@@ -1208,7 +1212,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 			return null;
 		}
 
-		DatabaseUser user = ( DatabaseUser ) listUsers.iterator( ).next( );
+        DatabaseUser user = listUsers.iterator( ).next( );
 
 		return user;
 	}
@@ -1318,6 +1322,12 @@ public class MyLuteceDatabaseApp implements XPageApplication
 				AppPropertiesService.getProperty( PROPERTY_MYLUTECE_DEFAULT_REDIRECT_URL ), null, SiteMessage.TYPE_ERROR );
 	}
 
+    /**
+     * Get the reset password message
+     * @param request The request
+     * @throws SiteMessageException The exception thrown to redirect the user to
+     *             the message
+     */
 	public void getMessageResetPassword( HttpServletRequest request ) throws SiteMessageException
 	{
 		SiteMessageService.setMessage( request, MESSAGE_MUST_CHANGE_PASSWORD, null, MESSAGE_PASSWORD_EXPIRED, getResetPasswordUrl( ), null, SiteMessage.TYPE_INFO );

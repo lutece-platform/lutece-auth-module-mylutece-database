@@ -199,6 +199,7 @@ public final class DatabaseHome
      * Update the reset password attribut of a user from his login
      * @param strUserName Login of the user to update
      * @param bNewValue New value
+     * @param plugin the plugin
      */
     public static void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin )
     {

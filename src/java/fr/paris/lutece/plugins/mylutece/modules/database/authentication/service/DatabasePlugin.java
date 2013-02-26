@@ -41,6 +41,9 @@ import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
  */
 public class DatabasePlugin extends PluginDefaultImplementation
 {
+    /**
+     * The plugin name
+     */
     public static final String PLUGIN_NAME = "mylutece-database";
 
     /**
