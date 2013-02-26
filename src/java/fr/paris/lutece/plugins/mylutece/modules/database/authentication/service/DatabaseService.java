@@ -149,9 +149,10 @@ public final class DatabaseService
     private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT = "mail_password_encryption_changed_subject";
 
 	// VARIABLES
+    private static DatabaseService _singleton;
+
 	private DatabaseUserParameterService _userParamService;
 
-	private static DatabaseService _singleton;
 
 	/**
 	 * Private constructor
@@ -194,7 +195,7 @@ public final class DatabaseService
 	 * Returns the instance of the singleton
 	 * @return The instance of the singleton
 	 */
-	public static DatabaseService getService( )
+    public static synchronized DatabaseService getService( )
 	{
 		if ( _singleton == null )
 		{

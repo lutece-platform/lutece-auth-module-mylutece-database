@@ -42,10 +42,6 @@ import java.sql.Timestamp;
  */
 public class DatabaseUser implements Serializable
 {
-    /**
-     * serialVersionUID
-     */
-    private static final long serialVersionUID = 8073247646404231859L;
     // Variables declarations
     /**
      * Status of not activated users.
@@ -63,6 +59,12 @@ public class DatabaseUser implements Serializable
      * Status of anonymized users.
      */
     public static final int STATUS_ANONYMIZED = 10;
+
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 8073247646404231859L;
+
     private int _nUserId;
     private String _strLogin;
     private String _strLastName;
