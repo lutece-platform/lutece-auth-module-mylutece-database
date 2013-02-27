@@ -109,7 +109,7 @@
 		        <td><#if user.status = 10>#i18n{mylutece.anonymize_user.statusLabelAnonymize}<#else>${user.email}</#if></td>
 		        <td>
 					<#if user.status != 10>
-					<a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="null" >
+					<a class="btn btn-primary btn-small" href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}"  title="#i18n{module.mylutece.database.manage_users.linkModifyUser}" >
 						<i class="icon-edit icon-white"></i>
 					</a>
 					</#if>
