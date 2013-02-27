@@ -57,7 +57,6 @@ public class ImportDatabaseUserService extends CSVReaderService
     private static final String MARK_SITE_NAME = "site_name";
     private static final String MARK_USER = "user";
     private static final String MARK_SITE_LINK = "site_link";
-    private static final String MARK_LOGIN_URL = "login_url";
     private static final String MARK_PASSWORD = "password";
 
     private static final String CONSTANT_DEFAULT_IMPORT_EXPORT_USER_SEPARATOR = ":";
@@ -332,6 +331,12 @@ public class ImportDatabaseUserService extends CSVReaderService
         return listMessages;
     }
 
+    /**
+     * Notify a user of the creation of his account and give him his credentials
+     * @param user the user to notify
+     * @param strPassword The password of the user
+     * @param locale The locale
+     */
     private void notifyUserAccountCreated( DatabaseUser user, String strPassword, Locale locale )
     {
         String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_NO_REPLY_EMAIL );

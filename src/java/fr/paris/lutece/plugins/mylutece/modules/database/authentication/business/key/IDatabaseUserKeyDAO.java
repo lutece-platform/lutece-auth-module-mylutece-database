@@ -78,6 +78,6 @@ public interface IDatabaseUserKeyDAO
      * @param plugin the plugin
      * @return a {@link DatabaseUserKey}
      */
-    public DatabaseUserKey selectKeyByLogin( String login, Plugin plugin );
+    DatabaseUserKey selectKeyByLogin( String login, Plugin plugin );
 
 }

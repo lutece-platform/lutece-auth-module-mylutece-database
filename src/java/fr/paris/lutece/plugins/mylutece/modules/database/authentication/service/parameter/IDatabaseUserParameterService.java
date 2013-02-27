@@ -15,12 +15,12 @@ public interface IDatabaseUserParameterService extends IUserParameterService
      * @param plugin the plugin
      * @return true if it must be validated by email, false otherwise
      */
-    public boolean isAccountCreationValidationEmail( Plugin plugin );
+    boolean isAccountCreationValidationEmail( Plugin plugin );
 
     /**
      * Check if the jcaptcha is enable or not
      * @param plugin the plugin
      * @return true if it is enable, false otherwise
      */
-    public boolean isJcaptchaEnable( Plugin plugin );
+    boolean isJcaptchaEnable( Plugin plugin );
 }
