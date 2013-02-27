@@ -17,9 +17,9 @@ import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -46,6 +46,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     private static final String MESSAGE_USERS_IMPORTED = "module.mylutece.database.import_users_from_file.usersImported";
     private static final String MESSAGE_ERROR_MIN_NUMBER_COLUMNS = "module.mylutece.database.import_users_from_file.messageErrorMinColumnNumber";
     private static final String MESSAGE_ACCOUNT_IMPORTED_MAIL_SUBJECT = "module.mylutece.database.import_users_from_file.email.mailSubject";
+    private static final String MESSAGE_ERROR_IMPORTING_ATTRIBUTES = "module.mylutece.database.import_users_from_file.errorImportingAttributes";
 
     private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
     private static final String PROPERTY_IMPORT_EXPORT_USER_SEPARATOR = "lutece.importExportUser.defaultSeparator";
@@ -224,24 +225,37 @@ public class ImportDatabaseUserService extends CSVReaderService
                         nIdField = 0;
                     }
                     String[] strValues = { strValue };
-                    List<MyLuteceUserField> listUserFields = attribute.getUserFieldsData( strValues, user.getUserId( ) );
-
-                    for ( MyLuteceUserField userField : listUserFields )
+                    try
                     {
-                        if ( userField != null )
+                        List<MyLuteceUserField> listUserFields = attribute.getUserFieldsData( strValues,
+                                user.getUserId( ) );
+
+                        for ( MyLuteceUserField userField : listUserFields )
                         {
-                            userField.getAttributeField( ).setIdField( nIdField );
-                            MyLuteceUserFieldHome.create( userField, mylutecePlugin );
+                            if ( userField != null )
+                            {
+                                userField.getAttributeField( ).setIdField( nIdField );
+                                MyLuteceUserFieldHome.create( userField, mylutecePlugin );
+                            }
+                        }
+                        if ( !bMyLuteceAttribute )
+                        {
+                            for ( MyLuteceUserFieldListenerService myLuteceUserFieldListenerService : SpringContextService
+                                    .getBeansOfType( MyLuteceUserFieldListenerService.class ) )
+                            {
+                                myLuteceUserFieldListenerService.doCreateUserFields( user.getUserId( ), listUserFields,
+                                        locale );
+                            }
                         }
                     }
-                    if ( !bMyLuteceAttribute )
+                    catch ( Exception e )
                     {
-                        for ( MyLuteceUserFieldListenerService myLuteceUserFieldListenerService : SpringContextService
-                                .getBeansOfType( MyLuteceUserFieldListenerService.class ) )
-                        {
-                            myLuteceUserFieldListenerService.doCreateUserFields( user.getUserId( ), listUserFields,
-                                    locale );
-                        }
+                        AppLogService.error( e.getMessage( ), e );
+                        String strErrorMessage = I18nService.getLocalizedString( MESSAGE_ERROR_IMPORTING_ATTRIBUTES,
+                                locale );
+                        CSVMessageDescriptor error = new CSVMessageDescriptor( CSVMessageLevel.ERROR, nLineNumber,
+                                strErrorMessage );
+                        listMessages.add( error );
                     }
                 }
             }
@@ -329,8 +343,6 @@ public class ImportDatabaseUserService extends CSVReaderService
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_USER, user );
         model.put( MARK_SITE_NAME, strSiteName );
-        model.put( MARK_LOGIN_URL, strBaseURL
-                + SecurityService.getInstance( ).getAuthenticationService( ).getLoginPageUrl( ) );
         model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
         model.put( MARK_PASSWORD, strPassword );
 
