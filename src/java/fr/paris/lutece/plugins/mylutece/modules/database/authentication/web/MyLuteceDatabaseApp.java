@@ -919,14 +919,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
 		if ( ( user == null ) )
 		{
-			try
-			{
-				SiteMessageService.setMessage( request, PROPERTY_ACCESS_DENIED_ERROR_MESSAGE, null, PROPERTY_ACCESS_DENIED_TITLE_MESSAGE, null, null, SiteMessage.TYPE_STOP );
-			}
-			catch ( SiteMessageException e )
-			{
-				return AppPathService.getBaseUrl( request );
-			}
+            return AppPathService.getBaseUrl( request );
 		}
 
 		if ( StringUtils.isBlank( strOldPassword ) || StringUtils.isBlank( strNewPassword ) || StringUtils.isBlank( strConfirmationPassword ) )

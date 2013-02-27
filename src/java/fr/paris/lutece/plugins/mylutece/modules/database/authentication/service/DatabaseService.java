@@ -77,6 +77,8 @@ import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.xml.XmlUtil;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -670,6 +672,7 @@ public final class DatabaseService
         Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         Plugin mylutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         StringBuffer sbXml = new StringBuffer( );
+        DateFormat dateFormat = new SimpleDateFormat( );
 
         XmlUtil.beginElement( sbXml, CONSTANT_XML_USER );
         XmlUtil.addElement( sbXml, CONSTANT_XML_ACCESS_CODE, user.getLogin( ) );
@@ -681,14 +684,14 @@ public final class DatabaseService
         String strPasswordMaxValidDate = StringUtils.EMPTY;
         if ( user.getPasswordMaxValidDate( ) != null )
         {
-            strPasswordMaxValidDate = Long.toString( user.getPasswordMaxValidDate( ).getTime( ) );
+            strPasswordMaxValidDate = dateFormat.format( user.getPasswordMaxValidDate( ) );
         }
         XmlUtil.addElement( sbXml, CONSTANT_XML_PASSWORD_MAX_VALID_DATE, strPasswordMaxValidDate );
 
         String strAccountMaxValidDate = StringUtils.EMPTY;
         if ( user.getAccountMaxValidDate( ) != null )
         {
-            strAccountMaxValidDate = Long.toString( user.getAccountMaxValidDate( ).getTime( ) );
+            strAccountMaxValidDate = dateFormat.format( user.getAccountMaxValidDate( ) );
         }
         XmlUtil.addElement( sbXml, CONSTANT_XML_ACCOUNT_MAX_VALID_DATE, strAccountMaxValidDate );
 

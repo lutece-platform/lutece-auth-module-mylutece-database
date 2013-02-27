@@ -14,10 +14,15 @@ import fr.paris.lutece.portal.service.csv.CSVMessageDescriptor;
 import fr.paris.lutece.portal.service.csv.CSVMessageLevel;
 import fr.paris.lutece.portal.service.csv.CSVReaderService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.password.PasswordUtil;
 
 import java.util.ArrayList;
@@ -37,15 +42,26 @@ public class ImportDatabaseUserService extends CSVReaderService
 {
     private static final String MESSAGE_NO_STATUS = "module.mylutece.database.import_users_from_file.importNoStatus";
     private static final String MESSAGE_ACCESS_CODE_ALREADY_USED = "module.mylutece.database.message.user_exist";
-    private static final String MESSAGE_EMAIL_ALREADY_USED = "module.mylutece.database.message.user.accessEmailUsed";
+    private static final String MESSAGE_EMAIL_ALREADY_USED = "module.mylutece.database.message.user_exist";
     private static final String MESSAGE_USERS_IMPORTED = "module.mylutece.database.import_users_from_file.usersImported";
     private static final String MESSAGE_ERROR_MIN_NUMBER_COLUMNS = "module.mylutece.database.import_users_from_file.messageErrorMinColumnNumber";
+    private static final String MESSAGE_ACCOUNT_IMPORTED_MAIL_SUBJECT = "module.mylutece.database.import_users_from_file.email.mailSubject";
+
+    private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
+    private static final String PROPERTY_IMPORT_EXPORT_USER_SEPARATOR = "lutece.importExportUser.defaultSeparator";
+    private static final String PROPERTY_SITE_NAME = "lutece.name";
+
+    private static final String TEMPLATE_MAIL_USER_IMPORTED = "admin/plugins/mylutece/modules/database/mail_user_imported.html";
+
+    private static final String MARK_SITE_NAME = "site_name";
+    private static final String MARK_USER = "user";
+    private static final String MARK_SITE_LINK = "site_link";
+    private static final String MARK_LOGIN_URL = "login_url";
+    private static final String MARK_PASSWORD = "password";
 
     private static final String CONSTANT_DEFAULT_IMPORT_EXPORT_USER_SEPARATOR = ":";
     private static final String CONSTANT_ROLE = "role";
     private static final String CONSTANT_GROUP = "group";
-    private static final String PROPERTY_IMPORT_EXPORT_USER_SEPARATOR = "lutece.importExportUser.defaultSeparator";
-
     private static final int CONSTANT_MINIMUM_COLUMNS_PER_LINE = 7;
 
     private Character _strAttributesSeparator;
@@ -81,7 +97,7 @@ public class ImportDatabaseUserService extends CSVReaderService
 
         String strStatus = strLineDataArray[nIndex++];
         int nStatus = 0;
-        if ( StringUtils.isNotEmpty( strStatus ) )
+        if ( StringUtils.isNotEmpty( strStatus ) && StringUtils.isNumeric( strStatus ) )
         {
             nStatus = Integer.parseInt( strStatus );
         }
@@ -117,7 +133,9 @@ public class ImportDatabaseUserService extends CSVReaderService
         else
         {
             // We create the user
-            DatabaseService.getService( ).doCreateUser( user, PasswordUtil.makePassword( ), databasePlugin );
+            String strPassword = PasswordUtil.makePassword( );
+            DatabaseService.getService( ).doCreateUser( user, strPassword, databasePlugin );
+            notifyUserAccountCreated( user, strPassword, locale );
         }
         // We remove old roles, groups and attributes of the user
         DatabaseHome.removeRolesForUser( user.getUserId( ), databasePlugin );
@@ -298,6 +316,28 @@ public class ImportDatabaseUserService extends CSVReaderService
         CSVMessageDescriptor message = new CSVMessageDescriptor( CSVMessageLevel.INFO, 0, strMessageContent );
         listMessages.add( message );
         return listMessages;
+    }
+
+    private void notifyUserAccountCreated( DatabaseUser user, String strPassword, Locale locale )
+    {
+        String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_NO_REPLY_EMAIL );
+        String strSiteName = AppPropertiesService.getProperty( PROPERTY_SITE_NAME );
+
+        String strEmailSubject = I18nService.getLocalizedString( MESSAGE_ACCOUNT_IMPORTED_MAIL_SUBJECT,
+                new String[] { strSiteName }, locale );
+        String strBaseURL = AppPathService.getBaseUrl( );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_USER, user );
+        model.put( MARK_SITE_NAME, strSiteName );
+        model.put( MARK_LOGIN_URL, strBaseURL
+                + SecurityService.getInstance( ).getAuthenticationService( ).getLoginPageUrl( ) );
+        model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
+        model.put( MARK_PASSWORD, strPassword );
+
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MAIL_USER_IMPORTED, locale, model );
+
+        MailService
+                .sendMailHtml( user.getEmail( ), strSenderEmail, strSenderEmail, strEmailSubject, template.getHtml( ) );
     }
 
     /**

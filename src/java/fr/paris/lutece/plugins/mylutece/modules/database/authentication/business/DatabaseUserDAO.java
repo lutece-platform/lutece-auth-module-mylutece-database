@@ -57,7 +57,7 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 	private static final String SQL_QUERY_UPDATE = " UPDATE mylutece_database_user SET login = ?, name_family = ?, name_given = ?, email = ?, is_active = ? WHERE mylutece_database_user_id = ? ";
 	private static final String SQL_QUERY_UPDATE_PASSWORD = " UPDATE mylutece_database_user SET password = ?, password_max_valid_date = ? WHERE mylutece_database_user_id = ? ";
 	private static final String SQL_QUERY_UPDATE_RESET_PASSWORD = " UPDATE mylutece_database_user SET reset_password = ? WHERE mylutece_database_user_id = ? ";
-	private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user ORDER BY name_family, login";
+    private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active, account_max_valid_date, password_max_valid_date FROM mylutece_database_user ORDER BY name_family, login";
 	private static final String SQL_QUERY_SELECTALL_FOR_LOGIN = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE login = ? ";
 	private static final String SQL_QUERY_SELECTALL_FOR_EMAIL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE email = ? ";
 	private static final String SQL_QUERY_CHECK_PASSWORD_FOR_USER_ID = " SELECT count(*) FROM mylutece_database_user WHERE login = ? AND password = ? ";
@@ -296,7 +296,12 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
 			databaseUser.setFirstName( daoUtil.getString( 4 ) );
 			databaseUser.setEmail( daoUtil.getString( 5 ) );
 			databaseUser.setStatus( daoUtil.getInt( 6 ) );
-
+            long accountTime = daoUtil.getLong( 7 );
+            if ( accountTime > 0 )
+            {
+                databaseUser.setAccountMaxValidDate( new Timestamp( accountTime ) );
+            }
+            databaseUser.setPasswordMaxValidDate( daoUtil.getTimestamp( 8 ) );
 			listDatabaseUsers.add( databaseUser );
 		}
 
