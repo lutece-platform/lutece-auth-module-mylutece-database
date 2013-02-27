@@ -59,6 +59,7 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.http.SecurityUtil;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -157,7 +158,7 @@ public class BaseAuthentication extends PortalAuthentication
 		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 		// Creating a record of connections log
 		ConnectionLog connectionLog = new ConnectionLog( );
-		connectionLog.setIpAddress( request.getRemoteAddr( ) );
+        connectionLog.setIpAddress( SecurityUtil.getRealIp( request ) );
 		connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
 
 		// Test the number of errors during an interval of minutes
