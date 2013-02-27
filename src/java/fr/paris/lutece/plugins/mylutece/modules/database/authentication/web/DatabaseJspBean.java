@@ -245,6 +245,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_SKIP_FIRST_LINE = "ignore_first_line";
     private static final String PARAMETER_UPDATE_USERS = "update_existing_users";
     private static final String PARAMETER_XSL_EXPORT_ID = "xsl_export_id";
+    private static final String PARAMETER_EXPORT_ATTRIBUTES = "export_attributes";
     private static final String PARAMETER_EXPORT_ROLES = "export_roles";
     private static final String PARAMETER_EXPORT_WORKGROUPS = "export_workgroups";
 
@@ -1719,8 +1720,10 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         String strXslExportId = request.getParameter( PARAMETER_XSL_EXPORT_ID );
+        String strExportAttributes = request.getParameter( PARAMETER_EXPORT_ATTRIBUTES );
         String strExportRoles = request.getParameter( PARAMETER_EXPORT_ROLES );
         String strExportWorkgroups = request.getParameter( PARAMETER_EXPORT_WORKGROUPS );
+        boolean bExportAttributes = StringUtils.isNotEmpty( strExportAttributes );
         boolean bExportRoles = StringUtils.isNotEmpty( strExportRoles );
         boolean bExportWorkgroups = StringUtils.isNotEmpty( strExportWorkgroups );
 
@@ -1746,8 +1749,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         {
             if ( !( user.getStatus( ) == DatabaseUser.STATUS_ANONYMIZED ) )
             {
-                sbXml.append( _databaseService.getXmlFromUser( user, bExportRoles, bExportWorkgroups, true,
-                        listAttributes, getLocale( ) ) );
+                sbXml.append( _databaseService.getXmlFromUser( user, bExportRoles, bExportWorkgroups,
+                        bExportAttributes, listAttributes, getLocale( ) ) );
             }
         }
         XmlUtil.endElement( sbXml, CONSTANT_XML_USERS );
