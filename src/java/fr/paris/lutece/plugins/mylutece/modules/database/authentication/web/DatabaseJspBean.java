@@ -1659,7 +1659,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             boolean bUpdateUsers = StringUtils.isNotEmpty( strUpdateUsers );
             _importDatabaseUserService.setUpdateExistingUsers( bUpdateUsers );
             List<CSVMessageDescriptor> listMessages = _importDatabaseUserService.readCSVFile( fileItem, 0, false,
-                    false, bSkipFirstLine, AdminUserService.getLocale( request ) );
+                    false, bSkipFirstLine, AdminUserService.getLocale( request ), AppPathService.getBaseUrl( request ) );
 
             request.setAttribute( ATTRIBUTE_IMPORT_USERS_LIST_MESSAGES, listMessages );
             String strHtmlResult = getImportUsersFromFile( request );

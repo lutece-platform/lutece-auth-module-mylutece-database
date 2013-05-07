@@ -20,7 +20,6 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.password.PasswordUtil;
@@ -71,7 +70,8 @@ public class ImportDatabaseUserService extends CSVReaderService
      * {@inheritDoc}
      */
     @Override
-    protected List<CSVMessageDescriptor> readLineOfCSVFile( String[] strLineDataArray, int nLineNumber, Locale locale )
+    protected List<CSVMessageDescriptor> readLineOfCSVFile( String[] strLineDataArray, int nLineNumber, Locale locale,
+            String strBaseUrl )
     {
         Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         Plugin mylutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
@@ -135,7 +135,7 @@ public class ImportDatabaseUserService extends CSVReaderService
             // We create the user
             String strPassword = PasswordUtil.makePassword( );
             DatabaseService.getService( ).doCreateUser( user, strPassword, databasePlugin );
-            notifyUserAccountCreated( user, strPassword, locale );
+            notifyUserAccountCreated( user, strPassword, locale, strBaseUrl );
         }
         // We remove old roles, groups and attributes of the user
         DatabaseHome.removeRolesForUser( user.getUserId( ), databasePlugin );
@@ -336,15 +336,16 @@ public class ImportDatabaseUserService extends CSVReaderService
      * @param user the user to notify
      * @param strPassword The password of the user
      * @param locale The locale
+     * @param strBaseUrl The base URL
      */
-    private void notifyUserAccountCreated( DatabaseUser user, String strPassword, Locale locale )
+    private void notifyUserAccountCreated( DatabaseUser user, String strPassword, Locale locale, String strBaseUrl )
     {
         String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_NO_REPLY_EMAIL );
         String strSiteName = AppPropertiesService.getProperty( PROPERTY_SITE_NAME );
 
         String strEmailSubject = I18nService.getLocalizedString( MESSAGE_ACCOUNT_IMPORTED_MAIL_SUBJECT,
                 new String[] { strSiteName }, locale );
-        String strBaseURL = AppPathService.getBaseUrl( );
+        String strBaseURL = strBaseUrl;
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_USER, user );
         model.put( MARK_SITE_NAME, strSiteName );
