@@ -7,6 +7,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
 
@@ -41,7 +42,6 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 	private static final String MARK_REF = "ref";
 
 	private static final String PROPERTY_ACCOUNT_REF_ENCRYPT_ALGO = "mylutece-database.account_life_time.refEncryptionAlgorythm";
-	private static final String PROPERTY_PROD_URL = "lutece.prod.url";
 
 	private static final String JSP_URL_REACTIVATE_ACCOUNT = "/jsp/site/Portal.jsp?page=mylutecedatabase&action=reactivateAccount";
 	private static final String CONSTANT_AND = "&";
@@ -169,7 +169,8 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 		String accountMaxValidDate = dateFormat.format( new Date( user.getAccountMaxValidDate( ).getTime( ) ) );
 
 		StringBuilder sbUrl = new StringBuilder( );
-		sbUrl.append( AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
+        // FIXME : get base URL in case the prod URL is null
+        sbUrl.append( AppPathService.getProdUrl( ) );
 		sbUrl.append( JSP_URL_REACTIVATE_ACCOUNT );
 		sbUrl.append( CONSTANT_AND );
 		sbUrl.append( MARK_USER_ID );
