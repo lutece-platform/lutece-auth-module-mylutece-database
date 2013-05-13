@@ -52,3 +52,18 @@ INSERT INTO core_physical_file VALUES (128,'<?xml version=\"1.0\" ?>\r\n<xsl:sty
 INSERT INTO core_file VALUES (128,'export_users_xml.xml',127,259,'application/xml');
 INSERT INTO core_xsl_export VALUES (128,'MyLutece Database - Export XML des utilisateurs','Export des utilisateur MyLutece Database dans un fichier XML','xml',128,'mylutece-database');
 
+--
+-- Init Public URLs
+--
+
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.login.page','jsp/site/Portal.jsp?page=mylutece&action=login');
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.doLogin','jsp/site/plugins/mylutece/DoMyLuteceLogin.jsp');
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.doLogout','jsp/site/plugins/mylutece/DoMyLuteceLogout.jsp');
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.createAccount.page','jsp/site/Portal.jsp?page=mylutecedatabase&action=createAccount');
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.lostPassword.page','jsp/site/Portal.jsp?page=mylutecedatabase&action=lostPassword');
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.lostLogin.page','jsp/site/Portal.jsp?page=mylutecedatabase&action=lostLogin');
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.reinitPassword.page','jsp/site/Portal.jsp?page=mylutecedatabase&action=reinitPassword');
+INSERT INTO core_datastore(entity_key,entity_value) VALUES('mylutece.security.public_url.mylutece-database.url.doActionsAll','jsp/site/plugins/mylutece/modules/database/*');
+
+
+
