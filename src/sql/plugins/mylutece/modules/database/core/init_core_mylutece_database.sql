@@ -49,7 +49,7 @@ INSERT INTO core_file VALUES (127,'export_users_csv.xml',127,1861,'application/x
 INSERT INTO core_xsl_export VALUES (127,'MyLutece Database - Export CSV des utilisateurs','Export des utilisateur MyLutece Database dans un fichier CSV','csv',127,'mylutece-database');
 
 INSERT INTO core_physical_file VALUES (128,'<?xml version=\"1.0\" ?>\r\n<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\r\n	<xsl:template match=\"/ | @* | node()\">\r\n		<xsl:copy>\r\n			<xsl:apply-templates select=\"@* | node()\" />\r\n		</xsl:copy>\r\n	</xsl:template>\r\n</xsl:stylesheet>');
-INSERT INTO core_file VALUES (128,'export_users_xml.xml',127,259,'application/xml');
+INSERT INTO core_file VALUES (128,'export_users_xml.xml',128,259,'application/xml');
 INSERT INTO core_xsl_export VALUES (128,'MyLutece Database - Export XML des utilisateurs','Export des utilisateur MyLutece Database dans un fichier XML','xml',128,'mylutece-database');
 
 --
