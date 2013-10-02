@@ -33,73 +33,79 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
-
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.security.LuteceUserService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+
 
 /**
- * This class provides instances management methods (create, find, ...) for DatabaseUser objects
+ * This class provides instances management methods (create, find, ...) for
+ * DatabaseUser objects
  */
 public final class DatabaseUserHome
 {
-	// Static variable pointed at the DAO instance
+    // Static variable pointed at the DAO instance
     private static IDatabaseUserDAO _dao = SpringContextService.getBean( "mylutece-database.databaseUserDAO" );
 
-	/**
-	 * Private constructor - this class need not be instantiated
-	 */
-	private DatabaseUserHome( )
-	{
-	}
+    /**
+     * Private constructor - this class need not be instantiated
+     */
+    private DatabaseUserHome( )
+    {
+    }
 
-	/**
-	 * Creation of an instance of databaseUser
-	 * 
-	 * @param databaseUser The instance of the DatabaseUser which contains the informations to store
-	 * @param strPassword The user's password
-	 * @param plugin The current plugin using this method
-	 * @return The instance of DatabaseUser which has been created with its primary key.
-	 */
-	public static DatabaseUser create( DatabaseUser databaseUser, String strPassword, Plugin plugin )
-	{
-		_dao.insert( databaseUser, strPassword, plugin );
+    /**
+     * Creation of an instance of databaseUser
+     * 
+     * @param databaseUser The instance of the DatabaseUser which contains the
+     *            informations to store
+     * @param strPassword The user's password
+     * @param plugin The current plugin using this method
+     * @return The instance of DatabaseUser which has been created with its
+     *         primary key.
+     */
+    public static DatabaseUser create( DatabaseUser databaseUser, String strPassword, Plugin plugin )
+    {
+        _dao.insert( databaseUser, strPassword, plugin );
 
-		return databaseUser;
-	}
+        return databaseUser;
+    }
 
-	/**
-	 * Update of the databaseUser which is specified in parameter
-	 * 
-	 * @param databaseUser The instance of the DatabaseUser which contains the data to store
-	 * @param plugin The current plugin using this method
-	 * @return The instance of the DatabaseUser which has been updated
-	 */
-	public static DatabaseUser update( DatabaseUser databaseUser, Plugin plugin )
-	{
-		_dao.store( databaseUser, plugin );
+    /**
+     * Update of the databaseUser which is specified in parameter
+     * 
+     * @param databaseUser The instance of the DatabaseUser which contains the
+     *            data to store
+     * @param plugin The current plugin using this method
+     * @return The instance of the DatabaseUser which has been updated
+     */
+    public static DatabaseUser update( DatabaseUser databaseUser, Plugin plugin )
+    {
+        _dao.store( databaseUser, plugin );
+        LuteceUserService.userAttributesChanged( databaseUser.getLogin( ) );
+        return databaseUser;
+    }
 
-		return databaseUser;
-	}
+    /**
+     * Update of the databaseUser which is specified in parameter
+     * 
+     * @param databaseUser The instance of the DatabaseUser which contains the
+     *            data to store
+     * @param strNewPassword The new password to store
+     * @param plugin The current plugin using this method
+     * @return The instance of the DatabaseUser which has been updated
+     */
+    public static DatabaseUser updatePassword( DatabaseUser databaseUser, String strNewPassword, Plugin plugin )
+    {
+        _dao.updatePassword( databaseUser, strNewPassword, plugin );
 
-	/**
-	 * Update of the databaseUser which is specified in parameter
-	 * 
-	 * @param databaseUser The instance of the DatabaseUser which contains the data to store
-	 * @param strNewPassword The new password to store
-	 * @param plugin The current plugin using this method
-	 * @return The instance of the DatabaseUser which has been updated
-	 */
-	public static DatabaseUser updatePassword( DatabaseUser databaseUser, String strNewPassword, Plugin plugin )
-	{
-		_dao.updatePassword( databaseUser, strNewPassword, plugin );
-
-		return databaseUser;
-	}
+        return databaseUser;
+    }
 
     /**
      * Update of the databaseUser which is specified in parameter
@@ -110,281 +116,290 @@ public final class DatabaseUserHome
      * @param plugin The current plugin using this method
      * @return The instance of the DatabaseUser which has been updated
      */
-	public static DatabaseUser updateResetPassword( DatabaseUser user, boolean bNewValue, Plugin plugin )
-	{
-		_dao.updateResetPassword( user, bNewValue, plugin );
+    public static DatabaseUser updateResetPassword( DatabaseUser user, boolean bNewValue, Plugin plugin )
+    {
+        _dao.updateResetPassword( user, bNewValue, plugin );
 
-		return user;
-	}
+        return user;
+    }
 
-	/**
-	 * Remove the databaseUser whose identifier is specified in parameter
-	 * 
-	 * @param databaseUser The DatabaseUser object to remove
-	 * @param plugin The current plugin using this method
-	 */
-	public static void remove( DatabaseUser databaseUser, Plugin plugin )
-	{
-		_dao.delete( databaseUser, plugin );
-	}
+    /**
+     * Remove the databaseUser whose identifier is specified in parameter
+     * 
+     * @param databaseUser The DatabaseUser object to remove
+     * @param plugin The current plugin using this method
+     */
+    public static void remove( DatabaseUser databaseUser, Plugin plugin )
+    {
+        _dao.delete( databaseUser, plugin );
+        LuteceUserService.userAttributesChanged( databaseUser.getLogin( ) );
+    }
 
-	// /////////////////////////////////////////////////////////////////////////
-	// Finders
+    // /////////////////////////////////////////////////////////////////////////
+    // Finders
 
-	/**
-	 * Returns an instance of a DatabaseUser whose identifier is specified in parameter
-	 * 
-	 * @param nKey The Primary key of the databaseUser
-	 * @param plugin The current plugin using this method
-	 * @return An instance of DatabaseUser
-	 */
-	public static DatabaseUser findByPrimaryKey( int nKey, Plugin plugin )
-	{
-		return _dao.load( nKey, plugin );
-	}
+    /**
+     * Returns an instance of a DatabaseUser whose identifier is specified in
+     * parameter
+     * 
+     * @param nKey The Primary key of the databaseUser
+     * @param plugin The current plugin using this method
+     * @return An instance of DatabaseUser
+     */
+    public static DatabaseUser findByPrimaryKey( int nKey, Plugin plugin )
+    {
+        return _dao.load( nKey, plugin );
+    }
 
-	/**
-	 * Returns a collection of DatabaseUser objects
-	 * @param plugin The current plugin using this method
-	 * @return A collection of DatabaseUser
-	 */
-	public static Collection<DatabaseUser> findDatabaseUsersList( Plugin plugin )
-	{
-		return _dao.selectDatabaseUserList( plugin );
-	}
+    /**
+     * Returns a collection of DatabaseUser objects
+     * @param plugin The current plugin using this method
+     * @return A collection of DatabaseUser
+     */
+    public static Collection<DatabaseUser> findDatabaseUsersList( Plugin plugin )
+    {
+        return _dao.selectDatabaseUserList( plugin );
+    }
 
-	/**
-	 * Returns a collection of DatabaseUser objects for a login
-	 * 
-	 * @param strLogin The login of the databseUser
-	 * @param plugin The current plugin using this method
-	 * @return A collection of DatabaseUser
-	 */
-	public static Collection<DatabaseUser> findDatabaseUsersListForLogin( String strLogin, Plugin plugin )
-	{
-		return _dao.selectDatabaseUserListForLogin( strLogin, plugin );
-	}
+    /**
+     * Returns a collection of DatabaseUser objects for a login
+     * 
+     * @param strLogin The login of the databseUser
+     * @param plugin The current plugin using this method
+     * @return A collection of DatabaseUser
+     */
+    public static Collection<DatabaseUser> findDatabaseUsersListForLogin( String strLogin, Plugin plugin )
+    {
+        return _dao.selectDatabaseUserListForLogin( strLogin, plugin );
+    }
 
-	/**
-	 * Returns a collection of DatabaseUser objects for a email
-	 * 
-	 * @param strEmail The email of the databseUser
-	 * @param plugin The current plugin using this method
-	 * @return A collection of DatabaseUser
-	 */
-	public static Collection<DatabaseUser> findDatabaseUsersListForEmail( String strEmail, Plugin plugin )
-	{
-		return _dao.selectDatabaseUserListForEmail( strEmail, plugin );
-	}
+    /**
+     * Returns a collection of DatabaseUser objects for a email
+     * 
+     * @param strEmail The email of the databseUser
+     * @param plugin The current plugin using this method
+     * @return A collection of DatabaseUser
+     */
+    public static Collection<DatabaseUser> findDatabaseUsersListForEmail( String strEmail, Plugin plugin )
+    {
+        return _dao.selectDatabaseUserListForEmail( strEmail, plugin );
+    }
 
-	/**
-	 * Returns the password of the specified user
-	 * 
-	 * @param nKey The Primary key of the databaseUser
-	 * @param plugin The current plugin using this method
-	 * @return An instance of DatabaseUser
-	 */
-	public static String findPasswordByPrimaryKey( int nKey, Plugin plugin )
-	{
-		return _dao.selectPasswordByPrimaryKey( nKey, plugin );
-	}
+    /**
+     * Returns the password of the specified user
+     * 
+     * @param nKey The Primary key of the databaseUser
+     * @param plugin The current plugin using this method
+     * @return An instance of DatabaseUser
+     */
+    public static String findPasswordByPrimaryKey( int nKey, Plugin plugin )
+    {
+        return _dao.selectPasswordByPrimaryKey( nKey, plugin );
+    }
 
-	/**
-	 * Check the password for a DatabaseUser
-	 * 
-	 * @param strLogin The user login of DatabaseUser
-	 * @param strPassword The password of DatabaseUser
-	 * @param plugin The Plugin using this data access service
-	 * @return true if password is ok
-	 */
-	public static boolean checkPassword( String strLogin, String strPassword, Plugin plugin )
-	{
-		return _dao.checkPassword( strLogin, strPassword, plugin );
-	}
+    /**
+     * Check the password for a DatabaseUser
+     * 
+     * @param strLogin The user login of DatabaseUser
+     * @param strPassword The password of DatabaseUser
+     * @param plugin The Plugin using this data access service
+     * @return true if password is ok
+     */
+    public static boolean checkPassword( String strLogin, String strPassword, Plugin plugin )
+    {
+        return _dao.checkPassword( strLogin, strPassword, plugin );
+    }
 
-	/**
-	 * Find DatabaseUsers by filter
-	 * @param duFilter filter
-	 * @param plugin The plugin
-	 * @return a list of DatabaseUsers
-	 */
-	public static List<DatabaseUser> findDatabaseUsersListByFilter( DatabaseUserFilter duFilter, Plugin plugin )
-	{
-		return _dao.selectDatabaseUsersListByFilter( duFilter, plugin );
-	}
+    /**
+     * Find DatabaseUsers by filter
+     * @param duFilter filter
+     * @param plugin The plugin
+     * @return a list of DatabaseUsers
+     */
+    public static List<DatabaseUser> findDatabaseUsersListByFilter( DatabaseUserFilter duFilter, Plugin plugin )
+    {
+        return _dao.selectDatabaseUsersListByFilter( duFilter, plugin );
+    }
 
-	/**
-	 * Get a user id from his login
-	 * @param strLogin The login of the user
-	 * @param plugin The plugin
-	 * @return The user id, or 0 if no user has this login.
-	 */
-	public static int findDatabaseUserIdFromLogin( String strLogin, Plugin plugin )
-	{
-		return _dao.findDatabaseUserIdFromLogin( strLogin, plugin );
-	}
+    /**
+     * Get a user id from his login
+     * @param strLogin The login of the user
+     * @param plugin The plugin
+     * @return The user id, or 0 if no user has this login.
+     */
+    public static int findDatabaseUserIdFromLogin( String strLogin, Plugin plugin )
+    {
+        return _dao.findDatabaseUserIdFromLogin( strLogin, plugin );
+    }
 
-	/**
-	 * Gets the history of password of the given user
-	 * @param nUserID Id of the user
-	 * @param plugin The plugin
-	 * @return The collection of recent passwords used by the user.
-	 */
-	public static List<String> selectUserPasswordHistory( int nUserID, Plugin plugin )
-	{
-		return _dao.selectUserPasswordHistory( nUserID, plugin );
-	}
+    /**
+     * Gets the history of password of the given user
+     * @param nUserID Id of the user
+     * @param plugin The plugin
+     * @return The collection of recent passwords used by the user.
+     */
+    public static List<String> selectUserPasswordHistory( int nUserID, Plugin plugin )
+    {
+        return _dao.selectUserPasswordHistory( nUserID, plugin );
+    }
 
-	/**
-	 * Get the number of password change done by a user since the given date.
-	 * @param minDate Minimum date to consider.
-	 * @param nUserId Id of the user
-	 * @param plugin The plugin
-	 * @return The number of password change done by the user since the given date.
-	 */
-	public static int countUserPasswordHistoryFromDate( Timestamp minDate, int nUserId, Plugin plugin )
-	{
-		return _dao.countUserPasswordHistoryFromDate( minDate, nUserId, plugin );
-	}
+    /**
+     * Get the number of password change done by a user since the given date.
+     * @param minDate Minimum date to consider.
+     * @param nUserId Id of the user
+     * @param plugin The plugin
+     * @return The number of password change done by the user since the given
+     *         date.
+     */
+    public static int countUserPasswordHistoryFromDate( Timestamp minDate, int nUserId, Plugin plugin )
+    {
+        return _dao.countUserPasswordHistoryFromDate( minDate, nUserId, plugin );
+    }
 
-	/**
-	 * Log a password change in the password history
-	 * @param strPassword New password of the user
-	 * @param nUserId Id of the user
-	 * @param plugin The plugin
-	 */
-	public static void insertNewPasswordInHistory( String strPassword, int nUserId, Plugin plugin )
-	{
-		_dao.insertNewPasswordInHistory( strPassword, nUserId, plugin );
-	}
+    /**
+     * Log a password change in the password history
+     * @param strPassword New password of the user
+     * @param nUserId Id of the user
+     * @param plugin The plugin
+     */
+    public static void insertNewPasswordInHistory( String strPassword, int nUserId, Plugin plugin )
+    {
+        _dao.insertNewPasswordInHistory( strPassword, nUserId, plugin );
+    }
 
-	/**
-	 * Remove every password saved in the password history for a user.
-	 * @param nUserId Id of the user
-	 * @param plugin The plugin
-	 */
-	public static void removeAllPasswordHistoryForUser( int nUserId, Plugin plugin )
-	{
-		_dao.removeAllPasswordHistoryForUser( nUserId, plugin );
-	}
+    /**
+     * Remove every password saved in the password history for a user.
+     * @param nUserId Id of the user
+     * @param plugin The plugin
+     */
+    public static void removeAllPasswordHistoryForUser( int nUserId, Plugin plugin )
+    {
+        _dao.removeAllPasswordHistoryForUser( nUserId, plugin );
+    }
 
-	/**
-	 * Get the list of id of user with the expired status.
-	 * @param plugin The plugin
-	 * @return The list of id of user with the expired status.
-	 */
-	public static List<Integer> findAllExpiredUserId( Plugin plugin )
-	{
-		return _dao.findAllExpiredUserId( plugin );
-	}
+    /**
+     * Get the list of id of user with the expired status.
+     * @param plugin The plugin
+     * @return The list of id of user with the expired status.
+     */
+    public static List<Integer> findAllExpiredUserId( Plugin plugin )
+    {
+        return _dao.findAllExpiredUserId( plugin );
+    }
 
-	/**
-	 * Get the list of id of users that have an expired time life but not the expired status
-	 * @param currentTimestamp Timestamp describing the current time.
-	 * @param plugin The plugin
-	 * @return the list of id of users with expired time life
-	 */
-	public static List<Integer> getIdUsersWithExpiredLifeTimeList( Timestamp currentTimestamp, Plugin plugin )
-	{
-		return _dao.getIdUsersWithExpiredLifeTimeList( currentTimestamp, plugin );
-	}
+    /**
+     * Get the list of id of users that have an expired time life but not the
+     * expired status
+     * @param currentTimestamp Timestamp describing the current time.
+     * @param plugin The plugin
+     * @return the list of id of users with expired time life
+     */
+    public static List<Integer> getIdUsersWithExpiredLifeTimeList( Timestamp currentTimestamp, Plugin plugin )
+    {
+        return _dao.getIdUsersWithExpiredLifeTimeList( currentTimestamp, plugin );
+    }
 
-	/**
-	 * Get the list of id of users that need to receive their first alert
-	 * @param firstAlertMaxDate The maximum expiration date to send first alert.
-	 * @param plugin The plugin
-	 * @return the list of id of users that need to receive their first alert
-	 */
-	public static List<Integer> getIdUsersToSendFirstAlert( Timestamp firstAlertMaxDate, Plugin plugin )
-	{
-		return _dao.getIdUsersToSendFirstAlert( firstAlertMaxDate, plugin );
-	}
+    /**
+     * Get the list of id of users that need to receive their first alert
+     * @param firstAlertMaxDate The maximum expiration date to send first alert.
+     * @param plugin The plugin
+     * @return the list of id of users that need to receive their first alert
+     */
+    public static List<Integer> getIdUsersToSendFirstAlert( Timestamp firstAlertMaxDate, Plugin plugin )
+    {
+        return _dao.getIdUsersToSendFirstAlert( firstAlertMaxDate, plugin );
+    }
 
-	/**
-	 * Get the list of id of users that need to receive their first alert
-	 * @param alertMaxDate The maximum date to send alerts.
-	 * @param timeBetweenAlerts Timestamp describing the time between two alerts.
-	 * @param maxNumberAlerts Maximum number of alerts to send to a user
-	 * @param plugin The plugin
-	 * @return the list of id of users that need to receive their first alert
-	 */
-	public static List<Integer> getIdUsersToSendOtherAlert( Timestamp alertMaxDate, Timestamp timeBetweenAlerts, int maxNumberAlerts, Plugin plugin )
-	{
-		return _dao.getIdUsersToSendOtherAlert( alertMaxDate, timeBetweenAlerts, maxNumberAlerts, plugin );
-	}
+    /**
+     * Get the list of id of users that need to receive their first alert
+     * @param alertMaxDate The maximum date to send alerts.
+     * @param timeBetweenAlerts Timestamp describing the time between two
+     *            alerts.
+     * @param maxNumberAlerts Maximum number of alerts to send to a user
+     * @param plugin The plugin
+     * @return the list of id of users that need to receive their first alert
+     */
+    public static List<Integer> getIdUsersToSendOtherAlert( Timestamp alertMaxDate, Timestamp timeBetweenAlerts,
+            int maxNumberAlerts, Plugin plugin )
+    {
+        return _dao.getIdUsersToSendOtherAlert( alertMaxDate, timeBetweenAlerts, maxNumberAlerts, plugin );
+    }
 
-	/**
-	 * Get the list of id of users that have an expired password but not the change password flag
-	 * @param currentTimestamp Timestamp describing the current time.
-	 * @param plugin The plugin
-	 * @return the list of id of users with expired passwords
-	 */
-	public static List<Integer> getIdUsersWithExpiredPasswordsList( Timestamp currentTimestamp, Plugin plugin )
-	{
-		return _dao.getIdUsersWithExpiredPasswordsList( currentTimestamp, plugin );
-	}
+    /**
+     * Get the list of id of users that have an expired password but not the
+     * change password flag
+     * @param currentTimestamp Timestamp describing the current time.
+     * @param plugin The plugin
+     * @return the list of id of users with expired passwords
+     */
+    public static List<Integer> getIdUsersWithExpiredPasswordsList( Timestamp currentTimestamp, Plugin plugin )
+    {
+        return _dao.getIdUsersWithExpiredPasswordsList( currentTimestamp, plugin );
+    }
 
-	/**
-	 * Update status of a list of user accounts
-	 * @param listIdUser List of user accounts to update
-	 * @param nNewStatus New status of the user
-	 * @param plugin The plugin
-	 */
-	public static void updateUserStatus( List<Integer> listIdUser, int nNewStatus, Plugin plugin )
-	{
-		_dao.updateUserStatus( listIdUser, nNewStatus, plugin );
-	}
+    /**
+     * Update status of a list of user accounts
+     * @param listIdUser List of user accounts to update
+     * @param nNewStatus New status of the user
+     * @param plugin The plugin
+     */
+    public static void updateUserStatus( List<Integer> listIdUser, int nNewStatus, Plugin plugin )
+    {
+        _dao.updateUserStatus( listIdUser, nNewStatus, plugin );
+    }
 
-	/**
-	 * Increment the number of alert send to users by 1
-	 * @param listIdUser The list of users to update
-	 * @param plugin The plugin
-	 */
-	public static void updateNbAlert( List<Integer> listIdUser, Plugin plugin )
-	{
-		_dao.updateNbAlert( listIdUser, plugin );
-	}
+    /**
+     * Increment the number of alert send to users by 1
+     * @param listIdUser The list of users to update
+     * @param plugin The plugin
+     */
+    public static void updateNbAlert( List<Integer> listIdUser, Plugin plugin )
+    {
+        _dao.updateNbAlert( listIdUser, plugin );
+    }
 
     /**
      * Set the "change password" flag of users to true
      * @param listIdUser The list of users to update
      * @param plugin The plugin
      */
-	public static void updateChangePassword( List<Integer> listIdUser, Plugin plugin )
-	{
+    public static void updateChangePassword( List<Integer> listIdUser, Plugin plugin )
+    {
         _dao.updateChangePassword( listIdUser, plugin );
-	}
+    }
 
-	/**
-	 * Update the user expiration date with the new values. Also update his alert account to 0
-	 * @param nIdUser Id of the user to update
-	 * @param newExpirationDate Id of the user to update
-	 * @param plugin The plugin
-	 */
-	public static void updateUserExpirationDate( int nIdUser, Timestamp newExpirationDate, Plugin plugin )
-	{
-		_dao.updateUserExpirationDate( nIdUser, newExpirationDate, plugin );
-	}
+    /**
+     * Update the user expiration date with the new values. Also update his
+     * alert account to 0
+     * @param nIdUser Id of the user to update
+     * @param newExpirationDate Id of the user to update
+     * @param plugin The plugin
+     */
+    public static void updateUserExpirationDate( int nIdUser, Timestamp newExpirationDate, Plugin plugin )
+    {
+        _dao.updateUserExpirationDate( nIdUser, newExpirationDate, plugin );
+    }
 
-	/**
-	 * Get the number of notification send to a user to warn him about the expiration of his account
-	 * @param nIdUser Id of the user
-	 * @param plugin The plugin
-	 * @return The number of notification send to the user
-	 */
-	public static int getNbAccountLifeTimeNotification( int nIdUser, Plugin plugin )
-	{
-		return _dao.getNbAccountLifeTimeNotification( nIdUser, plugin );
-	}
+    /**
+     * Get the number of notification send to a user to warn him about the
+     * expiration of his account
+     * @param nIdUser Id of the user
+     * @param plugin The plugin
+     * @return The number of notification send to the user
+     */
+    public static int getNbAccountLifeTimeNotification( int nIdUser, Plugin plugin )
+    {
+        return _dao.getNbAccountLifeTimeNotification( nIdUser, plugin );
+    }
 
-	/**
-	 * Update a user last login date
-	 * @param strLogin Login of the user to update
-	 * @param dateLastLogin date of the last login of the user
-	 * @param plugin The plugin
-	 */
-	public static void updateUserLastLoginDate( String strLogin, Date dateLastLogin, Plugin plugin )
-	{
-		_dao.updateUserLastLoginDate( strLogin, new java.sql.Timestamp( dateLastLogin.getTime( ) ), plugin );
-	}
+    /**
+     * Update a user last login date
+     * @param strLogin Login of the user to update
+     * @param dateLastLogin date of the last login of the user
+     * @param plugin The plugin
+     */
+    public static void updateUserLastLoginDate( String strLogin, Date dateLastLogin, Plugin plugin )
+    {
+        _dao.updateUserLastLoginDate( strLogin, new java.sql.Timestamp( dateLastLogin.getTime( ) ), plugin );
+    }
 }

@@ -30,6 +30,7 @@
   <bean id="mylutece-database.databaseUserKeyService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService" />
   <bean id="mylutece-database.databaseAnonymizationService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAnonymizationService" />
   <bean id="mylutece-database.databaseAccountLifeTimeService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAccountLifeTimeService" />
+  <bean id="mylutece-database.databaseUserProviderService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseUserProviderService" />
   
   
   <!-- DatabaseUser -->
