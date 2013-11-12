@@ -60,6 +60,7 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
@@ -1060,7 +1061,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
 						model.put( MARK_REINIT_URL, _userKeyService.getReinitUrl( key.getKey( ), request ) );
 
                         HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl(
-                                PROPERTY_DATABASE_MAIL_LOST_PASSWORD, _locale, model );
+                        		DatabaseTemplateService
+		                        .getTemplateFromKey( PROPERTY_DATABASE_MAIL_LOST_PASSWORD ) , _locale, model );
 
                         ReferenceItem referenceItem = _userParamService.findByKey( PARAMETER_MAIL_LOST_PASSWORD_SENDER,
                                 plugin );
