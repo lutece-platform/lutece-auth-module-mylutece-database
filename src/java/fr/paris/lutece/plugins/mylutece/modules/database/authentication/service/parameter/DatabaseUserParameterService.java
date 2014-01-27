@@ -61,6 +61,7 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
     private static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
     private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
     private static final String PARAMETER_ENABLE_JCAPTCHA = "enable_jcaptcha";
+    private static final String PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL = "auto_login_after_validation_email";
 
     /**
      * Private constructor
@@ -164,6 +165,24 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
         }
 
         return bIsValidationEmail;
+    }
+    
+  
+    /**
+     * {@inheritDoc}
+     */
+     @Override
+    public boolean isAutoLoginAfterValidationEmail( Plugin plugin )
+    {
+        boolean bIsAutoLogin = false;
+        ReferenceItem userParam = findByKey( PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL, plugin );
+
+        if ( ( userParam != null ) && userParam.isChecked(  ) )
+        {
+            bIsAutoLogin = true;
+        }
+
+        return bIsAutoLogin;
     }
 
     /**

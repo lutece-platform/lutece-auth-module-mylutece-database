@@ -57,6 +57,7 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldFilter;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFieldListener;
@@ -78,6 +79,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
@@ -149,11 +151,15 @@ public final class DatabaseService
     private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED = "mylutece_database_mailPasswordEncryptionChanged";
     private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER = "mail_password_encryption_changed_sender";
     private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT = "mail_password_encryption_changed_subject";
+    private static final String PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL = "auto_login_after_validation_email";
 
     // VARIABLES
     private static DatabaseService _singleton;
 
     private DatabaseUserParameterService _userParamService;
+    
+    
+    private BaseAuthentication _baseAuthentication ;
 
     /**
      * Private constructor
@@ -180,11 +186,11 @@ public final class DatabaseService
         RoleRemovalListenerService.getService( ).registerListener( new DatabaseUserRoleRemovalListener( ) );
         DatabaseMyLuteceUserFieldListenerService.getService( ).registerListener( new DatabaseUserFieldListener( ) );
 
-        BaseAuthentication baseAuthentication = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
+        _baseAuthentication = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
 
-        if ( baseAuthentication != null )
+        if ( _baseAuthentication != null )
         {
-            MultiLuteceAuthentication.registerAuthentication( baseAuthentication );
+            MultiLuteceAuthentication.registerAuthentication( _baseAuthentication );
         }
         else
         {
@@ -235,6 +241,10 @@ public final class DatabaseService
             }
             model.put( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL, SecurityUtils.getBooleanSecurityParameter(
                     _userParamService, plugin, PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL ) );
+            
+            model.put( PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL, SecurityUtils.getBooleanSecurityParameter(
+                    _userParamService, plugin, PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL ) );
+            
             model.put( MARK_BANNED_DOMAIN_NAMES,
                     SecurityUtils.getLargeSecurityParameter( _userParamService, plugin, MARK_BANNED_DOMAIN_NAMES ) );
 
@@ -752,4 +762,21 @@ public final class DatabaseService
         XmlUtil.endElement( sbXml, CONSTANT_XML_USER );
         return sbXml.toString( );
     }
+    
+    /**
+     * Login automatically the database user 
+     * @param request the HTTP request
+     * @param DatabaseUser databaseUser
+     * @param plugin the plugin
+     */
+    public  void doAutoLoginDatabaseUser(HttpServletRequest request,DatabaseUser databaseUser,Plugin plugin )
+    {
+    	if(_baseAuthentication !=null)
+    	{
+    		BaseUser user = DatabaseHome.findLuteceUserByLogin( databaseUser.getLogin(), plugin, _baseAuthentication );
+    		SecurityService.getInstance().registerUser(request, user);
+    	}
+    }
+    
+    
 }

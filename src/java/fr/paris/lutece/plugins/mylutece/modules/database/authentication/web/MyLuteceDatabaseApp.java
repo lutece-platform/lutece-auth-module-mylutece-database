@@ -37,6 +37,8 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
@@ -59,6 +61,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -230,7 +233,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 	private CaptchaSecurityService _captchaService = new CaptchaSecurityService( );
 	private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory( );
 	private DatabaseService _databaseService = DatabaseService.getService( );
-
+	
 	/**
 	 * 
 	 * @param request The HTTP request
@@ -689,6 +692,10 @@ public class MyLuteceDatabaseApp implements XPageApplication
 					_databaseService.doUpdateUser( databaseUser, _plugin );
 					_userKeyService.remove( strKey );
 					url.addParameter( PARAMETER_ACTION_VALIDATION_SUCCESS, getDefaultRedirectUrl( ) );
+					if(_userParamService.isAutoLoginAfterValidationEmail(plugin))
+					{
+						DatabaseService.getService().doAutoLoginDatabaseUser(request, databaseUser, plugin);
+					}
 				}
 			}
 		}

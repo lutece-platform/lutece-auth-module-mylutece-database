@@ -78,6 +78,16 @@
 						<span class="help-block">#i18n{module.mylutece.database.manage_advanced_parameters.labelAccountCreationValidationEmailComment}</span>
 					</div>
 				</div>
+				<div class="control-group">
+					<label class="control-label" for=""></label>
+					<div class="controls">
+						<label class="checkbox" for="auto_login_after_validation_email">
+							#i18n{module.mylutece.database.manage_advanced_parameters.labelAutoLoginAfterValidationEmail}
+							<input type="checkbox" class="checkbox"	name="auto_login_after_validation_email" value="true" <#if auto_login_after_validation_email?? && auto_login_after_validation_email>checked="checked"</#if> />
+						</label>
+						<span class="help-block">#i18n{module.mylutece.database.manage_advanced_parameters.labelAutoLoginAfterValidationEmailComment}</span>
+					</div>
+				</div>
 				<#if is_plugin_jcatpcha_enable>
 					<div class="control-group">
 						<label class="control-label" for=""></label>

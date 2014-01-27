@@ -210,6 +210,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_ASSIGN_ROLE = "assign_role";
     private static final String PARAMETER_ASSIGN_GROUP = "assign_group";
     private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
+    private static final String PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL = "auto_login_after_validation_email";
     private static final String PARAMETER_ENABLE_JCAPTCHA = "enable_jcaptcha";
     private static final String PARAMETER_NAME_GIVEN = "name_given";
     private static final String PARAMETER_NAME_FAMILY = "name_family";
@@ -1171,6 +1172,12 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         SecurityUtils.updateParameterValue( _userParamService, getPlugin( ),
                 PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL,
                 request.getParameter( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL ) );
+        
+        SecurityUtils.updateParameterValue( _userParamService, getPlugin( ),
+                PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL,
+                request.getParameter( PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL ) );
+        
+        
         if ( _databaseService.isPluginJcaptchaEnable( ) )
         {
             SecurityUtils.updateParameterValue( _userParamService, _plugin, PARAMETER_ENABLE_JCAPTCHA,

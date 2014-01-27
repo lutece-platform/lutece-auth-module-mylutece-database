@@ -4,6 +4,7 @@
 INSERT INTO mylutece_database_user_parameter VALUES ('enable_password_encryption', 'false');
 INSERT INTO mylutece_database_user_parameter VALUES ('encryption_algorithm', '');
 INSERT INTO mylutece_database_user_parameter VALUES ('account_creation_validation_email', 'false');
+INSERT INTO mylutece_database_user_parameter VALUES ('auto_login_after_validation_email', 'false');
 INSERT INTO mylutece_database_user_parameter VALUES ('enable_jcaptcha', 'false');
 INSERT INTO mylutece_database_user_parameter VALUES ('force_change_password_reinit', '');
 INSERT INTO mylutece_database_user_parameter VALUES ('password_minimum_length', '8');

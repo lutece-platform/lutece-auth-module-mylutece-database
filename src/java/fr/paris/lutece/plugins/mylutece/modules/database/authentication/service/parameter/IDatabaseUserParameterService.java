@@ -56,4 +56,12 @@ public interface IDatabaseUserParameterService extends IUserParameterService
      * @return true if it is enable, false otherwise
      */
     boolean isJcaptchaEnable( Plugin plugin );
+    
+    
+    /**
+     * Check if the user must be automatically logged after validation email
+     * @param plugin the plugin
+     * @return true  if the user must be automatically logged after validation email
+     */
+    boolean isAutoLoginAfterValidationEmail( Plugin plugin );
 }
