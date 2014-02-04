@@ -45,6 +45,8 @@ public class BaseUser extends LuteceUser
 {
     private static final long serialVersionUID = -1414600470836409898L;
 
+    private String _strEmail;
+            
     /**
     * Constructor
     * @param strUserName The user's name
@@ -54,4 +56,23 @@ public class BaseUser extends LuteceUser
     {
         super( strUserName, authenticationService );
     }
+
+    /**
+     * @return the Email
+     */
+    @Override
+    public String getEmail()
+    {
+        return _strEmail;
+    }
+
+    /**
+     * @param strEmail the Email to set
+     */
+    public void setEmail(String strEmail)
+    {
+        _strEmail = strEmail;
+    }
+    
+    
 }

@@ -113,6 +113,8 @@ public class DatabaseDAO implements IDatabaseDAO
 		Timestamp dateLastLogin = daoUtil.getTimestamp( 6 );
 
 		BaseUser user = new BaseUser( strLogin, authenticationService );
+                
+                user.setEmail( strEmail );
 		user.setLuteceAuthenticationService( authenticationService );
 		user.setUserInfo( LuteceUser.NAME_FAMILY, strLastName );
 		user.setUserInfo( LuteceUser.NAME_GIVEN, strFirstName );
@@ -192,7 +194,9 @@ public class DatabaseDAO implements IDatabaseDAO
 			BaseUser user = new BaseUser( daoUtil.getString( 2 ), authenticationService );
 			user.setUserInfo( LuteceUser.NAME_FAMILY, daoUtil.getString( 3 ) );
 			user.setUserInfo( LuteceUser.NAME_GIVEN, daoUtil.getString( 4 ) );
-			user.setUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, daoUtil.getString( 5 ) );
+                        String strEmail = daoUtil.getString( 5 );
+			user.setUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, strEmail );
+                        user.setEmail( strEmail );
 			listBaseUsers.add( user );
 		}
 

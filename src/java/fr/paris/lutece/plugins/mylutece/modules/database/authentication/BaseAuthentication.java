@@ -126,6 +126,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * Gets the Authentification service name
 	 * @return The name of the authentication service
 	 */
+        @Override
 	public String getAuthServiceName( )
 	{
 		return AUTH_SERVICE_NAME;
@@ -136,6 +137,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * @param request The HTTP request
 	 * @return The type of authentication
 	 */
+        @Override
 	public String getAuthType( HttpServletRequest request )
 	{
 		return HttpServletRequest.BASIC_AUTH;
@@ -150,6 +152,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * @return A LuteceUser object corresponding to the login
 	 * @throws LoginException The LoginException
 	 */
+        @Override
 	public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException
 	{
 		DatabaseService databaseService = DatabaseService.getService( );
@@ -268,6 +271,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * This methods logout the user
 	 * @param user The user
 	 */
+        @Override
 	public void logout( LuteceUser user )
 	{
 	}
@@ -278,6 +282,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * @param strLogin the login
 	 * @return DatabaseUser the user corresponding to the login
 	 */
+        @Override
 	public boolean findResetPassword( HttpServletRequest request, String strLogin )
 	{
 		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -289,6 +294,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * 
 	 * @return An anonymous Lutece user
 	 */
+        @Override
 	public LuteceUser getAnonymousUser( )
 	{
 		return new BaseUser( LuteceUser.ANONYMOUS_USERNAME, this );
@@ -323,6 +329,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * Returns the View account page URL of the Authentication Service
 	 * @return The URL
 	 */
+        @Override
 	public String getViewAccountPageUrl( )
 	{
 		return MyLuteceDatabaseApp.getViewAccountUrl( );
@@ -332,6 +339,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * Returns the New account page URL of the Authentication Service
 	 * @return The URL
 	 */
+        @Override
 	public String getNewAccountPageUrl( )
 	{
 		return MyLuteceDatabaseApp.getNewAccountUrl( );
@@ -350,6 +358,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * Returns the lost password URL of the Authentication Service
 	 * @return The URL
 	 */
+        @Override
 	public String getLostPasswordPageUrl( )
 	{
 		return MyLuteceDatabaseApp.getLostPasswordUrl( );
@@ -357,6 +366,7 @@ public class BaseAuthentication extends PortalAuthentication
 
 	/**
 	 * {@inheritDoc}
+     * @return 
 	 */
 	@Override
 	public String getLostLoginPageUrl( )
@@ -377,6 +387,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * Returns all users managed by the authentication service if this feature is available.
 	 * @return A collection of Lutece users or null if the service doesn't provide a users list
 	 */
+        @Override
 	public Collection<LuteceUser> getUsers( )
 	{
 		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -397,6 +408,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * @param userLogin the user login
 	 * @return A Lutece users or null if the service doesn't provide a user
 	 */
+        @Override
 	public LuteceUser getUser( String userLogin )
 	{
 		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -412,6 +424,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * @param user The user
 	 * @return Array of roles
 	 */
+        @Override
 	public String[] getRolesByUser( LuteceUser user )
 	{
 		Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -450,6 +463,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * 
 	 *{@inheritDoc}
 	 */
+        @Override
 	public String getIconUrl( )
 	{
 		return CONSTANT_PATH_ICON;
@@ -460,6 +474,7 @@ public class BaseAuthentication extends PortalAuthentication
 	 * Returns {@link DatabasePlugin#PLUGIN_NAME}.
 	 * @return {@link DatabasePlugin#PLUGIN_NAME}
 	 */
+        @Override
 	public String getName( )
 	{
 		return DatabasePlugin.PLUGIN_NAME;
@@ -468,6 +483,7 @@ public class BaseAuthentication extends PortalAuthentication
 	/**
 	 *{@inheritDoc}
 	 */
+        @Override
 	public String getPluginName( )
 	{
 		return DatabasePlugin.PLUGIN_NAME;
@@ -484,7 +500,7 @@ public class BaseAuthentication extends PortalAuthentication
 		_databaseService.updateUserLastLoginDate( user.getName( ), plugin );
 	}
 
-	@SuppressWarnings( "deprecation" )
+
 	private void sendUnlockLinkToUser( String strLogin, int nIntervalMinutes, HttpServletRequest request, Plugin plugin )
 	{
 		int nIdUser = DatabaseUserHome.findDatabaseUserIdFromLogin( strLogin, plugin );
