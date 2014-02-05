@@ -33,21 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
@@ -93,11 +78,28 @@ import fr.paris.lutece.util.password.PasswordUtil;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.xml.XmlUtil;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.sql.Timestamp;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
- * 
+ *
  * DatabaseService
- * 
+ *
  */
 public final class DatabaseService
 {
@@ -155,16 +157,13 @@ public final class DatabaseService
 
     // VARIABLES
     private static DatabaseService _singleton;
-
     private DatabaseUserParameterService _userParamService;
-    
-    
-    private BaseAuthentication _baseAuthentication ;
+    private BaseAuthentication _baseAuthentication;
 
     /**
      * Private constructor
      */
-    private DatabaseService( )
+    private DatabaseService(  )
     {
     }
 
@@ -179,12 +178,12 @@ public final class DatabaseService
 
     /**
      * Initialize the Database service
-     * 
+     *
      */
-    public void init( )
+    public void init(  )
     {
-        RoleRemovalListenerService.getService( ).registerListener( new DatabaseUserRoleRemovalListener( ) );
-        DatabaseMyLuteceUserFieldListenerService.getService( ).registerListener( new DatabaseUserFieldListener( ) );
+        RoleRemovalListenerService.getService(  ).registerListener( new DatabaseUserRoleRemovalListener(  ) );
+        DatabaseMyLuteceUserFieldListenerService.getService(  ).registerListener( new DatabaseUserFieldListener(  ) );
 
         _baseAuthentication = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
 
@@ -202,12 +201,13 @@ public final class DatabaseService
      * Returns the instance of the singleton
      * @return The instance of the singleton
      */
-    public static synchronized DatabaseService getService( )
+    public static synchronized DatabaseService getService(  )
     {
         if ( _singleton == null )
         {
             _singleton = SpringContextService.getBean( BEAN_DATABASE_SERVICE );
         }
+
         return _singleton;
     }
 
@@ -218,11 +218,11 @@ public final class DatabaseService
      */
     public Map<String, Object> getManageAdvancedParameters( AdminUser user )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
+                    DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
         {
             // Encryption Password
             String strAlgorithms = AppPropertiesService.getProperty( PROPERTY_ENCRYPTION_ALGORITHMS_LIST );
@@ -232,24 +232,27 @@ public final class DatabaseService
                 String[] listAlgorithms = strAlgorithms.split( COMMA );
 
                 model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
-                model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable( ) );
-                if ( isPluginJcaptchaEnable( ) )
+                model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable(  ) );
+
+                if ( isPluginJcaptchaEnable(  ) )
                 {
                     model.put( MARK_ENABLE_JCAPTCHA,
-                            SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin, MARK_ENABLE_JCAPTCHA ) );
+                        SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin, MARK_ENABLE_JCAPTCHA ) );
                 }
             }
-            model.put( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL, SecurityUtils.getBooleanSecurityParameter(
-                    _userParamService, plugin, PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL ) );
-            
-            model.put( PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL, SecurityUtils.getBooleanSecurityParameter(
-                    _userParamService, plugin, PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL ) );
-            
+
+            model.put( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL,
+                SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin,
+                    PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL ) );
+
+            model.put( PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL,
+                SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin,
+                    PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL ) );
+
             model.put( MARK_BANNED_DOMAIN_NAMES,
-                    SecurityUtils.getLargeSecurityParameter( _userParamService, plugin, MARK_BANNED_DOMAIN_NAMES ) );
+                SecurityUtils.getLargeSecurityParameter( _userParamService, plugin, MARK_BANNED_DOMAIN_NAMES ) );
 
             model = SecurityUtils.checkSecurityParameters( _userParamService, model, plugin );
-
         }
 
         return model;
@@ -266,7 +269,7 @@ public final class DatabaseService
     public boolean isAuthorized( DatabaseUser user, AdminUser adminUser, Plugin plugin )
     {
         boolean bHasRole = false;
-        List<String> userRoleKeyList = DatabaseHome.findUserRolesFromLogin( user.getLogin( ), plugin );
+        List<String> userRoleKeyList = DatabaseHome.findUserRolesFromLogin( user.getLogin(  ), plugin );
 
         for ( String userRoleKey : userRoleKeyList )
         {
@@ -280,7 +283,7 @@ public final class DatabaseService
             }
         }
 
-        List<String> userGroupKeyList = DatabaseHome.findUserGroupsFromLogin( user.getLogin( ), plugin );
+        List<String> userGroupKeyList = DatabaseHome.findUserGroupsFromLogin( user.getLogin(  ), plugin );
 
         for ( String userGroupKey : userGroupKeyList )
         {
@@ -311,7 +314,7 @@ public final class DatabaseService
     public List<DatabaseUser> getAuthorizedUsers( AdminUser adminUser, Plugin plugin )
     {
         Collection<DatabaseUser> userList = DatabaseUserHome.findDatabaseUsersList( plugin );
-        List<DatabaseUser> authorizedUserList = new ArrayList<DatabaseUser>( );
+        List<DatabaseUser> authorizedUserList = new ArrayList<DatabaseUser>(  );
 
         for ( DatabaseUser user : userList )
         {
@@ -335,19 +338,19 @@ public final class DatabaseService
      * @return the filtered list
      */
     public List<DatabaseUser> getFilteredUsersInterface( DatabaseUserFilter duFilter, boolean bIsSearch,
-            List<DatabaseUser> listUsers, HttpServletRequest request, Map<String, Object> model, UrlItem url )
+        List<DatabaseUser> listUsers, HttpServletRequest request, Map<String, Object> model, UrlItem url )
     {
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         List<DatabaseUser> filteredUsers = getListFilteredUsers( request, duFilter, listUsers );
-        MyLuteceUserFieldFilter mlFieldFilter = new MyLuteceUserFieldFilter( );
-        mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale( ) );
+        MyLuteceUserFieldFilter mlFieldFilter = new MyLuteceUserFieldFilter(  );
+        mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale(  ) );
 
-        List<IAttribute> listAttributes = AttributeHome.findAll( request.getLocale( ), myLutecePlugin );
+        List<IAttribute> listAttributes = AttributeHome.findAll( request.getLocale(  ), myLutecePlugin );
 
         for ( IAttribute attribute : listAttributes )
         {
-            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute(
-                    attribute.getIdAttribute( ), myLutecePlugin );
+            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
+                    myLutecePlugin );
             attribute.setListAttributeFields( listAttributeFields );
         }
 
@@ -357,16 +360,16 @@ public final class DatabaseService
         {
             duFilter.setUrlAttributes( url );
 
-            if ( duFilter.getUrlAttributes( ) != StringUtils.EMPTY )
+            if ( duFilter.getUrlAttributes(  ) != StringUtils.EMPTY )
             {
-                strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes( );
+                strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes(  );
             }
 
             mlFieldFilter.setUrlAttributes( url );
 
-            if ( mlFieldFilter.getUrlAttributes( ) != StringUtils.EMPTY )
+            if ( mlFieldFilter.getUrlAttributes(  ) != StringUtils.EMPTY )
             {
-                strSortSearchAttribute += ( AMPERSAND + mlFieldFilter.getUrlAttributes( ) );
+                strSortSearchAttribute += ( AMPERSAND + mlFieldFilter.getUrlAttributes(  ) );
             }
         }
 
@@ -387,18 +390,18 @@ public final class DatabaseService
      * @return a list of {@link DatabaseUser}
      */
     public List<DatabaseUser> getListFilteredUsers( HttpServletRequest request, DatabaseUserFilter duFilter,
-            List<DatabaseUser> listUsers )
+        List<DatabaseUser> listUsers )
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         List<DatabaseUser> listFilteredUsers = DatabaseUserHome.findDatabaseUsersListByFilter( duFilter, plugin );
-        List<DatabaseUser> listAvailableUsers = new ArrayList<DatabaseUser>( );
+        List<DatabaseUser> listAvailableUsers = new ArrayList<DatabaseUser>(  );
 
         for ( DatabaseUser filteredUser : listFilteredUsers )
         {
             for ( DatabaseUser user : listUsers )
             {
-                if ( filteredUser.getUserId( ) == user.getUserId( ) )
+                if ( filteredUser.getUserId(  ) == user.getUserId(  ) )
                 {
                     listAvailableUsers.add( user );
                 }
@@ -406,10 +409,10 @@ public final class DatabaseService
         }
 
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-        List<DatabaseUser> filteredUsers = new ArrayList<DatabaseUser>( );
+        List<DatabaseUser> filteredUsers = new ArrayList<DatabaseUser>(  );
 
-        MyLuteceUserFieldFilter mlFieldFilter = new MyLuteceUserFieldFilter( );
-        mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale( ) );
+        MyLuteceUserFieldFilter mlFieldFilter = new MyLuteceUserFieldFilter(  );
+        mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale(  ) );
 
         List<Integer> listFilteredUserIdsByUserFields = MyLuteceUserFieldHome.findUsersByFilter( mlFieldFilter,
                 myLutecePlugin );
@@ -420,7 +423,7 @@ public final class DatabaseService
             {
                 for ( Integer nFilteredUserIdByUserField : listFilteredUserIdsByUserFields )
                 {
-                    if ( filteredUser.getUserId( ) == nFilteredUserIdByUserField )
+                    if ( filteredUser.getUserId(  ) == nFilteredUserIdByUserField )
                     {
                         filteredUsers.add( filteredUser );
                     }
@@ -454,6 +457,7 @@ public final class DatabaseService
 
         user.setPasswordMaxValidDate( SecurityUtils.getPasswordMaxValidDate( _userParamService, plugin ) );
         user.setAccountMaxValidDate( SecurityUtils.getAccountMaxValidDate( _userParamService, plugin ) );
+
         return DatabaseUserHome.create( user, strEncryptedPassword, plugin );
     }
 
@@ -477,7 +481,7 @@ public final class DatabaseService
                 strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
             }
 
-            DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId( ), plugin );
+            DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId(  ), plugin );
 
             if ( userStored != null )
             {
@@ -495,7 +499,7 @@ public final class DatabaseService
      */
     public void doModifyResetPassword( DatabaseUser user, boolean bNewValue, Plugin plugin )
     {
-        DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId( ), plugin );
+        DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId(  ), plugin );
 
         if ( userStored != null )
         {
@@ -544,13 +548,13 @@ public final class DatabaseService
     {
         boolean bIsActive = false;
 
-        List<DatabaseUser> listUsers = (List<DatabaseUser>) DatabaseUserHome.findDatabaseUsersListForLogin(
-                strUserName, plugin );
+        List<DatabaseUser> listUsers = (List<DatabaseUser>) DatabaseUserHome.findDatabaseUsersListForLogin( strUserName,
+                plugin );
 
-        if ( ( listUsers != null ) && !listUsers.isEmpty( ) )
+        if ( ( listUsers != null ) && !listUsers.isEmpty(  ) )
         {
             DatabaseUser user = listUsers.get( 0 );
-            bIsActive = user.isActive( );
+            bIsActive = user.isActive(  );
         }
 
         return bIsActive;
@@ -560,7 +564,7 @@ public final class DatabaseService
      * Check if the plugin jcaptcha is activated or not
      * @return true if it is activated, false otherwise
      */
-    public boolean isPluginJcaptchaEnable( )
+    public boolean isPluginJcaptchaEnable(  )
     {
         return PluginService.isPluginEnable( PLUGIN_JCAPTCHA );
     }
@@ -579,31 +583,30 @@ public final class DatabaseService
         for ( DatabaseUser user : listUsers )
         {
             // Makes password
-            String strPassword = PasswordUtil.makePassword( );
+            String strPassword = PasswordUtil.makePassword(  );
             doModifyPassword( user, strPassword, plugin );
 
-            if ( StringUtils.isNotBlank( user.getEmail( ) ) )
+            if ( StringUtils.isNotBlank( user.getEmail(  ) ) )
             {
                 // Sends password by e-mail
-                ReferenceItem referenceItem = _userParamService.findByKey(
-                        PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER, plugin );
-                String strSenderEmail = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
-                referenceItem = _userParamService
-                        .findByKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT, plugin );
-                String strEmailSubject = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+                ReferenceItem referenceItem = _userParamService.findByKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER,
+                        plugin );
+                String strSenderEmail = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
+                referenceItem = _userParamService.findByKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT, plugin );
 
-                Map<String, Object> model = new HashMap<String, Object>( );
+                String strEmailSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
+
+                Map<String, Object> model = new HashMap<String, Object>(  );
                 model.put( MARK_NEW_PASSWORD, strPassword );
-                model.put( MARK_LOGIN_URL, strBaseURL + AdminAuthenticationService.getInstance( ).getLoginPageUrl( ) );
+                model.put( MARK_LOGIN_URL, strBaseURL + AdminAuthenticationService.getInstance(  ).getLoginPageUrl(  ) );
                 model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
 
-                String strTemplate = DatabaseTemplateService
-                        .getTemplateFromKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED );
+                String strTemplate = DatabaseTemplateService.getTemplateFromKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED );
 
                 HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strTemplate, locale, model );
 
-                MailService.sendMailHtml( user.getEmail( ), strSenderEmail, strSenderEmail, strEmailSubject,
-                        template.getHtml( ) );
+                MailService.sendMailHtml( user.getEmail(  ), strSenderEmail, strSenderEmail, strEmailSubject,
+                    template.getHtml(  ) );
             }
         }
     }
@@ -616,7 +619,7 @@ public final class DatabaseService
      */
     public boolean mustUserChangePassword( LuteceUser databaseUser, Plugin plugin )
     {
-        return DatabaseHome.findResetPasswordFromLogin( databaseUser.getName( ), plugin );
+        return DatabaseHome.findResetPasswordFromLogin( databaseUser.getName(  ), plugin );
     }
 
     /**
@@ -646,24 +649,25 @@ public final class DatabaseService
         DatabaseUserHome.updateUserExpirationDate( nIdUser, newExpirationDate, plugin );
 
         // We notify the user
-        DatabaseAccountLifeTimeService accountLifeTimeService = new DatabaseAccountLifeTimeService( );
+        DatabaseAccountLifeTimeService accountLifeTimeService = new DatabaseAccountLifeTimeService(  );
         String strUserMail = accountLifeTimeService.getUserMainEmail( nIdUser );
 
-        if ( nbMailSend > 0 && StringUtils.isNotBlank( strUserMail ) )
+        if ( ( nbMailSend > 0 ) && StringUtils.isNotBlank( strUserMail ) )
         {
             String strBody = DatabaseTemplateService.getTemplateFromKey( PARAMETER_ACCOUNT_REACTIVATED_MAIL_BODY );
 
-            ReferenceItem referenceItem = _userParamService.findByKey( PARAMETER_ACCOUNT_REACTIVATED_MAIL_SENDER,
-                    plugin );
-            String strSender = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
+            ReferenceItem referenceItem = _userParamService.findByKey( PARAMETER_ACCOUNT_REACTIVATED_MAIL_SENDER, plugin );
+            String strSender = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
 
             referenceItem = _userParamService.findByKey( PARAMETER_ACCOUNT_REACTIVATED_MAIL_SUBJECT, plugin );
-            String strSubject = referenceItem == null ? StringUtils.EMPTY : referenceItem.getName( );
 
-            Map<String, String> model = new HashMap<String, String>( );
+            String strSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
+
+            Map<String, String> model = new HashMap<String, String>(  );
             accountLifeTimeService.addParametersToModel( model, nIdUser );
-            HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strBody, Locale.getDefault( ), model );
-            MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml( ) );
+
+            HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strBody, Locale.getDefault(  ), model );
+            MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml(  ) );
         }
     }
 
@@ -674,7 +678,7 @@ public final class DatabaseService
      */
     public void updateUserLastLoginDate( String strLogin, Plugin plugin )
     {
-        DatabaseUserHome.updateUserLastLoginDate( strLogin, new Date( ), plugin );
+        DatabaseUserHome.updateUserLastLoginDate( strLogin, new Date(  ), plugin );
     }
 
     /**
@@ -689,94 +693,105 @@ public final class DatabaseService
      * @return A string of XML with the information of the user.
      */
     public String getXmlFromUser( DatabaseUser user, boolean bExportRoles, boolean bExportGroups,
-            boolean bExportAttributes, List<IAttribute> listAttributes, Locale locale )
+        boolean bExportAttributes, List<IAttribute> listAttributes, Locale locale )
     {
         Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         Plugin mylutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-        StringBuffer sbXml = new StringBuffer( );
-        DateFormat dateFormat = new SimpleDateFormat( );
+        StringBuffer sbXml = new StringBuffer(  );
+        DateFormat dateFormat = new SimpleDateFormat(  );
 
         XmlUtil.beginElement( sbXml, CONSTANT_XML_USER );
-        XmlUtil.addElement( sbXml, CONSTANT_XML_ACCESS_CODE, user.getLogin( ) );
-        XmlUtil.addElement( sbXml, CONSTANT_XML_LAST_NAME, user.getLastName( ) );
-        XmlUtil.addElement( sbXml, CONSTANT_XML_FIRST_NAME, user.getFirstName( ) );
-        XmlUtil.addElement( sbXml, CONSTANT_XML_EMAIL, user.getEmail( ) );
-        XmlUtil.addElement( sbXml, CONSTANT_XML_STATUS, Integer.toString( user.getStatus( ) ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_ACCESS_CODE, user.getLogin(  ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_LAST_NAME, user.getLastName(  ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_FIRST_NAME, user.getFirstName(  ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_EMAIL, user.getEmail(  ) );
+        XmlUtil.addElement( sbXml, CONSTANT_XML_STATUS, Integer.toString( user.getStatus(  ) ) );
 
         String strPasswordMaxValidDate = StringUtils.EMPTY;
-        if ( user.getPasswordMaxValidDate( ) != null )
+
+        if ( user.getPasswordMaxValidDate(  ) != null )
         {
-            strPasswordMaxValidDate = dateFormat.format( user.getPasswordMaxValidDate( ) );
+            strPasswordMaxValidDate = dateFormat.format( user.getPasswordMaxValidDate(  ) );
         }
+
         XmlUtil.addElement( sbXml, CONSTANT_XML_PASSWORD_MAX_VALID_DATE, strPasswordMaxValidDate );
 
         String strAccountMaxValidDate = StringUtils.EMPTY;
-        if ( user.getAccountMaxValidDate( ) != null )
+
+        if ( user.getAccountMaxValidDate(  ) != null )
         {
-            strAccountMaxValidDate = dateFormat.format( user.getAccountMaxValidDate( ) );
+            strAccountMaxValidDate = dateFormat.format( user.getAccountMaxValidDate(  ) );
         }
+
         XmlUtil.addElement( sbXml, CONSTANT_XML_ACCOUNT_MAX_VALID_DATE, strAccountMaxValidDate );
 
         if ( bExportRoles )
         {
-            List<String> listRoles = DatabaseHome.findUserRolesFromLogin( user.getLogin( ), databasePlugin );
+            List<String> listRoles = DatabaseHome.findUserRolesFromLogin( user.getLogin(  ), databasePlugin );
             XmlUtil.beginElement( sbXml, CONSTANT_XML_ROLES );
+
             for ( String strRole : listRoles )
             {
                 XmlUtil.addElement( sbXml, CONSTANT_XML_ROLE, strRole );
             }
+
             XmlUtil.endElement( sbXml, CONSTANT_XML_ROLES );
         }
+
         if ( bExportGroups )
         {
-            List<String> listGroups = DatabaseHome.findUserGroupsFromLogin( user.getLogin( ), databasePlugin );
+            List<String> listGroups = DatabaseHome.findUserGroupsFromLogin( user.getLogin(  ), databasePlugin );
             XmlUtil.beginElement( sbXml, CONSTANT_XML_GROUPS );
+
             for ( String strGoup : listGroups )
             {
                 XmlUtil.addElement( sbXml, CONSTANT_XML_GROUP, strGoup );
             }
+
             XmlUtil.endElement( sbXml, CONSTANT_XML_GROUPS );
         }
 
         if ( bExportAttributes )
         {
             XmlUtil.beginElement( sbXml, CONSTANT_XML_ATTRIBUTES );
+
             for ( IAttribute attribute : listAttributes )
             {
-                List<MyLuteceUserField> listUserFields = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute(
-                        user.getUserId( ), attribute.getIdAttribute( ), mylutecePlugin );
+                List<MyLuteceUserField> listUserFields = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( user.getUserId(  ),
+                        attribute.getIdAttribute(  ), mylutecePlugin );
+
                 for ( MyLuteceUserField userField : listUserFields )
                 {
                     XmlUtil.beginElement( sbXml, CONSTANT_XML_ATTRIBUTE );
                     XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_ID,
-                            Integer.toString( attribute.getIdAttribute( ) ) );
-                    XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_FIELD_ID, userField.getAttributeField( )
-                            .getIdField( ) );
-                    XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_VALUE, userField.getValue( ) );
+                        Integer.toString( attribute.getIdAttribute(  ) ) );
+                    XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_FIELD_ID,
+                        userField.getAttributeField(  ).getIdField(  ) );
+                    XmlUtil.addElement( sbXml, CONSTANT_XML_ATTRIBUTE_VALUE, userField.getValue(  ) );
                     XmlUtil.endElement( sbXml, CONSTANT_XML_ATTRIBUTE );
                 }
             }
+
             XmlUtil.endElement( sbXml, CONSTANT_XML_ATTRIBUTES );
         }
 
         XmlUtil.endElement( sbXml, CONSTANT_XML_USER );
-        return sbXml.toString( );
+
+        return sbXml.toString(  );
     }
-    
+
     /**
-     * Login automatically the database user 
+     * Login automatically the database user
      * @param request the HTTP request
      * @param DatabaseUser databaseUser
      * @param plugin the plugin
      */
-    public  void doAutoLoginDatabaseUser(HttpServletRequest request,DatabaseUser databaseUser,Plugin plugin )
+    public void doAutoLoginDatabaseUser( HttpServletRequest request, DatabaseUser databaseUser, Plugin plugin )
     {
-    	if(_baseAuthentication !=null)
-    	{
-    		BaseUser user = DatabaseHome.findLuteceUserByLogin( databaseUser.getLogin(), plugin, _baseAuthentication );
-    		SecurityService.getInstance().registerUser(request, user);
-    	}
+        if ( _baseAuthentication != null )
+        {
+            BaseUser user = DatabaseHome.findLuteceUserByLogin( databaseUser.getLogin(  ), plugin, _baseAuthentication );
+            SecurityService.getInstance(  ).registerUser( request, user );
+        }
     }
-    
-    
 }

@@ -58,14 +58,14 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.password.PasswordUtil;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -80,23 +80,18 @@ public class ImportDatabaseUserService extends CSVReaderService
     private static final String MESSAGE_ERROR_MIN_NUMBER_COLUMNS = "module.mylutece.database.import_users_from_file.messageErrorMinColumnNumber";
     private static final String MESSAGE_ACCOUNT_IMPORTED_MAIL_SUBJECT = "module.mylutece.database.import_users_from_file.email.mailSubject";
     private static final String MESSAGE_ERROR_IMPORTING_ATTRIBUTES = "module.mylutece.database.import_users_from_file.errorImportingAttributes";
-
     private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
     private static final String PROPERTY_IMPORT_EXPORT_USER_SEPARATOR = "lutece.importExportUser.defaultSeparator";
     private static final String PROPERTY_SITE_NAME = "lutece.name";
-
     private static final String TEMPLATE_MAIL_USER_IMPORTED = "admin/plugins/mylutece/modules/database/mail_user_imported.html";
-
     private static final String MARK_SITE_NAME = "site_name";
     private static final String MARK_USER = "user";
     private static final String MARK_SITE_LINK = "site_link";
     private static final String MARK_PASSWORD = "password";
-
     private static final String CONSTANT_DEFAULT_IMPORT_EXPORT_USER_SEPARATOR = ":";
     private static final String CONSTANT_ROLE = "role";
     private static final String CONSTANT_GROUP = "group";
     private static final int CONSTANT_MINIMUM_COLUMNS_PER_LINE = 7;
-
     private Character _strAttributesSeparator;
     private boolean _bUpdateExistingUsers;
 
@@ -105,11 +100,11 @@ public class ImportDatabaseUserService extends CSVReaderService
      */
     @Override
     protected List<CSVMessageDescriptor> readLineOfCSVFile( String[] strLineDataArray, int nLineNumber, Locale locale,
-            String strBaseUrl )
+        String strBaseUrl )
     {
         Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         Plugin mylutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>( );
+        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>(  );
         int nIndex = 0;
 
         String strAccessCode = strLineDataArray[nIndex++];
@@ -117,20 +112,24 @@ public class ImportDatabaseUserService extends CSVReaderService
         String strFirstName = strLineDataArray[nIndex++];
         String strEmail = strLineDataArray[nIndex++];
 
-        boolean bUpdateUser = getUpdateExistingUsers( );
+        boolean bUpdateUser = getUpdateExistingUsers(  );
         int nUserId = 0;
+
         if ( bUpdateUser )
         {
             int nAccessCodeUserId = DatabaseUserHome.findDatabaseUserIdFromLogin( strAccessCode, databasePlugin );
+
             if ( nAccessCodeUserId > 0 )
             {
                 nUserId = nAccessCodeUserId;
             }
+
             bUpdateUser = nUserId > 0;
         }
 
         String strStatus = strLineDataArray[nIndex++];
         int nStatus = 0;
+
         if ( StringUtils.isNotEmpty( strStatus ) && StringUtils.isNumeric( strStatus ) )
         {
             nStatus = Integer.parseInt( strStatus );
@@ -150,7 +149,7 @@ public class ImportDatabaseUserService extends CSVReaderService
         // String strAccountMaxValidDate = strLineDataArray[nIndex++];
         nIndex++;
 
-        DatabaseUser user = new DatabaseUser( );
+        DatabaseUser user = new DatabaseUser(  );
 
         user.setLogin( strAccessCode );
         user.setLastName( strLastName );
@@ -162,31 +161,35 @@ public class ImportDatabaseUserService extends CSVReaderService
         {
             user.setUserId( nUserId );
             // We update the user
-            DatabaseService.getService( ).doUpdateUser( user, databasePlugin );
+            DatabaseService.getService(  ).doUpdateUser( user, databasePlugin );
         }
         else
         {
             // We create the user
-            String strPassword = PasswordUtil.makePassword( );
-            DatabaseService.getService( ).doCreateUser( user, strPassword, databasePlugin );
+            String strPassword = PasswordUtil.makePassword(  );
+            DatabaseService.getService(  ).doCreateUser( user, strPassword, databasePlugin );
             notifyUserAccountCreated( user, strPassword, locale, AppPathService.getProdUrl( strBaseUrl ) );
         }
+
         // We remove old roles, groups and attributes of the user
-        DatabaseHome.removeRolesForUser( user.getUserId( ), databasePlugin );
-        DatabaseHome.removeGroupsForUser( user.getUserId( ), databasePlugin );
-        MyLuteceUserFieldService.doRemoveUserFields( user.getUserId( ), locale );
+        DatabaseHome.removeRolesForUser( user.getUserId(  ), databasePlugin );
+        DatabaseHome.removeGroupsForUser( user.getUserId(  ), databasePlugin );
+        MyLuteceUserFieldService.doRemoveUserFields( user.getUserId(  ), locale );
 
         // We get every attributes, roles and groups of the user
-        Map<Integer, List<String>> mapAttributesValues = new HashMap<Integer, List<String>>( );
-        List<String> listRoles = new ArrayList<String>( );
-        List<String> listGroups = new ArrayList<String>( );
+        Map<Integer, List<String>> mapAttributesValues = new HashMap<Integer, List<String>>(  );
+        List<String> listRoles = new ArrayList<String>(  );
+        List<String> listGroups = new ArrayList<String>(  );
+
         while ( nIndex < strLineDataArray.length )
         {
             String strValue = strLineDataArray[nIndex];
-            if ( StringUtils.isNotBlank( strValue ) && strValue.indexOf( getAttributesSeparator( ) ) > 0 )
+
+            if ( StringUtils.isNotBlank( strValue ) && ( strValue.indexOf( getAttributesSeparator(  ) ) > 0 ) )
             {
-                int nSeparatorIndex = strValue.indexOf( getAttributesSeparator( ) );
+                int nSeparatorIndex = strValue.indexOf( getAttributesSeparator(  ) );
                 String strLineId = strValue.substring( 0, nSeparatorIndex );
+
                 if ( StringUtils.isNotBlank( strLineId ) )
                 {
                     if ( StringUtils.equalsIgnoreCase( strLineId, CONSTANT_ROLE ) )
@@ -203,46 +206,54 @@ public class ImportDatabaseUserService extends CSVReaderService
 
                         String strAttributeValue = strValue.substring( nSeparatorIndex + 1 );
                         List<String> listValues = mapAttributesValues.get( nAttributeId );
+
                         if ( listValues == null )
                         {
-                            listValues = new ArrayList<String>( );
+                            listValues = new ArrayList<String>(  );
                         }
+
                         listValues.add( strAttributeValue );
                         mapAttributesValues.put( nAttributeId, listValues );
                     }
                 }
             }
+
             nIndex++;
         }
 
         // We create roles
         for ( String strRole : listRoles )
         {
-            DatabaseHome.addRoleForUser( user.getUserId( ), strRole, databasePlugin );
+            DatabaseHome.addRoleForUser( user.getUserId(  ), strRole, databasePlugin );
         }
 
         // We create groups
         for ( String strGoup : listGroups )
         {
-            DatabaseHome.addGroupForUser( user.getUserId( ), strGoup, databasePlugin );
+            DatabaseHome.addGroupForUser( user.getUserId(  ), strGoup, databasePlugin );
         }
 
         // We save the attributes found
         List<IAttribute> listAttributes = AttributeHome.findAll( locale, mylutecePlugin );
+
         for ( IAttribute attribute : listAttributes )
         {
-            List<String> listValues = mapAttributesValues.get( attribute.getIdAttribute( ) );
-            if ( listValues != null && listValues.size( ) > 0 )
+            List<String> listValues = mapAttributesValues.get( attribute.getIdAttribute(  ) );
+
+            if ( ( listValues != null ) && ( listValues.size(  ) > 0 ) )
             {
                 int nIdField = 0;
-                boolean bMyLuteceAttribute = attribute.getPlugin( ) == null
-                        || StringUtils.equals( attribute.getPlugin( ).getName( ), MyLutecePlugin.PLUGIN_NAME );
+                boolean bMyLuteceAttribute = ( attribute.getPlugin(  ) == null ) ||
+                    StringUtils.equals( attribute.getPlugin(  ).getName(  ), MyLutecePlugin.PLUGIN_NAME );
+
                 for ( String strValue : listValues )
                 {
-                    int nSeparatorIndex = strValue.indexOf( getAttributesSeparator( ) );
+                    int nSeparatorIndex = strValue.indexOf( getAttributesSeparator(  ) );
+
                     if ( nSeparatorIndex >= 0 )
                     {
                         nIdField = 0;
+
                         try
                         {
                             nIdField = Integer.parseInt( strValue.substring( 0, nSeparatorIndex ) );
@@ -251,39 +262,44 @@ public class ImportDatabaseUserService extends CSVReaderService
                         {
                             nIdField = 0;
                         }
+
                         strValue = strValue.substring( nSeparatorIndex + 1 );
                     }
                     else
                     {
                         nIdField = 0;
                     }
+
                     String[] strValues = { strValue };
+
                     try
                     {
                         List<MyLuteceUserField> listUserFields = attribute.getUserFieldsData( strValues,
-                                user.getUserId( ) );
+                                user.getUserId(  ) );
 
                         for ( MyLuteceUserField userField : listUserFields )
                         {
                             if ( userField != null )
                             {
-                                userField.getAttributeField( ).setIdField( nIdField );
+                                userField.getAttributeField(  ).setIdField( nIdField );
                                 MyLuteceUserFieldHome.create( userField, mylutecePlugin );
                             }
                         }
+
                         if ( !bMyLuteceAttribute )
                         {
-                            for ( MyLuteceUserFieldListenerService myLuteceUserFieldListenerService : SpringContextService
-                                    .getBeansOfType( MyLuteceUserFieldListenerService.class ) )
+                            for ( MyLuteceUserFieldListenerService myLuteceUserFieldListenerService : SpringContextService.getBeansOfType( 
+                                    MyLuteceUserFieldListenerService.class ) )
                             {
-                                myLuteceUserFieldListenerService.doCreateUserFields( user.getUserId( ), listUserFields,
-                                        locale );
+                                myLuteceUserFieldListenerService.doCreateUserFields( user.getUserId(  ),
+                                    listUserFields, locale );
                             }
                         }
                     }
                     catch ( Exception e )
                     {
-                        AppLogService.error( e.getMessage( ), e );
+                        AppLogService.error( e.getMessage(  ), e );
+
                         String strErrorMessage = I18nService.getLocalizedString( MESSAGE_ERROR_IMPORTING_ATTRIBUTES,
                                 locale );
                         CSVMessageDescriptor error = new CSVMessageDescriptor( CSVMessageLevel.ERROR, nLineNumber,
@@ -305,10 +321,12 @@ public class ImportDatabaseUserService extends CSVReaderService
     {
         int nMinColumnNumber = CONSTANT_MINIMUM_COLUMNS_PER_LINE;
         Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>( );
-        if ( strLineDataArray == null || strLineDataArray.length < nMinColumnNumber )
+        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>(  );
+
+        if ( ( strLineDataArray == null ) || ( strLineDataArray.length < nMinColumnNumber ) )
         {
             int nNbCol;
+
             if ( strLineDataArray == null )
             {
                 nNbCol = 0;
@@ -317,16 +335,20 @@ public class ImportDatabaseUserService extends CSVReaderService
             {
                 nNbCol = strLineDataArray.length;
             }
+
             Object[] args = { nNbCol, nMinColumnNumber };
             String strErrorMessage = I18nService.getLocalizedString( MESSAGE_ERROR_MIN_NUMBER_COLUMNS, args, locale );
             CSVMessageDescriptor error = new CSVMessageDescriptor( CSVMessageLevel.ERROR, nLineNumber, strErrorMessage );
             listMessages.add( error );
+
             return listMessages;
         }
-        if ( !getUpdateExistingUsers( ) )
+
+        if ( !getUpdateExistingUsers(  ) )
         {
             String strAccessCode = strLineDataArray[0];
             String strEmail = strLineDataArray[3];
+
             if ( DatabaseUserHome.findDatabaseUserIdFromLogin( strAccessCode, databasePlugin ) > 0 )
             {
                 String strMessage = I18nService.getLocalizedString( MESSAGE_ACCESS_CODE_ALREADY_USED, locale );
@@ -337,7 +359,8 @@ public class ImportDatabaseUserService extends CSVReaderService
             {
                 Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail,
                         databasePlugin );
-                if ( listUsers != null && listUsers.size( ) > 0 )
+
+                if ( ( listUsers != null ) && ( listUsers.size(  ) > 0 ) )
                 {
                     String strMessage = I18nService.getLocalizedString( MESSAGE_EMAIL_ALREADY_USED, locale );
                     CSVMessageDescriptor error = new CSVMessageDescriptor( CSVMessageLevel.ERROR, nLineNumber,
@@ -355,13 +378,14 @@ public class ImportDatabaseUserService extends CSVReaderService
      */
     @Override
     protected List<CSVMessageDescriptor> getEndOfProcessMessages( int nNbLineParses, int nNbLinesWithoutErrors,
-            Locale locale )
+        Locale locale )
     {
-        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>( );
+        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>(  );
         Object[] args = { nNbLineParses, nNbLinesWithoutErrors };
         String strMessageContent = I18nService.getLocalizedString( MESSAGE_USERS_IMPORTED, args, locale );
         CSVMessageDescriptor message = new CSVMessageDescriptor( CSVMessageLevel.INFO, 0, strMessageContent );
         listMessages.add( message );
+
         return listMessages;
     }
 
@@ -380,7 +404,7 @@ public class ImportDatabaseUserService extends CSVReaderService
         String strEmailSubject = I18nService.getLocalizedString( MESSAGE_ACCOUNT_IMPORTED_MAIL_SUBJECT,
                 new String[] { strSiteName }, locale );
         String strBaseURL = strProdUrl;
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_USER, user );
         model.put( MARK_SITE_NAME, strSiteName );
         model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
@@ -388,21 +412,22 @@ public class ImportDatabaseUserService extends CSVReaderService
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MAIL_USER_IMPORTED, locale, model );
 
-        MailService
-                .sendMailHtml( user.getEmail( ), strSenderEmail, strSenderEmail, strEmailSubject, template.getHtml( ) );
+        MailService.sendMailHtml( user.getEmail(  ), strSenderEmail, strSenderEmail, strEmailSubject,
+            template.getHtml(  ) );
     }
 
     /**
      * Get the separator used for attributes of admin users.
      * @return The separator
      */
-    public Character getAttributesSeparator( )
+    public Character getAttributesSeparator(  )
     {
         if ( _strAttributesSeparator == null )
         {
             _strAttributesSeparator = AppPropertiesService.getProperty( PROPERTY_IMPORT_EXPORT_USER_SEPARATOR,
                     CONSTANT_DEFAULT_IMPORT_EXPORT_USER_SEPARATOR ).charAt( 0 );
         }
+
         return _strAttributesSeparator;
     }
 
@@ -411,7 +436,7 @@ public class ImportDatabaseUserService extends CSVReaderService
      * @return True if existing users should be updated, false if they should be
      *         ignored.
      */
-    public boolean getUpdateExistingUsers( )
+    public boolean getUpdateExistingUsers(  )
     {
         return _bUpdateExistingUsers;
     }
@@ -425,5 +450,4 @@ public class ImportDatabaseUserService extends CSVReaderService
     {
         this._bUpdateExistingUsers = bUpdateExistingUsers;
     }
-
 }

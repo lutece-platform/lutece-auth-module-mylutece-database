@@ -125,17 +125,17 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_LOGIN, plugin );
         daoUtil.setString( 1, login );
 
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        if ( daoUtil.next( ) )
+        if ( daoUtil.next(  ) )
         {
             int nIndex = 1;
-            userKey = new DatabaseUserKey( );
+            userKey = new DatabaseUserKey(  );
             userKey.setKey( daoUtil.getString( nIndex++ ) );
             userKey.setUserId( daoUtil.getInt( nIndex++ ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return userKey;
     }

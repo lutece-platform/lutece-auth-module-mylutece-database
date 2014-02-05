@@ -100,13 +100,16 @@ public final class DatabaseUserParameterHome
     public static int getIntegerSecurityParameter( String strParameterkey, Plugin plugin )
     {
         ReferenceItem refItem = findByKey( strParameterkey, plugin );
-        if ( refItem == null || StringUtils.isEmpty( refItem.getName( ) ) )
+
+        if ( ( refItem == null ) || StringUtils.isEmpty( refItem.getName(  ) ) )
         {
             return 0;
         }
+
         try
         {
-            int nValue = Integer.parseInt( refItem.getName( ) );
+            int nValue = Integer.parseInt( refItem.getName(  ) );
+
             return nValue;
         }
         catch ( NumberFormatException e )

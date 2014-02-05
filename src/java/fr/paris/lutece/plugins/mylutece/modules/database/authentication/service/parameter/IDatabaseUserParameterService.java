@@ -39,7 +39,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 
 /**
  * User parameter service
- * 
+ *
  */
 public interface IDatabaseUserParameterService extends IUserParameterService
 {
@@ -56,8 +56,7 @@ public interface IDatabaseUserParameterService extends IUserParameterService
      * @return true if it is enable, false otherwise
      */
     boolean isJcaptchaEnable( Plugin plugin );
-    
-    
+
     /**
      * Check if the user must be automatically logged after validation email
      * @param plugin the plugin

@@ -41,10 +41,11 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
-import java.sql.Timestamp;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
+
+import java.sql.Timestamp;
+
+import java.util.List;
 
 
 /**
@@ -166,12 +167,11 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
 
         return bIsValidationEmail;
     }
-    
-  
+
     /**
      * {@inheritDoc}
      */
-     @Override
+    @Override
     public boolean isAutoLoginAfterValidationEmail( Plugin plugin )
     {
         boolean bIsAutoLogin = false;

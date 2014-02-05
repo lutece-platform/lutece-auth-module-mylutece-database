@@ -33,14 +33,15 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import java.sql.Timestamp;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -55,13 +56,13 @@ public final class DatabaseUserHome
     /**
      * Private constructor - this class need not be instantiated
      */
-    private DatabaseUserHome( )
+    private DatabaseUserHome(  )
     {
     }
 
     /**
      * Creation of an instance of databaseUser
-     * 
+     *
      * @param databaseUser The instance of the DatabaseUser which contains the
      *            informations to store
      * @param strPassword The user's password
@@ -78,7 +79,7 @@ public final class DatabaseUserHome
 
     /**
      * Update of the databaseUser which is specified in parameter
-     * 
+     *
      * @param databaseUser The instance of the DatabaseUser which contains the
      *            data to store
      * @param plugin The current plugin using this method
@@ -87,13 +88,14 @@ public final class DatabaseUserHome
     public static DatabaseUser update( DatabaseUser databaseUser, Plugin plugin )
     {
         _dao.store( databaseUser, plugin );
-        LuteceUserService.userAttributesChanged( databaseUser.getLogin( ) );
+        LuteceUserService.userAttributesChanged( databaseUser.getLogin(  ) );
+
         return databaseUser;
     }
 
     /**
      * Update of the databaseUser which is specified in parameter
-     * 
+     *
      * @param databaseUser The instance of the DatabaseUser which contains the
      *            data to store
      * @param strNewPassword The new password to store
@@ -109,7 +111,7 @@ public final class DatabaseUserHome
 
     /**
      * Update of the databaseUser which is specified in parameter
-     * 
+     *
      * @param user The instance of the DatabaseUser which contains the data to
      *            store
      * @param bNewValue The new value of the reset password attribute
@@ -125,14 +127,14 @@ public final class DatabaseUserHome
 
     /**
      * Remove the databaseUser whose identifier is specified in parameter
-     * 
+     *
      * @param databaseUser The DatabaseUser object to remove
      * @param plugin The current plugin using this method
      */
     public static void remove( DatabaseUser databaseUser, Plugin plugin )
     {
         _dao.delete( databaseUser, plugin );
-        LuteceUserService.userAttributesChanged( databaseUser.getLogin( ) );
+        LuteceUserService.userAttributesChanged( databaseUser.getLogin(  ) );
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -141,7 +143,7 @@ public final class DatabaseUserHome
     /**
      * Returns an instance of a DatabaseUser whose identifier is specified in
      * parameter
-     * 
+     *
      * @param nKey The Primary key of the databaseUser
      * @param plugin The current plugin using this method
      * @return An instance of DatabaseUser
@@ -163,7 +165,7 @@ public final class DatabaseUserHome
 
     /**
      * Returns a collection of DatabaseUser objects for a login
-     * 
+     *
      * @param strLogin The login of the databseUser
      * @param plugin The current plugin using this method
      * @return A collection of DatabaseUser
@@ -175,7 +177,7 @@ public final class DatabaseUserHome
 
     /**
      * Returns a collection of DatabaseUser objects for a email
-     * 
+     *
      * @param strEmail The email of the databseUser
      * @param plugin The current plugin using this method
      * @return A collection of DatabaseUser
@@ -187,7 +189,7 @@ public final class DatabaseUserHome
 
     /**
      * Returns the password of the specified user
-     * 
+     *
      * @param nKey The Primary key of the databaseUser
      * @param plugin The current plugin using this method
      * @return An instance of DatabaseUser
@@ -199,7 +201,7 @@ public final class DatabaseUserHome
 
     /**
      * Check the password for a DatabaseUser
-     * 
+     *
      * @param strLogin The user login of DatabaseUser
      * @param strPassword The password of DatabaseUser
      * @param plugin The Plugin using this data access service
@@ -320,7 +322,7 @@ public final class DatabaseUserHome
      * @return the list of id of users that need to receive their first alert
      */
     public static List<Integer> getIdUsersToSendOtherAlert( Timestamp alertMaxDate, Timestamp timeBetweenAlerts,
-            int maxNumberAlerts, Plugin plugin )
+        int maxNumberAlerts, Plugin plugin )
     {
         return _dao.getIdUsersToSendOtherAlert( alertMaxDate, timeBetweenAlerts, maxNumberAlerts, plugin );
     }
@@ -400,6 +402,6 @@ public final class DatabaseUserHome
      */
     public static void updateUserLastLoginDate( String strLogin, Date dateLastLogin, Plugin plugin )
     {
-        _dao.updateUserLastLoginDate( strLogin, new java.sql.Timestamp( dateLastLogin.getTime( ) ), plugin );
+        _dao.updateUserLastLoginDate( strLogin, new java.sql.Timestamp( dateLastLogin.getTime(  ) ), plugin );
     }
 }

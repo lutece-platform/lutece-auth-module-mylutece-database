@@ -44,42 +44,41 @@ import fr.paris.lutece.plugins.mylutece.service.IUserParameterService;
  */
 public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
 {
-	private static final String DAEMON_NAME = "DatabaseAccountLifeTimeDaemon";
-
-    private DatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService( );
+    private static final String DAEMON_NAME = "DatabaseAccountLifeTimeDaemon";
+    private DatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService(  );
 
     /**
      * Default constructor
      */
-    public DatabaseAccountLifeTimeDaemon( )
+    public DatabaseAccountLifeTimeDaemon(  )
     {
-        super( );
+        super(  );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public IAccountLifeTimeService getAccountLifeTimeService( )
+    public IAccountLifeTimeService getAccountLifeTimeService(  )
     {
-        return DatabaseAccountLifeTimeService.getService( );
+        return DatabaseAccountLifeTimeService.getService(  );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public IUserParameterService getParameterService( )
+    public IUserParameterService getParameterService(  )
     {
         return _parameterService;
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getDaemonName( )
-	{
-		return DAEMON_NAME;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDaemonName(  )
+    {
+        return DAEMON_NAME;
+    }
 }

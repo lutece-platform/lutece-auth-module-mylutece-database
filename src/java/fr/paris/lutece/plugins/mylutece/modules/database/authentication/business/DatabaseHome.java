@@ -39,6 +39,7 @@ import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.sql.Timestamp;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public final class DatabaseHome
 
     /**
      * Gets the reset password attribute of the user from his login
-     * 
+     *
      * @param strLogin the login
      * @param plugin The Plugin using this data access service
      * @return True if the password has to be changed, false otherwise

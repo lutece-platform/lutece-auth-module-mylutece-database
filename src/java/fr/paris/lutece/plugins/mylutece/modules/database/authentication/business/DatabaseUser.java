@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
 import java.io.Serializable;
+
 import java.sql.Timestamp;
 
 
@@ -47,14 +48,17 @@ public class DatabaseUser implements Serializable
      * Status of not activated users.
      */
     public static final int STATUS_NOT_ACTIVATED = 0;
+
     /**
      * Status of activated users.
      */
     public static final int STATUS_ACTIVATED = 1;
+
     /**
      * Status of expired users. Expired users will be anonymized.
      */
     public static final int STATUS_EXPIRED = 5;
+
     /**
      * Status of anonymized users.
      */
@@ -64,7 +68,6 @@ public class DatabaseUser implements Serializable
      * serialVersionUID
      */
     private static final long serialVersionUID = 8073247646404231859L;
-
     private int _nUserId;
     private String _strLogin;
     private String _strLastName;
@@ -178,7 +181,7 @@ public class DatabaseUser implements Serializable
      * Get the status of the user
      * @return The status of the user
      */
-    public int getStatus( )
+    public int getStatus(  )
     {
         return _nStatus;
     }
@@ -198,7 +201,7 @@ public class DatabaseUser implements Serializable
      */
     public boolean isActive(  )
     {
-        return ( _nStatus >= STATUS_ACTIVATED && _nStatus < STATUS_EXPIRED );
+        return ( ( _nStatus >= STATUS_ACTIVATED ) && ( _nStatus < STATUS_EXPIRED ) );
     }
 
     /**
@@ -215,7 +218,7 @@ public class DatabaseUser implements Serializable
      * Get the password maximum valide date of a user
      * @return The password maximum valide date of a user
      */
-    public Timestamp getPasswordMaxValidDate( )
+    public Timestamp getPasswordMaxValidDate(  )
     {
         return this._passwordMaxValidDate;
     }
@@ -224,7 +227,7 @@ public class DatabaseUser implements Serializable
      * Get the maximum valid date of the account of the user
      * @return The maximum valid date of the account of the user
      */
-    public Timestamp getAccountMaxValidDate( )
+    public Timestamp getAccountMaxValidDate(  )
     {
         return _accountMaxValidDate;
     }

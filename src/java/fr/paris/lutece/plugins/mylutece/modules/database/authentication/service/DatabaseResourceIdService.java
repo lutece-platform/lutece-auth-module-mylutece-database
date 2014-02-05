@@ -39,9 +39,9 @@ import fr.paris.lutece.portal.service.rbac.ResourceType;
 import fr.paris.lutece.portal.service.rbac.ResourceTypeManager;
 import fr.paris.lutece.util.ReferenceList;
 
-import java.util.Locale;
-
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Locale;
 
 
 /**
@@ -71,7 +71,7 @@ public class DatabaseResourceIdService extends ResourceIdService
         p.setPermissionTitleKey( PROPERTY_LABEL_MANAGE );
         rt.registerPermission( p );
 
-        p = new Permission( );
+        p = new Permission(  );
         p.setPermissionKey( PERMISSION_IMPORT_EXPORT_DATABASE_USERS );
         p.setPermissionTitleKey( PROPERTY_LABEL_IMPORT_EXPORT_DATABASE_USERS );
         rt.registerPermission( p );

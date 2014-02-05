@@ -45,7 +45,6 @@ import fr.paris.lutece.portal.service.security.SecurityService;
  */
 public class DatabaseUserProviderService implements ILuteceUserProviderService
 {
-
     /**
      * {@inheritDoc}
      */
@@ -53,16 +52,15 @@ public class DatabaseUserProviderService implements ILuteceUserProviderService
     public LuteceUser getLuteceUserFromName( String strName )
     {
         return DatabaseHome.findLuteceUserByLogin( strName, PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME ),
-                SecurityService.getInstance( ).getAuthenticationService( ) );
+            SecurityService.getInstance(  ).getAuthenticationService(  ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean canUsersBeCached( )
+    public boolean canUsersBeCached(  )
     {
         return true;
     }
-
 }

@@ -39,18 +39,18 @@ import fr.paris.lutece.plugins.mylutece.service.IAnonymizationService;
 
 /**
  * User anonymization daemon
- * 
+ *
  */
 public class DatabaseAnonymizationDaemon extends AbstractAnonymizationDaemon
 {
-	private static final String DAEMON_NAME = "DatabaseAnonymizationDaemon";
+    private static final String DAEMON_NAME = "DatabaseAnonymizationDaemon";
 
     /**
      * Default constructor of the daemon
      */
-    public DatabaseAnonymizationDaemon( )
+    public DatabaseAnonymizationDaemon(  )
     {
-        super( );
+        super(  );
         setPluginName( DatabasePlugin.PLUGIN_NAME );
     }
 
@@ -58,17 +58,17 @@ public class DatabaseAnonymizationDaemon extends AbstractAnonymizationDaemon
      * {@inheritDoc}
      */
     @Override
-    public IAnonymizationService getAnonymizationService( )
+    public IAnonymizationService getAnonymizationService(  )
     {
-        return DatabaseAnonymizationService.getService( );
+        return DatabaseAnonymizationService.getService(  );
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getDaemonName( )
-	{
-		return DAEMON_NAME;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDaemonName(  )
+    {
+        return DAEMON_NAME;
+    }
 }

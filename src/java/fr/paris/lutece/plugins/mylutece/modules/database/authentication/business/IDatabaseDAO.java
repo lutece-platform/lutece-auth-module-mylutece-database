@@ -38,6 +38,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 
 import java.sql.Timestamp;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public interface IDatabaseDAO
 
     /**
      * Check if a user has reset his password from his login
-     * 
+     *
      * @param strLogin the login
      * @param plugin The Plugin using this data access service
      * @param authenticationService the LuteceAuthentication object
