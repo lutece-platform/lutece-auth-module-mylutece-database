@@ -33,6 +33,15 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
@@ -40,9 +49,11 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldListenerService;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
+import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.service.csv.CSVMessageDescriptor;
 import fr.paris.lutece.portal.service.csv.CSVMessageLevel;
 import fr.paris.lutece.portal.service.csv.CSVReaderService;
@@ -56,16 +67,6 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
-import fr.paris.lutece.util.password.PasswordUtil;
-
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 
 /**
@@ -94,6 +95,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     private static final int CONSTANT_MINIMUM_COLUMNS_PER_LINE = 7;
     private Character _strAttributesSeparator;
     private boolean _bUpdateExistingUsers;
+    private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService(  );
 
     /**
      * {@inheritDoc}
@@ -166,7 +168,7 @@ public class ImportDatabaseUserService extends CSVReaderService
         else
         {
             // We create the user
-            String strPassword = PasswordUtil.makePassword(  );
+            String strPassword = SecurityUtils.makePassword(_userParamService, databasePlugin);
             DatabaseService.getService(  ).doCreateUser( user, strPassword, databasePlugin );
             notifyUserAccountCreated( user, strPassword, locale, AppPathService.getProdUrl( strBaseUrl ) );
         }

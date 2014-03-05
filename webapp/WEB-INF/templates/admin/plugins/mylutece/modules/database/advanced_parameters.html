@@ -113,10 +113,16 @@
 				</div>
 				<#if use_advanced_security_parameters>
 					<div class="control-group">
-						<label class="control-label" for=""></label>
+						<label class="control-label" for="">#i18n{mylutece.message.password.labelPasswordFormat} :</label>
 						<div class="controls">
-							<label class="checkbox" for="password_format">#i18n{mylutece.message.password.labelPasswordFormat}
-								<input class="checkbox" type="checkbox" name="password_format" id="password_format" value="true" <#if password_format?? && password_format>checked="checked"</#if> />
+							<label class="checkbox inline" for="password_format_upper_lower_case">
+                        			<input type="checkbox" name="password_format_upper_lower_case" value="true" <#if password_format_upper_lower_case?? && password_format_upper_lower_case>checked="checked"</#if> />#i18n{mylutece.message.password.labelPasswordFormatUpperLowerCase}
+							</label>
+							<label class="checkbox inline" for="password_format_numero">
+                        			<input type="checkbox" name="password_format_numero" value="true" <#if password_format_numero?? && password_format_numero>checked="checked"</#if> />#i18n{mylutece.message.password.labelPasswordFormatNumero}
+							</label>
+							<label class="checkbox inline" for="password_format_special_characters">
+                        			<input type="checkbox" name="password_format_special_characters" value="true" <#if password_format_special_characters?? && password_format_special_characters>checked="checked"</#if> />#i18n{mylutece.message.password.labelPasswordFormatSpecialCharacters}
 							</label>
 						</div>
 					</div>

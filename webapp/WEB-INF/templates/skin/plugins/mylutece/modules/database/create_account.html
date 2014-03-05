@@ -48,7 +48,7 @@
 			<#assign classConfirmation = typeClass />
 		</#if>
 		<#if error_code = "password_format">
-			<p class="text-error">#i18n{mylutece.message.password.labelPasswordFormat}</p>
+			<p class="text-error">${password_format_message!!}</p>
 			<#assign classPassword = typeClass />
 			<#assign classConfirmation = typeClass />
 		</#if>

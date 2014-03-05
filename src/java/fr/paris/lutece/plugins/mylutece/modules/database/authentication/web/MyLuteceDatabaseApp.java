@@ -33,12 +33,21 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
@@ -61,7 +70,6 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -73,21 +81,8 @@ import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
-import fr.paris.lutece.util.password.PasswordUtil;
 import fr.paris.lutece.util.string.StringUtil;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-
-import java.sql.Timestamp;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -112,6 +107,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_KEY = "key";
     private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
     private static final String MARK_PASSWORD_MINIMUM_LENGTH = "password_minimum_length";
+    private static final String MARK_PASSWORD_FORMAT_MESSAGE = "password_format_message";
     private static final String MARK_USER_ID = "user_id";
     private static final String MARK_REF = "ref";
     private static final String MARK_SITE_LINK = "site_link";
@@ -161,7 +157,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String ERROR_LOGIN_ALREADY_EXISTS = "error_login_already_exists";
     private static final String ERROR_CAPTCHA = "error_captcha";
     private static final String ERROR_PASSWORD_MINIMUM_LENGTH = "password_minimum_length";
-
+  
     // Templates
     private static final String TEMPLATE_LOST_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/lost_password.html";
     private static final String TEMPLATE_LOST_LOGIN_PAGE = "skin/plugins/mylutece/modules/database/lost_login.html";
@@ -521,6 +517,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         model.put( MARK_ACTION_VALIDATION_EMAIL, strValidationEmail );
         model.put( MARK_ACTION_VALIDATION_SUCCESS, strValidationSuccess );
         model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin(  ) );
+        model.put(MARK_PASSWORD_FORMAT_MESSAGE,SecurityUtils.getMessageFrontPasswordFormat(_locale,_userParamService, _plugin));
 
         if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
         {
@@ -528,6 +525,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
             model.put( MARK_PASSWORD_MINIMUM_LENGTH,
                 I18nService.getLocalizedString( MESSAGE_MINIMUM_PASSWORD_LENGTH, param, _locale ) );
         }
+        
+        
 
         if ( _userParamService.isJcaptchaEnable( _plugin ) )
         {
@@ -774,7 +773,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                 model.put( MARK_PASSWORD_MINIMUM_LENGTH,
                     I18nService.getLocalizedString( MESSAGE_MINIMUM_PASSWORD_LENGTH, param, _locale ) );
             }
-
+            model.put(MARK_PASSWORD_FORMAT_MESSAGE,SecurityUtils.getMessageFrontPasswordFormat(_locale,_userParamService, _plugin));
             model.put( MARK_KEY, strKey );
             model.put( MARK_ACTION_SUCCESSFUL, request.getParameter( PARAMETER_ACTION_SUCCESSFUL ) );
 
@@ -1071,7 +1070,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                 if ( user.isActive(  ) )
                 {
                     // make password
-                    String strPassword = PasswordUtil.makePassword(  );
+                    String strPassword = SecurityUtils.makePassword(_userParamService, _plugin);
 
                     // update password
                     String strEncryptedPassword = strPassword;
