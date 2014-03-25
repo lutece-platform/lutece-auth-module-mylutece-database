@@ -1,66 +1,66 @@
 <div class="row-fluid">
-	<form class="form-horizontal" enctype="multipart/form-data" method="post" name="import_users_from_file" action="jsp/admin/plugins/mylutece/modules/database/DoImportUsersFromFile.jsp">
-		<fieldset>
-		    <legend>#i18n{module.mylutece.database.import_users_from_file.pageTitle}</legend> 
-			<ul class="nav nav-tabs">
-				<li>
-					<a href="jsp/admin/plugins/mylutece/modules/database/ExportUsers.jsp">#i18n{module.mylutece.database.export_users.labelExportUsers}</a>
-				</li>
-				<li class="active">
-					<a href="jsp/admin/plugins/mylutece/modules/database/ImportUsersFromFile.jsp" >#i18n{module.mylutece.database.import_users_from_file.labelImportUsers}</a>
-				</li>
-			</ul>
-			<div class="control-group">
-				<label class="control-label" for="import_file">#i18n{module.mylutece.database.import_users_from_file.labelImportFile} * :</label>
-				<div class="controls">
-					<input type="file" id="import_file" name="import_file"/>
-					<span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelCSVSeparator} "<strong>${csv_separator}</strong>".<br />
-					#i18n{module.mylutece.database.import_users_from_file.labelListColumns}<br />
-					#i18n{module.mylutece.database.import_users_from_file.labelComplementaryAttributes} "<strong>${attributes_separator}</strong>".<br />
-					#i18n{module.mylutece.database.import_users_from_file.labelRightsRolesWorkgroup}</span>
-					<span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelFileEncoding}</span>
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="ignore_first_line">#i18n{module.mylutece.database.import_users_from_file.labelIgnoreFirstLine} :</label>
-				<div class="controls">
-					<input type="checkbox" id="ignore_first_line" name="ignore_first_line"/>
-					<span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelHelpIgnoreFirstLine}</span>
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label" for="update_existing_users">#i18n{module.mylutece.database.import_users_from_file.labelUpdateExistingUsers} :</label>
-				<div class="controls">
-					<input type="checkbox" id="update_existing_users" name="update_existing_users"/>
-					<span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelHelpUpdateExistingUsers}</span>
-				</div>
-			</div>
-			<#if messages?? && messages?has_content>
-				<div class="well" >
-					<#list messages as message>
-						<div <#if message.messageLevel?string == "ERROR">class="alert-error"</#if>>
-							<#if 0 < message.lineNumber >#i18n{module.mylutece.database.import_users_from_file.lineNumber} ${message.lineNumber} - </#if>${message.messageContent}
-						</div>
-					</#list>
-				</div>
-			</#if>
-			
-			<div class="form-actions">
-				<button class="btn btn-primary btn-small" type="submit">
-					<i class="icon-white icon-ok">&nbsp;</i>
-					#i18n{portal.util.labelValidate}
-				</button>
-				<a class="btn btn-small" href="jsp/admin/user/ManageUsers.jsp">
-					<i class="icon-remove-circle"></i>
-					 #i18n{portal.util.labelBack}
-				</a>
-			</div>
-		</fieldset>
-	</form>
+    <form class="form-horizontal" enctype="multipart/form-data" method="post" name="import_users_from_file" action="jsp/admin/plugins/mylutece/modules/database/DoImportUsersFromFile.jsp">
+        <fieldset>
+            <legend>#i18n{module.mylutece.database.import_users_from_file.pageTitle}</legend> 
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="jsp/admin/plugins/mylutece/modules/database/ExportUsers.jsp">#i18n{module.mylutece.database.export_users.labelExportUsers}</a>
+                </li>
+                <li class="active">
+                    <a href="jsp/admin/plugins/mylutece/modules/database/ImportUsersFromFile.jsp" >#i18n{module.mylutece.database.import_users_from_file.labelImportUsers}</a>
+                </li>
+            </ul>
+            <div class="control-group">
+                <label class="control-label" for="import_file">#i18n{module.mylutece.database.import_users_from_file.labelImportFile} * :</label>
+                <div class="controls">
+                    <input type="file" id="import_file" name="import_file"/>
+                    <span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelCSVSeparator} "<strong>${csv_separator}</strong>".<br />
+                    #i18n{module.mylutece.database.import_users_from_file.labelListColumns}<br />
+                    #i18n{module.mylutece.database.import_users_from_file.labelComplementaryAttributes} "<strong>${attributes_separator}</strong>".<br />
+                    #i18n{module.mylutece.database.import_users_from_file.labelRightsRolesWorkgroup}</span>
+                    <span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelFileEncoding}</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="ignore_first_line">#i18n{module.mylutece.database.import_users_from_file.labelIgnoreFirstLine} :</label>
+                <div class="controls">
+                    <input type="checkbox" id="ignore_first_line" name="ignore_first_line"/>
+                    <span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelHelpIgnoreFirstLine}</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="update_existing_users">#i18n{module.mylutece.database.import_users_from_file.labelUpdateExistingUsers} :</label>
+                <div class="controls">
+                    <input type="checkbox" id="update_existing_users" name="update_existing_users"/>
+                    <span class="help-block">#i18n{module.mylutece.database.import_users_from_file.labelHelpUpdateExistingUsers}</span>
+                </div>
+            </div>
+            <#if messages?? && messages?has_content>
+                <div class="well" >
+                    <#list messages as message>
+                        <div <#if message.messageLevel?string == "ERROR">class="alert-error"</#if>>
+                            <#if 0 < message.lineNumber >#i18n{module.mylutece.database.import_users_from_file.lineNumber} ${message.lineNumber} - </#if>${message.messageContent}
+                        </div>
+                    </#list>
+                </div>
+            </#if>
+            
+            <div class="form-actions">
+                <button class="btn btn-primary btn-small" type="submit">
+                    <i class="icon-white icon-ok">&nbsp;</i>
+                    #i18n{portal.util.labelValidate}
+                </button>
+                <a class="btn btn-small" href="jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp">
+                    <i class="icon-remove-circle"></i>
+                     #i18n{portal.util.labelBack}
+                </a>
+            </div>
+        </fieldset>
+    </form>
 </div>
 
 
-	    
-	    
-	    
-	
+        
+        
+        
+    
