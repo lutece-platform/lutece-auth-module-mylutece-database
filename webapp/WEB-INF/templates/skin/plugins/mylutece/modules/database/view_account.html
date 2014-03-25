@@ -1,61 +1,41 @@
 <div id="one-zone-first" class="span-22 prepend-1 append-1 last">
     <div id="one-zone-first-content" class="portlet append-bottom -lutece-border-radius">
 
-		<h2>#i18n{module.mylutece.database.xpage.view_account.pageTitle}</h2>
-		
+        <h2>#i18n{module.mylutece.database.xpage.view_account.pageTitle}</h2>
+        
         <form class="default-form" id="modifyAccount" name="modifyAccount" action="jsp/site/Portal.jsp?page=mylutecedatabase&amp;action=changePassword" method="post">
         <fieldset>
-			
-	        <p>
-	        	<#if show_input_login>
-		            <label class="text-label" for="login">#i18n{module.mylutece.database.xpage.view_account.login} : </label>
-		            <input type="text" readonly="readonly" name="login" maxlength="100" size="35" tabindex="1" value="${user.login}" />
-		            <br />
-		        </#if>
-		        <label class="text-label" for="email">#i18n{module.mylutece.database.xpage.view_account.eMail} : </label>
-	            <input type="text" readonly="readonly" name="email" maxlength="100" size="35" tabindex="2" value="${user.email}" />
-	            <br />
-	            <label class="text-label" for="last_name">#i18n{module.mylutece.database.xpage.view_account.lastName} : </label>
-	            <input type="text" readonly="readonly" name="last_name" maxlength="100" size="35" tabindex="3"  value="${user.lastName}" />
-	            <br />
-	            <label class="text-label" for="first_name">#i18n{module.mylutece.database.xpage.view_account.firstName} : </label>
-	            <input type="text" readonly="readonly" name="first_name" maxlength="100" size="35" tabindex="4" value="${user.firstName}" />
-	            <br />
-	            <!--
-	            <label class="combo-label" for="roles">#i18n{module.mylutece.database.xpage.view_account.roles} : </label>
-				<#if roles?has_content>
-		            <select name="roles" id="roles" size="4">
-	            		<#list roles as role>
-		        	    	<option value="${role}">${role}</option>
-						</#list>
-	    	       	</select>
-	   	       	<#else>
-	   	       		#i18n{module.mylutece.database.xpage.view_account.noRole}
-				</#if>
-				<br />
-	            <label class="combo-label" for="groups">#i18n{module.mylutece.database.xpage.view_account.groups} : </label>
-				<#if groups?has_content>
-		            <select name="groups" id="groups" size="4">
-	            		<#list groups as group>
-		        	    	<option value="${group}">${group}</option>
-						</#list>
-	    	       	</select>
-	   	       	<#else>
-	   	       		#i18n{module.mylutece.database.xpage.view_account.noGroup}
-				</#if>
-				-->
-			</p>
+            
+            <p>
+                <#if show_input_login>
+                    <label class="text-label" for="login">#i18n{module.mylutece.database.xpage.view_account.login} : </label>
+                    <input type="text" readonly="readonly" name="login" maxlength="100" size="35" tabindex="1" value="${user.login}" />
+                    <br />
+                </#if>
+                <label class="text-label" for="email">#i18n{module.mylutece.database.xpage.view_account.eMail} : </label>
+                <input type="text" readonly="readonly" name="email" maxlength="100" size="35" tabindex="2" value="${user.email}" />
+                <br />
+                <label class="text-label" for="last_name">#i18n{module.mylutece.database.xpage.view_account.lastName} : </label>
+                <input type="text" readonly="readonly" name="last_name" maxlength="100" size="35" tabindex="3"  value="${user.lastName}" />
+                <br />
+                <label class="text-label" for="first_name">#i18n{module.mylutece.database.xpage.view_account.firstName} : </label>
+                <input type="text" readonly="readonly" name="first_name" maxlength="100" size="35" tabindex="4" value="${user.firstName}" />
+                <br />
+            </p>
             <table align="center">
-				<tr>
-					<td>
-						<input class="site-buttons" id="button-subscribe" type="submit" name="changePasswordBtn" value="#i18n{module.mylutece.database.xpage.view_account.btnChangePassword}" />
+                <tr>
+                    <td>
+                        <a class="btn btn-danger" id="button-delete" type="button" name="delete" href="jsp/site/Portal.jsp?page=mylutecedatabase&action=delete">#i18n{module.mylutece.database.xpage.view_account.btnDeleteAccount}</a>
                     </td>
-					<td> 
-						<input class="site-buttons" id="button-return" type="button" name="back" value="#i18n{module.mylutece.database.xpage.account.btnBack}" onclick='javascript:history.go(-1)'/>  
-					</td>
-	       	    </tr>
-           	</table>
-		</fieldset>
-		</form>		
-	</div>
+                    <td>
+                        <button class="btn btn-primary" id="button-subscribe" type="submit" name="changePasswordBtn">#i18n{module.mylutece.database.xpage.view_account.btnChangePassword}</button>
+                    </td>
+                    <td> 
+                        <button class="btn" id="button-return" type="button" name="back" onclick='javascript:history.go(-1)'>#i18n{module.mylutece.database.xpage.account.btnBack}</button>  
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        </form>     
+    </div>
 </div>
