@@ -33,6 +33,18 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
@@ -76,18 +88,6 @@ import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.string.StringUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-
 
 /**
  * This class provides the XPageApp that manage personalization features for
@@ -111,6 +111,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_VALIDATION_URL = "validation_url";
     private static final String MARK_JCAPTCHA = "jcaptcha";
     private static final String MARK_SHOW_INPUT_LOGIN = "show_input_login";
+    private static final String MARK_SHOW_INPUT_EMAIL = "show_input_email";
     private static final String MARK_REINIT_URL = "reinit_url";
     private static final String MARK_KEY = "key";
     private static final String MARK_ATTRIBUTES_LIST = "attributes_list";
@@ -148,6 +149,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String ACTION_DELETE = "delete";
     private static final String ACTION_CONFIRM_DELETE = "deleteConfirm";
     private static final String ACTION_VIEW_ACCOUNT = "viewAccount";
+    private static final String ACTION_MODIFY_ACCOUNT = "modifyAccount";
     private static final String ACTION_LOST_PASSWORD = "lostPassword";
     private static final String ACTION_LOST_LOGIN = "lostLogin";
     private static final String ACTION_ACCESS_DENIED = "accessDenied";
@@ -172,6 +174,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String TEMPLATE_LOST_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/lost_password.html";
     private static final String TEMPLATE_LOST_LOGIN_PAGE = "skin/plugins/mylutece/modules/database/lost_login.html";
     private static final String TEMPLATE_VIEW_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/view_account.html";
+    private static final String TEMPLATE_MODIFY_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/modify_account.html";
     private static final String TEMPLATE_CHANGE_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/change_password.html";
     private static final String TEMPLATE_CREATE_ACCOUNT_PAGE = "skin/plugins/mylutece/modules/database/create_account.html";
     private static final String TEMPLATE_EMAIL_VALIDATION = "skin/plugins/mylutece/modules/database/email_validation.html";
@@ -182,6 +185,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String PROPERTY_MYLUTECE_CHANGE_PASSWORD_URL = "mylutece-database.url.changePassword.page";
     private static final String PROPERTY_MYLUTECE_VIEW_ACCOUNT_URL = "mylutece-database.url.viewAccount.page";
     private static final String PROPERTY_MYLUTECE_CREATE_ACCOUNT_URL = "mylutece-database.url.createAccount.page";
+    private static final String PROPERTY_MYLUTECE_MODIFY_ACCOUNT_URL = "mylutece-database.url.modifyAccount.page";
     private static final String PROPERTY_MYLUTECE_LOST_PASSWORD_URL = "mylutece-database.url.lostPassword.page";
     private static final String PROPERTY_MYLUTECE_LOST_LOGIN_URL = "mylutece-database.url.lostLogin.page";
     private static final String PROPERTY_MYLUTECE_RESET_PASSWORD_URL = "mylutece-database.url.resetPassword.page";
@@ -204,6 +208,9 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String PROPERTY_CHANGE_PASSWORD_TITLE = "module.mylutece.database.xpage.changePassword.title";
     private static final String PROPERTY_VIEW_ACCOUNT_LABEL = "module.mylutece.database.xpage.viewAccount.label";
     private static final String PROPERTY_VIEW_ACCOUNT_TITLE = "module.mylutece.database.xpage.viewAccount.title";
+    private static final String PROPERTY_MODIFY_ACCOUNT_LABEL = "module.mylutece.database.xpage.modifyAccount.label";
+    private static final String PROPERTY_MODIFY_ACCOUNT_TITLE = "module.mylutece.database.xpage.modifyAccount.title";
+    
     private static final String PROPERTY_LOST_PASSWORD_LABEL = "module.mylutece.database.xpage.lostPassword.label";
     private static final String PROPERTY_LOST_PASSWORD_TITLE = "module.mylutece.database.xpage.lostPassword.title";
     private static final String PROPERTY_LOST_LOGIN_LABEL = "module.mylutece.database.xpage.lostLogin.label";
@@ -302,6 +309,10 @@ public class MyLuteceDatabaseApp implements XPageApplication
             {
                 page = getCreateAccountPage( page, request );
             }
+            else if ( ACTION_MODIFY_ACCOUNT.equals( strAction ) )
+            {
+                page = getModifyAccountPage( page, request );
+            }
             else if ( ACTION_REINIT_PASSWORD.equals( strAction ) )
             {
                 page = getReinitPasswordPage( page, request );
@@ -384,6 +395,15 @@ public class MyLuteceDatabaseApp implements XPageApplication
     public static String getNewAccountUrl( )
     {
         return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_CREATE_ACCOUNT_URL );
+    }
+    
+    /**
+     * Returns the modifyAccount URL of the Authentication Service
+     * @return The URL
+     */
+    public static String getModifyAccountUrl( )
+    {
+        return AppPropertiesService.getProperty( PROPERTY_MYLUTECE_MODIFY_ACCOUNT_URL );
     }
 
     /**
@@ -469,16 +489,33 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         return getDefaultRedirectUrl( );
     }
-
+    
+    
     /**
-     * Build the ViewAccount page
+     * Build the modifyAccount page
      * @param page The XPage object to fill
      * @param request The HTTP request
      * @return The XPage object containing the page content
      */
-    private XPage getViewAccountPage( XPage page, HttpServletRequest request )
+    private XPage getModifyAccountPage( XPage page, HttpServletRequest request )throws UserNotSignedException
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
+        String strLastName = request.getParameter( PARAMETER_LAST_NAME );
+        String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
+        String strEmail = request.getParameter( PARAMETER_EMAIL );
+        String strSuccess = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
+        String strValidationEmail = request.getParameter( PARAMETER_ACTION_VALIDATION_EMAIL );
+        String strValidationSuccess = request.getParameter( PARAMETER_ACTION_VALIDATION_SUCCESS );
+
+    	
+    	Map<String, Object> model = new HashMap<String, Object>( );
+        LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
+        
+        if ( luteceUser == null )
+        {
+            throw new UserNotSignedException(  );
+        }
+        
         DatabaseUser user = getRemoteUser( request );
 
         if ( user == null )
@@ -486,12 +523,78 @@ public class MyLuteceDatabaseApp implements XPageApplication
             return null;
         }
 
+        if (  strLastName  !=null )
+        {
+            user.setLastName( strLastName );
+        }
+
+        if ( strFirstName != null  )
+        {
+            user.setFirstName( strFirstName );
+        }
+
+        if (  strEmail != null  )
+        {
+            user.setEmail( strEmail );
+        }
+
+    
+        model.put( MARK_PLUGIN_NAME, _plugin.getName( ) );
+        model.put( MARK_ERROR_CODE, strErrorCode );
+        model.put( MARK_USER, user );
+        model.put( MARK_ACTION_SUCCESSFUL, strSuccess );
+        model.put( MARK_ACTION_VALIDATION_EMAIL, strValidationEmail );
+        model.put( MARK_ACTION_VALIDATION_SUCCESS, strValidationSuccess );
+        model.put( MARK_SHOW_INPUT_EMAIL, !_userFactory.isEmailUsedAsLogin( ) );
+        model.put( MARK_PASSWORD_FORMAT_MESSAGE,
+                SecurityUtils.getMessageFrontPasswordFormat( _locale, _userParamService, _plugin ) );
+
+        if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
+        {
+            Object[] param = { _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( ) };
+            model.put( MARK_PASSWORD_MINIMUM_LENGTH,
+                    I18nService.getLocalizedString( MESSAGE_MINIMUM_PASSWORD_LENGTH, param, _locale ) );
+        }
+
+        if ( _userParamService.isJcaptchaEnable( _plugin ) )
+        {
+            model.put( MARK_JCAPTCHA, _captchaService.getHtmlCode( ) );
+        }
+
+        HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_MODIFY_ACCOUNT_PAGE, _locale, model );
+        page.setContent( t.getHtml( ) );
+        page.setPathLabel( I18nService.getLocalizedString( PROPERTY_MODIFY_ACCOUNT_LABEL, _locale ) );
+        page.setTitle( I18nService.getLocalizedString( PROPERTY_MODIFY_ACCOUNT_TITLE, _locale ) );
+
+        return page;
+       
+    }
+    
+
+    /**
+     * Build the ViewAccount page
+     * @param page The XPage object to fill
+     * @param request The HTTP request
+     * @return The XPage object containing the page content
+     */
+    private XPage getViewAccountPage( XPage page, HttpServletRequest request )throws UserNotSignedException
+    {
+        Map<String, Object> model = new HashMap<String, Object>( );
         LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( luteceUser == null )
         {
+            throw new UserNotSignedException(  );
+        }
+        
+        DatabaseUser user = getRemoteUser( request );
+
+        if ( user == null )
+        {
             return null;
         }
+
+       
 
         model.put( MARK_USER, user );
         model.put( MARK_ROLES, luteceUser.getRoles( ) );
@@ -724,6 +827,86 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         return url.getUrl( );
     }
+    
+    
+    
+    /**
+     * This method is call by the JSP named DoModifyAccount.jsp
+     * @param request The HTTP request
+     * @return The URL to forward depending of the result of the change.
+     */
+    public String doModifyAccount( HttpServletRequest request )throws UserNotSignedException
+    {
+    	DatabaseUser user = getRemoteUser( request );
+    	
+    	if ( user == null )
+         {
+             return getLoginPageUrl();
+         }
+    	Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+        init( request, plugin );
+
+        String strError = StringUtils.EMPTY;
+        String strLastName = request.getParameter( PARAMETER_LAST_NAME );
+        String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
+        String strEmail = request.getParameter( PARAMETER_EMAIL );
+   
+        if (  _userParamService.isJcaptchaEnable( _plugin )
+                && !_captchaService.validate( request ) )
+        {
+            strError = ERROR_CAPTCHA;
+        }
+        
+    
+
+        else 
+        	
+        {
+        
+	        if ( (!_userFactory.isEmailUsedAsLogin( ) && StringUtils.isBlank( strEmail ) )|| StringUtils.isBlank( strFirstName )
+	                || StringUtils.isBlank( strEmail ) || StringUtils.isBlank( strLastName ) )
+	        {
+	            strError = ERROR_MANDATORY_FIELDS;
+	        }
+	
+	    
+	
+	        // Check email format
+	        if ( StringUtils.isBlank( strError )
+	                && (!_userFactory.isEmailUsedAsLogin( ) && !StringUtil.checkEmailAndDomainName( strEmail,
+	                        SecurityUtils.getBannedDomainNames( _userParamService, plugin ) )) )
+	        {
+	            strError = ERROR_SYNTAX_EMAIL;
+	        }
+        
+        }
+          
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getModifyAccountUrl( ) );
+        url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName( ) );
+        url.addParameter( PARAMETER_LAST_NAME, strLastName );
+        url.addParameter( PARAMETER_FIRST_NAME, strFirstName );
+        url.addParameter( PARAMETER_EMAIL, strEmail );
+
+        if ( StringUtils.isBlank( strError ) )
+        {
+          
+            user.setLastName( strLastName );
+            user.setFirstName( strFirstName );
+            user.setEmail( strEmail );
+            _databaseService.doUpdateUser(user, plugin);
+            //add action successFul
+            url.addParameter( PARAMETER_ACTION_SUCCESSFUL, getDefaultRedirectUrl( ) );
+        }
+        else
+        {
+            url.addParameter( PARAMETER_ERROR_CODE, strError );
+        }
+
+        return url.getUrl( );
+    }
+    
+    
+    
 
     /**
      * Do validate an account
