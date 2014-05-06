@@ -1,162 +1,162 @@
 <div class="well" >
-	<#if error_code?has_content >
-		<#assign typeClass = "class=\"error\"" />
-		
-		<#if error_code = "error_mandatory_fields">
-			<p class="text-error">#i18n{module.mylutece.database.message.account.errorMandatoryFields}</p>
-			<#if !(user.login?has_content)>
-				<#assign classLogin = typeClass />
-			</#if>
-			<#if !(user.password?has_content)>
-				<#assign classPassword = typeClass />
-			</#if>
-			<#if !(user.confirmation?has_content)>
-				<#assign classConfirmation = typeClass />
-			</#if>
-			<#if !(user.lastName?has_content)>
-				<#assign classLastName = typeClass />
-			</#if>
-			<#if !(user.firstName?has_content)>
-				<#assign classFirstName = typeClass />
-			</#if>
-			<#if !(user.email?has_content)>
-				<#assign classEmail = typeClass />
-			</#if>
-		</#if>
-		<#if error_code = "error_confirmation_password">
-			<p class="text-error">#i18n{module.mylutece.database.message.account.errorConfirmation}</p>
-			<#assign classPassword = typeClass />
-			<#assign classConfirmation = typeClass />
-		</#if>
-		<#if error_code = "error_login_already_exists">
-			<p class="text-error">#i18n{module.mylutece.database.message.create_account.errorLogin}</p>
-			<#assign classLogin = typeClass />
-		</#if>
-		<#if error_code = "error_syntax_email">
-			<p class="text-error">#i18n{module.mylutece.database.message.account.errorBadEmail}</p>
-			<#assign classEmail = typeClass />
-		</#if>
-		<#if error_code = "error_sending_email">
-			<p class="text-error">#i18n{module.mylutece.database.message.create_account.errorSendingEmail}</p>
-		</#if>
-		<#if error_code = "error_captcha">
-			<p class="text-error">#i18n{module.mylutece.database.message.create_account.errorCaptcha}</p>
-		</#if>
-		<#if error_code = "password_minimum_length">
-			<p class="text-error">${password_minimum_length!}</p>
-			<#assign classPassword = typeClass />
-			<#assign classConfirmation = typeClass />
-		</#if>
-		<#if error_code = "password_format">
-			<p class="text-error">${password_format_message!!}</p>
-			<#assign classPassword = typeClass />
-			<#assign classConfirmation = typeClass />
-		</#if>
-	</#if>
-	
-	<#if action_successful?has_content>
-		<form class="form-horizontal" id="createAccount" name="createAccount" action="${action_successful}" method="post">
-			<fieldset>
-				<legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
-				<p class="lead">#i18n{module.mylutece.database.message.create_account.success}</p>
-				<div class="form-actions">
-					<input class="btn btn-primary btn-small" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
-				</div>
-			</fieldset>
-		</form>
-	<#elseif action_validation_email?has_content>
-		<form class="form-horizontal" id="createAccount" name="createAccount" action="${action_validation_email}" method="post">
-			<fieldset>
-				<legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
-				<p class="lead">#i18n{module.mylutece.database.message.create_account.validation.email}</p>
-				<div class="form-actions">
-					<input class="btn btn-primary btn-small" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
-				</div>
-			</fieldset>	
-		</form>
-	<#elseif action_validation_success?has_content>
-		<form class="form-horizontal" id="createAccount" name="createAccount" action="${action_validation_success}" method="post">
-			<fieldset>
-				<legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
-				<p class="lead">#i18n{module.mylutece.database.message.create_account.validation.success}</p>
-				<div class="form-actions">
-					<input class="btn btn-primary btn-small" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
-				</div>
-			</fieldset>
-		</form>
-	<#else>
-		<form class="form-horizontal" id="createAccount" name="createAccount" action="jsp/site/plugins/mylutece/modules/database/DoCreateAccount.jsp" method="post">
-			<fieldset>
-				<legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
-				<input type="hidden" name="plugin_name" value="${plugin_name}" />
-				
-				<#if show_input_login>
-					<div class="control-group">
-						<label class="control-label" for="login">#i18n{module.mylutece.database.xpage.create_account.login} * : </label>
-						<div class="controls">
-							<input type="text" ${classLogin?if_exists} name="login" maxlength="100" size="35" tabindex="1" value="${(user.login)?if_exists}" />
-						</div>
-					</div>
-				</#if>
-				<div class="control-group">
-					<label class="control-label" for="email">#i18n{module.mylutece.database.xpage.create_account.eMail} * : </label>
-					<div class="controls">
-						<input type="text" ${classEmail?if_exists} name="email" maxlength="100" size="35" tabindex="2" value="${(user.email)?if_exists}" />
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="password">#i18n{module.mylutece.database.xpage.create_account.password} * : </label>
-					<div class="controls">
-						<input type="password" ${classPassword?if_exists} id="password" name="password" maxlength="100" size="35" tabindex="3" value="" />
-						<div id="status">
-							#i18n{portal.users.create_user.passwordComplexity} : 
-						</div>
-						<div id="progressbar" class="progress progress-striped" style="width:220px;">
-							<div id="progress" ><div id="complexity">0%</div></div>
-						</div>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="confirmation">#i18n{module.mylutece.database.xpage.create_account.confirmation} * : </label>
-					<div class="controls">
-						<input type="password" ${classConfirmation?if_exists} name="confirmation_password" maxlength="100" size="35" tabindex="4" value="" />
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="last_name">#i18n{module.mylutece.database.xpage.create_account.lastName} * : </label>
-					<div class="controls">
-						<input type="text" ${classLastName?if_exists} name="last_name" maxlength="100" size="35" tabindex="5"  value="${(user.lastName)?if_exists}" />
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="first_name">#i18n{module.mylutece.database.xpage.create_account.firstName} * : </label>
-					<div class="controls">
-						<input type="text" ${classFirstName?if_exists} name="first_name" maxlength="100" size="35" tabindex="6" value="${(user.firstName)?if_exists}" />
-					</div>
-				</div>
-				<#if jcaptcha?exists>
-					<div class="control-group">
-						${jcaptcha}
-					</div>
-				</#if>				
-				<div class="form-actions">
-					<input class="btn btn-primary btn-small" id="button-subscribe" type="submit" name="createAccountBtn" value="#i18n{module.mylutece.database.xpage.create_account.btnCreateAccount}" />
-					<input class="btn btn-small" id="button-return" type="button" name="back" value="#i18n{module.mylutece.database.xpage.account.btnBack}" onclick='javascript:history.go(-1)'/>
-				</div>
-			</fieldset>
-		</form>
-	</#if>
+    <#if error_code?has_content >
+    <#assign typeClass = "class=\"error\"" />
+
+    <#if error_code = "error_mandatory_fields">
+    <div class="alert alert-error">#i18n{module.mylutece.database.message.account.errorMandatoryFields}</div>
+    <#if !(user.login?has_content)>
+    <#assign classLogin = typeClass />
+    </#if>
+    <#if !(user.password?has_content)>
+    <#assign classPassword = typeClass />
+    </#if>
+    <#if !(user.confirmation?has_content)>
+    <#assign classConfirmation = typeClass />
+    </#if>
+    <#if !(user.lastName?has_content)>
+    <#assign classLastName = typeClass />
+    </#if>
+    <#if !(user.firstName?has_content)>
+    <#assign classFirstName = typeClass />
+    </#if>
+    <#if !(user.email?has_content)>
+    <#assign classEmail = typeClass />
+    </#if>
+    </#if>
+    <#if error_code = "error_confirmation_password">
+    <div class="alert alert-error">#i18n{module.mylutece.database.message.account.errorConfirmation}</div>
+    <#assign classPassword = typeClass />
+    <#assign classConfirmation = typeClass />
+    </#if>
+    <#if error_code = "error_login_already_exists">
+    <div class="alert alert-error">#i18n{module.mylutece.database.message.create_account.errorLogin}</div>
+    <#assign classLogin = typeClass />
+    </#if>
+    <#if error_code = "error_syntax_email">
+    <div class="alert alert-error">#i18n{module.mylutece.database.message.account.errorBadEmail}</div>
+    <#assign classEmail = typeClass />
+    </#if>
+    <#if error_code = "error_sending_email">
+    <div class="alert alert-error">#i18n{module.mylutece.database.message.create_account.errorSendingEmail}</div>
+    </#if>
+    <#if error_code = "error_captcha">
+    <div class="alert alert-error">#i18n{module.mylutece.database.message.create_account.errorCaptcha}</div>
+    </#if>
+    <#if error_code = "password_minimum_length">
+    <div class="alert alert-error">${password_minimum_length!}</div>
+    <#assign classPassword = typeClass />
+    <#assign classConfirmation = typeClass />
+    </#if>
+    <#if error_code = "password_format">
+    <div class="alert alert-error">${password_format_message!!}</div>
+    <#assign classPassword = typeClass />
+    <#assign classConfirmation = typeClass />
+    </#if>
+    </#if>
+
+    <#if action_successful?has_content>
+    <form class="form-horizontal" id="createAccount" name="createAccount" action="${action_successful}" method="post">
+        <fieldset>
+            <legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
+            <p class="lead">#i18n{module.mylutece.database.message.create_account.success}</p>
+            <div class="form-actions">
+                <input class="btn btn-primary btn-small" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
+            </div>
+        </fieldset>
+    </form>
+    <#elseif action_validation_email?has_content>
+    <form class="form-horizontal" id="createAccount" name="createAccount" action="${action_validation_email}" method="post">
+        <fieldset>
+            <legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
+            <p class="lead">#i18n{module.mylutece.database.message.create_account.validation.email}</p>
+            <div class="form-actions">
+                <input class="btn btn-primary btn-small" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
+            </div>
+        </fieldset>	
+    </form>
+    <#elseif action_validation_success?has_content>
+    <form class="form-horizontal" id="createAccount" name="createAccount" action="${action_validation_success}" method="post">
+        <fieldset>
+            <legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
+            <p class="lead">#i18n{module.mylutece.database.message.create_account.validation.success}</p>
+            <div class="form-actions">
+                <input class="btn btn-primary btn-small" id="button-return" type="submit" name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
+            </div>
+        </fieldset>
+    </form>
+    <#else>
+    <form class="form-horizontal" id="createAccount" name="createAccount" action="jsp/site/plugins/mylutece/modules/database/DoCreateAccount.jsp" method="post">
+        <fieldset>
+            <legend>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</legend>
+            <input type="hidden" name="plugin_name" value="${plugin_name}" />
+
+            <#if show_input_login>
+            <div class="control-group">
+                <label class="control-label" for="login">#i18n{module.mylutece.database.xpage.create_account.login} * : </label>
+                <div class="controls">
+                    <input type="text" ${classLogin?if_exists} name="login" maxlength="100" size="35" tabindex="1" value="${(user.login)?if_exists}" />
+                </div>
+            </div>
+            </#if>
+            <div class="control-group">
+                <label class="control-label" for="email">#i18n{module.mylutece.database.xpage.create_account.eMail} * : </label>
+                <div class="controls">
+                    <input type="text" ${classEmail?if_exists} name="email" maxlength="100" size="35" tabindex="2" value="${(user.email)?if_exists}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="password">#i18n{module.mylutece.database.xpage.create_account.password} * : </label>
+                <div class="controls">
+                    <input type="password" ${classPassword?if_exists} id="password" name="password" maxlength="100" size="35" tabindex="3" value="" />
+                    <div id="status">
+                        #i18n{portal.users.create_user.passwordComplexity} : 
+                    </div>
+                    <div id="progressbar" class="progress progress-striped" style="width:220px;">
+                        <div id="progress" ><div id="complexity">0%</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="confirmation">#i18n{module.mylutece.database.xpage.create_account.confirmation} * : </label>
+                <div class="controls">
+                    <input type="password" ${classConfirmation?if_exists} name="confirmation_password" maxlength="100" size="35" tabindex="4" value="" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="last_name">#i18n{module.mylutece.database.xpage.create_account.lastName} * : </label>
+                <div class="controls">
+                    <input type="text" ${classLastName?if_exists} name="last_name" maxlength="100" size="35" tabindex="5"  value="${(user.lastName)?if_exists}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="first_name">#i18n{module.mylutece.database.xpage.create_account.firstName} * : </label>
+                <div class="controls">
+                    <input type="text" ${classFirstName?if_exists} name="first_name" maxlength="100" size="35" tabindex="6" value="${(user.firstName)?if_exists}" />
+                </div>
+            </div>
+            <#if jcaptcha?exists>
+            <div class="control-group">
+                ${jcaptcha}
+            </div>
+            </#if>				
+            <div class="form-actions">
+                <input class="btn btn-primary btn-small" id="button-subscribe" type="submit" name="createAccountBtn" value="#i18n{module.mylutece.database.xpage.create_account.btnCreateAccount}" />
+                <input class="btn btn-small" id="button-return" type="button" name="back" value="#i18n{module.mylutece.database.xpage.account.btnBack}" onclick='javascript:history.go(-1)'/>
+            </div>
+        </fieldset>
+    </form>
+    </#if>
 </div>
 <script src="js/jquery.complexify.js"></script>
 <script>
-$(document).ready(function(){
-	$("#password").complexify({}, function (valid, complexity) {
-		if (!valid) {
-			$('#progress').css({'width':complexity + '%'}).removeClass('bar bar-success').addClass('bar bar-danger');
-		} else {
-			$('#progress').css({'width':complexity + '%'}).removeClass('bar bar-danger').addClass('bar bar-success');
-			}
-		$('#complexity').html(Math.round(complexity) + '%');
-	});
-});
+                    $(document).ready(function() {
+                        $("#password").complexify({}, function(valid, complexity) {
+                            if (!valid) {
+                                $('#progress').css({'width': complexity + '%'}).removeClass('bar bar-success').addClass('bar bar-danger');
+                            } else {
+                                $('#progress').css({'width': complexity + '%'}).removeClass('bar bar-danger').addClass('bar bar-success');
+                            }
+                            $('#complexity').html(Math.round(complexity) + '%');
+                        });
+                    });
 </script>
