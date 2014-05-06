@@ -65,6 +65,7 @@ public final class GroupDAO implements IGroupDAO
      * @param group The Instance of the object Group
      * @param plugin Plugin
      */
+    @Override
     public synchronized void insert( Group group, Plugin plugin )
     {
         int nParam = 0;
@@ -83,6 +84,7 @@ public final class GroupDAO implements IGroupDAO
      * @param plugin Plugin
      * @return The Instance of the object Group
      */
+    @Override
     public Group load( String strGroupKey, Plugin plugin )
     {
         int nParam;
@@ -110,6 +112,7 @@ public final class GroupDAO implements IGroupDAO
      * @param strGroupKey The indentifier of the object Group
      * @param plugin Plugin
      */
+    @Override
     public void delete( String strGroupKey, Plugin plugin )
     {
         int nParam = 0;
@@ -124,6 +127,7 @@ public final class GroupDAO implements IGroupDAO
      * @param group The instance of the Group to update
      * @param plugin Plugin
      */
+    @Override
     public void store( Group group, Plugin plugin )
     {
         int nParam = 0;
@@ -142,6 +146,7 @@ public final class GroupDAO implements IGroupDAO
      * @param plugin Plugin
      * @return A ReferenceList of group objects
      */
+    @Override
     public ReferenceList selectGroupsList( Plugin plugin )
     {
         int nParam;
@@ -169,6 +174,7 @@ public final class GroupDAO implements IGroupDAO
      * @param plugin Plugin
      * @return The Collection of the Groups
      */
+    @Override
     public Collection<Group> selectAll( Plugin plugin )
     {
         int nParam;
@@ -199,6 +205,7 @@ public final class GroupDAO implements IGroupDAO
      * @param plugin Plugin
      * @return List of Group
      */
+    @Override
     public List<Group> selectByFilter( GroupFilter gFilter, Plugin plugin )
     {
         List<Group> listFilteredGroups = new ArrayList<Group>(  );

@@ -75,18 +75,6 @@ public class DatabaseDAO implements IDatabaseDAO
     private static final String SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN = "UPDATE mylutece_database_user SET reset_password = ? WHERE login like ? ";
     private static final String SQL_QUERY_SELECT_USER_ID_FROM_LOGIN = "SELECT mylutece_database_user_id FROM mylutece_database_user WHERE login like ? ";
 
-    /** This class implements the Singleton design pattern. */
-    private static DatabaseDAO _dao = new DatabaseDAO(  );
-
-    /**
-     * Returns the unique instance of the singleton.
-     *
-     * @return the instance
-     */
-    static DatabaseDAO getInstance(  )
-    {
-        return _dao;
-    }
 
     /**
      * Find DatabaseUser by login
@@ -96,6 +84,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param authenticationService the LuteceAuthentication object
      * @return DatabaseUser the user corresponding to the login
      */
+    @Override
     public BaseUser selectLuteceUserByLogin( String strLogin, Plugin plugin, LuteceAuthentication authenticationService )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_USER_BY_LOGIN, plugin );
@@ -140,6 +129,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param plugin The Plugin using this data access service
      * @return boolean true if the password vhas been reset, false otherwise
      */
+    @Override
     public boolean selectResetPasswordFromLogin( String strLogin, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_RESET_PASSWORD, plugin );
@@ -190,6 +180,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param authenticationService the authentication service
      * @return The Collection of the {@link BaseUser}
      */
+    @Override
     public Collection<BaseUser> selectLuteceUserList( Plugin plugin, LuteceAuthentication authenticationService )
     {
         Collection<BaseUser> listBaseUsers = new ArrayList<BaseUser>(  );
@@ -220,6 +211,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param plugin The Plugin using this data access service
      * @return ArrayList the roles key list corresponding to the login
      */
+    @Override
     public List<String> selectUserRolesFromLogin( String strLogin, Plugin plugin )
     {
         List<String> arrayRoles = new ArrayList<String>(  );
@@ -242,6 +234,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param nIdUser The id of the user
      * @param plugin The Plugin using this data access service
      */
+    @Override
     public void deleteRolesForUser( int nIdUser, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ROLES_FOR_USER, plugin );
@@ -257,6 +250,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param strRoleKey The key of the role
      * @param plugin The Plugin using this data access service
      */
+    @Override
     public void createRoleForUser( int nIdUser, String strRoleKey, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ROLE_FOR_USER, plugin );
@@ -274,6 +268,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param plugin The Plugin using this data access service
      * @return ArrayList the group key list corresponding to the login
      */
+    @Override
     public List<String> selectUserGroupsFromLogin( String strLogin, Plugin plugin )
     {
         ArrayList<String> arrayGroups = new ArrayList<String>(  );
@@ -297,6 +292,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param plugin The Plugin using this data access service
      * @return The Collection of the DatabaseUsers
      */
+    @Override
     public Collection<String> selectLoginListForRoleKey( String strRoleKey, Plugin plugin )
     {
         Collection<String> listLogins = new ArrayList<String>(  );
@@ -319,6 +315,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param nIdUser The id of the user
      * @param plugin The Plugin using this data access service
      */
+    @Override
     public void deleteGroupsForUser( int nIdUser, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_GROUPS_FOR_USER, plugin );
@@ -334,6 +331,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param strGroupKey The key of the group
      * @param plugin The Plugin using this data access service
      */
+    @Override
     public void createGroupForUser( int nIdUser, String strGroupKey, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_GROUP_FOR_USER, plugin );
@@ -350,6 +348,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param plugin Plugin
      * @return a list of DatabaseUser
      */
+    @Override
     public List<DatabaseUser> selectGroupUsersFromGroupKey( String strGroupKey, Plugin plugin )
     {
         List<DatabaseUser> listUsers = new ArrayList<DatabaseUser>(  );
@@ -379,6 +378,7 @@ public class DatabaseDAO implements IDatabaseDAO
      * @param bNewValue New value
      * @param plugin The plugin
      */
+    @Override
     public void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN, plugin );

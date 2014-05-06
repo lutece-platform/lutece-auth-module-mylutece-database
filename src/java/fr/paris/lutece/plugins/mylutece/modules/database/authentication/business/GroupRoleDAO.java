@@ -43,25 +43,12 @@ import java.util.List;
 /**
  * This class provides Data Access methods for Group objects
  */
-public final class GroupRoleDAO implements IGroupRoleDAO
+public class GroupRoleDAO implements IGroupRoleDAO
 {
     public static final String SQL_QUERY_FIND_ROLES_FROM_GROUP_ID = "SELECT role_key FROM mylutece_database_group_role WHERE group_key like ? ";
     public static final String SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID = "SELECT group_key FROM mylutece_database_group_role WHERE role_key = ? ";
     private static final String SQL_QUERY_DELETE_ROLES_FOR_GROUP = "DELETE FROM mylutece_database_group_role WHERE group_key like ?";
     private static final String SQL_QUERY_INSERT_ROLE_FOR_GROUP = "INSERT INTO mylutece_database_group_role ( group_key, role_key ) VALUES ( ?, ? ) ";
-
-    /** This class implements the Singleton design pattern. */
-    private static GroupRoleDAO _dao = new GroupRoleDAO(  );
-
-    /**
-     * Returns the unique instance of the singleton.
-     *
-     * @return the instance
-     */
-    static GroupRoleDAO getInstance(  )
-    {
-        return _dao;
-    }
 
     /**
      * Find group's roles
@@ -70,6 +57,7 @@ public final class GroupRoleDAO implements IGroupRoleDAO
      * @param plugin Plugin
      * @return ArrayList the roles key list corresponding to the group
      */
+    @Override
     public List<String> selectGroupRoles( String strGroupKey, Plugin plugin )
     {
         int nParam = 0;
@@ -96,6 +84,7 @@ public final class GroupRoleDAO implements IGroupRoleDAO
      * @param plugin Plugin
      * @return ArrayList the groups key list corresponding to the role
      */
+    @Override
     public List<String> selectGroupRolesByRoleKey( String strRoleKey, Plugin plugin )
     {
         int nParam = 0;
@@ -120,6 +109,7 @@ public final class GroupRoleDAO implements IGroupRoleDAO
      * @param strGroupKey The key of the group
      * @param plugin Plugin
      */
+    @Override
     public void deleteRoles( String strGroupKey, Plugin plugin )
     {
         int nParam = 0;
@@ -136,6 +126,7 @@ public final class GroupRoleDAO implements IGroupRoleDAO
      * @param strRoleKey The key of the role
      * @param plugin Plugin
      */
+    @Override
     public void createRole( String strGroupKey, String strRoleKey, Plugin plugin )
     {
         int nParam = 0;

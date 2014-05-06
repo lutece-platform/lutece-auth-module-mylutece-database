@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * This class provides Data Access methods for databaseUser objects
  */
-public final class DatabaseUserDAO implements IDatabaseUserDAO
+public class DatabaseUserDAO implements IDatabaseUserDAO
 {
     // Constants
     private static final String PERCENT = "%";
@@ -83,26 +83,6 @@ public final class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String SQL_QUERY_SELECT_NB_ALERT_SENT = " SELECT nb_alerts_sent FROM mylutece_database_user WHERE mylutece_database_user_id = ? ";
     private static final String CONSTANT_CLOSE_PARENTHESIS = " ) ";
     private static final String CONSTANT_COMMA = ", ";
-
-    /** This class implements the Singleton design pattern. */
-    private static DatabaseUserDAO _dao = new DatabaseUserDAO(  );
-
-    /**
-     * Creates a new databaseUserDAO object.
-     */
-    private DatabaseUserDAO(  )
-    {
-    }
-
-    /**
-     * Returns the unique instance of the singleton.
-     *
-     * @return the instance
-     */
-    static DatabaseUserDAO getInstance(  )
-    {
-        return _dao;
-    }
 
     /**
      * {@inheritDoc}
