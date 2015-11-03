@@ -81,6 +81,14 @@
 		</rbac-resource-type>
 	</rbac-resource-types>
 	
+	<rbac-resource-types>
+		<rbac-resource-type>
+			<rbac-resource-type-class>
+				fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.GroupResourceIdService
+			</rbac-resource-type-class>
+		</rbac-resource-type>
+	</rbac-resource-types>
+	
 	<!-- Admin Dashboard  components -->
     <admindashboard-components>
     	<admindashboard-component>
