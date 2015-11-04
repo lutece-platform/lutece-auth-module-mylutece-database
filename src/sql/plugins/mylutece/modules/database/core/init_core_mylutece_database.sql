@@ -26,6 +26,8 @@ INSERT INTO core_admin_role (role_key,role_description) VALUES ('mylutece_databa
 --
 -- Init  table core_admin_role_resource
 --
+INSERT INTO core_admin_role_resource (rbac_id,role_key,resource_type,resource_id,permission) VALUES 
+ (206,'assign_groups','GROUP_TYPE','*','ASSIGN_GROUP');
 INSERT INTO core_admin_role_resource (rbac_id,role_key,resource_type,resource_id,permission) VALUES (350,'mylutece_database_manager','DATABASE','*','*');
 
 --
