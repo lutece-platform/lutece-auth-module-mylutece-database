@@ -113,11 +113,11 @@
                     </div>
                     <div class="form-group">
                         <label for="first_name">#i18n{module.mylutece.database.xpage.create_account.firstName} * : </label>
-                        <input class="form-control" type="text" ${classFirstName?if_exists} name="first_name" maxlength="100" size="35" tabindex="6" value="${(user.firstName)?if_exists}" />
+                        <input class="form-control" type="text" ${classFirstName?if_exists} name="first_name" maxlength="100" size="35" tabindex="5" value="${(user.firstName)?if_exists}" />
                     </div>
                     <div class="form-group">
                         <label for="last_name">#i18n{module.mylutece.database.xpage.create_account.lastName} * : </label>
-                        <input class="form-control" type="text" ${classLastName?if_exists} name="last_name" maxlength="100" size="35" tabindex="5"  value="${(user.lastName)?if_exists}" />
+                        <input class="form-control" type="text" ${classLastName?if_exists} name="last_name" maxlength="100" size="35" tabindex="6"  value="${(user.lastName)?if_exists}" />
                     </div>
                     <#if jcaptcha?exists>
                     <div class="form-group">
