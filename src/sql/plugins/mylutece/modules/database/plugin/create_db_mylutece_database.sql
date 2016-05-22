@@ -75,7 +75,7 @@ CREATE TABLE mylutece_database_user_parameter (
 --
 DROP TABLE IF EXISTS mylutece_database_key;
 CREATE TABLE mylutece_database_key(
-	mylutece_database_user_key VARCHAR(255) DEFAULT NULL,
+	mylutece_database_user_key VARCHAR(255) NOT NULL,
 	mylutece_database_user_id INT DEFAULT 0 NOT NULL,	
 	PRIMARY KEY (mylutece_database_user_key)
 );
@@ -86,5 +86,5 @@ CREATE  TABLE mylutece_database_user_password_history (
   password VARCHAR(100) NOT NULL ,
   date_password_change TIMESTAMP NOT NULL DEFAULT NOW() ,
   PRIMARY KEY (mylutece_database_user_id, date_password_change)
-  );
+);
 
