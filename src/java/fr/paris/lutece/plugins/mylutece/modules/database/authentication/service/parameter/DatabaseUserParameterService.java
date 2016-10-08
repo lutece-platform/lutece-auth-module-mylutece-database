@@ -41,10 +41,8 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.sql.Timestamp;
-
+import java.util.Collections;
 import java.util.List;
 
 
@@ -58,8 +56,6 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
     private static final String BEAN_DATABASE_USER_PARAMETER_SERVICE = "mylutece-database.databaseUserParameterService";
 
     // PARAMETERS
-    private static final String PARAMETER_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
-    private static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
     private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
     private static final String PARAMETER_ENABLE_JCAPTCHA = "enable_jcaptcha";
     private static final String PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL = "auto_login_after_validation_email";
@@ -117,19 +113,12 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
     /**
      * Check if the passwords must be encrypted or not
      * @param plugin the plugin
-     * @return true if they are encrypted, false otherwise
+     * @return <code>false</code>. Passwords are in fact salted and hashed, but we don't want
+     * plugin-mylutece to try and hash the password itself
      */
     public boolean isPasswordEncrypted( Plugin plugin )
     {
-        boolean bIsPasswordEncrypted = false;
-        ReferenceItem userParam = findByKey( PARAMETER_ENABLE_PASSWORD_ENCRYPTION, plugin );
-
-        if ( ( userParam != null ) && userParam.isChecked(  ) )
-        {
-            bIsPasswordEncrypted = true;
-        }
-
-        return bIsPasswordEncrypted;
+        return false;
     }
 
     /**
@@ -139,15 +128,7 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
      */
     public String getEncryptionAlgorithm( Plugin plugin )
     {
-        String strAlgorithm = StringUtils.EMPTY;
-        ReferenceItem userParam = findByKey( PARAMETER_ENCRYPTION_ALGORITHM, plugin );
-
-        if ( userParam != null )
-        {
-            strAlgorithm = userParam.getName(  );
-        }
-
-        return strAlgorithm;
+        return "";
     }
 
     /**
@@ -219,6 +200,7 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
     @Override
     public List<String> selectUserPasswordHistory( int nUserID, Plugin plugin )
     {
-        return DatabaseUserHome.selectUserPasswordHistory( nUserID, plugin );
+        // the way we store password is incompatible with this function specified by plugin-mulutece
+        return Collections.emptyList( );
     }
 }

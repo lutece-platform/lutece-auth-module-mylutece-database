@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.password.IPassword;
+import fr.paris.lutece.util.password.IPasswordFactory;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Timestamp;
@@ -41,6 +43,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.inject.Inject;
 
 
 /**
@@ -52,7 +56,6 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String PERCENT = "%";
     private static final String SQL_QUERY_NEW_PK = " SELECT max( mylutece_database_user_id ) FROM mylutece_database_user ";
     private static final String SQL_QUERY_SELECT = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active, account_max_valid_date FROM mylutece_database_user WHERE mylutece_database_user_id = ?";
-    private static final String SQL_QUERY_SELECT_PASSWORD = " SELECT password FROM mylutece_database_user WHERE mylutece_database_user_id = ? ";
     private static final String SQL_QUERY_INSERT = " INSERT INTO mylutece_database_user ( mylutece_database_user_id, login, name_family, name_given, email, is_active, password, password_max_valid_date, account_max_valid_date ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM mylutece_database_user WHERE mylutece_database_user_id = ?  ";
     private static final String SQL_QUERY_UPDATE = " UPDATE mylutece_database_user SET login = ?, name_family = ?, name_given = ?, email = ?, is_active = ? WHERE mylutece_database_user_id = ? ";
@@ -61,7 +64,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active, account_max_valid_date, password_max_valid_date FROM mylutece_database_user ORDER BY name_family, login";
     private static final String SQL_QUERY_SELECTALL_FOR_LOGIN = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE login = ? ";
     private static final String SQL_QUERY_SELECTALL_FOR_EMAIL = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user WHERE email = ? ";
-    private static final String SQL_QUERY_CHECK_PASSWORD_FOR_USER_ID = " SELECT count(*) FROM mylutece_database_user WHERE login = ? AND password = ? ";
+    private static final String SQL_QUERY_CHECK_PASSWORD_FOR_USER_ID = " SELECT password FROM mylutece_database_user WHERE login = ?";
     private static final String SQL_QUERY_SELECT_USER_FROM_SEARCH = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active FROM mylutece_database_user " +
         " WHERE login LIKE ? AND name_family LIKE ? and name_given LIKE ? AND email LIKE ? ORDER BY name_family ";
     private static final String SQL_SELECT_USER_ID_FROM_PASSWORD = "SELECT mylutece_database_user_id FROM mylutece_database_user WHERE login = ?";
@@ -83,6 +86,9 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String SQL_QUERY_SELECT_NB_ALERT_SENT = " SELECT nb_alerts_sent FROM mylutece_database_user WHERE mylutece_database_user_id = ? ";
     private static final String CONSTANT_CLOSE_PARENTHESIS = " ) ";
     private static final String CONSTANT_COMMA = ", ";
+
+    @Inject
+    IPasswordFactory _passwordFactory;
 
     /**
      * {@inheritDoc}
@@ -112,7 +118,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
      * {@inheritDoc}
      */
     @Override
-    public void insert( DatabaseUser databaseUser, String strPassword, Plugin plugin )
+    public void insert( DatabaseUser databaseUser, IPassword password, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         databaseUser.setUserId( newPrimaryKey( plugin ) );
@@ -122,7 +128,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
         daoUtil.setString( 4, databaseUser.getFirstName(  ) );
         daoUtil.setString( 5, databaseUser.getEmail(  ) );
         daoUtil.setInt( 6, databaseUser.getStatus(  ) );
-        daoUtil.setString( 7, strPassword );
+        daoUtil.setString( 7, password.getStorableRepresentation( ) );
         daoUtil.setTimestamp( 8, databaseUser.getPasswordMaxValidDate(  ) );
 
         if ( databaseUser.getAccountMaxValidDate(  ) == null )
@@ -209,10 +215,10 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
      * {@inheritDoc}
      */
     @Override
-    public void updatePassword( DatabaseUser databaseUser, String strNewPassword, Plugin plugin )
+    public void updatePassword( DatabaseUser databaseUser, IPassword newPassword, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_PASSWORD, plugin );
-        daoUtil.setString( 1, strNewPassword );
+        daoUtil.setString( 1, newPassword.getStorableRepresentation( ) );
         daoUtil.setTimestamp( 2, databaseUser.getPasswordMaxValidDate(  ) );
         daoUtil.setInt( 3, databaseUser.getUserId(  ) );
 
@@ -232,27 +238,6 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String selectPasswordByPrimaryKey( int nDatabaseUserId, Plugin plugin )
-    {
-        String strPassword = null;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PASSWORD, plugin );
-        daoUtil.setInt( 1, nDatabaseUserId );
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
-        {
-            strPassword = daoUtil.getString( 1 );
-        }
-
-        daoUtil.free(  );
-
-        return strPassword;
     }
 
     /**
@@ -353,22 +338,25 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
      * {@inheritDoc}
      */
     @Override
-    public boolean checkPassword( String strLogin, String strPassword, Plugin plugin )
+    public IPassword loadPassword( String strLogin, Plugin plugin )
     {
-        int nCount = 0;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_CHECK_PASSWORD_FOR_USER_ID, plugin );
         daoUtil.setString( 1, strLogin );
-        daoUtil.setString( 2, strPassword );
         daoUtil.executeQuery(  );
+
+        IPassword password;
 
         if ( daoUtil.next(  ) )
         {
-            nCount = daoUtil.getInt( 1 );
+            password = _passwordFactory.getPassword( daoUtil.getString( 1 ) );
+        } else
+        {
+            password = _passwordFactory.getDummyPassword( );
         }
 
         daoUtil.free(  );
 
-        return ( nCount == 1 ) ? true : false;
+        return password;
     }
 
     /**
@@ -429,9 +417,9 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
      * {@inheritDoc}
      */
     @Override
-    public List<String> selectUserPasswordHistory( int nUserID, Plugin plugin )
+    public List<IPassword> selectUserPasswordHistory( int nUserID, Plugin plugin )
     {
-        List<String> listPasswordHistory = new ArrayList<String>(  );
+        List<IPassword> listPasswordHistory = new ArrayList<IPassword>(  );
 
         DAOUtil daoUtil = new DAOUtil( SQL_SELECT_USER_PASSWORD_HISTORY, plugin );
         daoUtil.setInt( 1, nUserID );
@@ -439,7 +427,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 
         while ( daoUtil.next(  ) )
         {
-            listPasswordHistory.add( daoUtil.getString( 1 ) );
+            listPasswordHistory.add( _passwordFactory.getPassword( daoUtil.getString( 1 ) ) );
         }
 
         daoUtil.free(  );
@@ -474,11 +462,11 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
      * {@inheritDoc}
      */
     @Override
-    public void insertNewPasswordInHistory( String strPassword, int nUserId, Plugin plugin )
+    public void insertNewPasswordInHistory( IPassword password, int nUserId, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_INSERT_PASSWORD_HISTORY, plugin );
         daoUtil.setInt( 1, nUserId );
-        daoUtil.setString( 2, strPassword );
+        daoUtil.setString( 2, password.getStorableRepresentation( ) );
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );

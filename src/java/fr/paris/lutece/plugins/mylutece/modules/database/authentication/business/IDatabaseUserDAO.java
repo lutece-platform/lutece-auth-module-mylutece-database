@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.password.IPassword;
 
 import java.sql.Timestamp;
 
@@ -58,10 +59,10 @@ public interface IDatabaseUserDAO
      * Insert a new record in the table.
      *
      * @param databaseUser The databaseUser object
-     * @param strPassword The user password
+     * @param password The user password
      * @param plugin The Plugin using this data access service
      */
-    void insert( DatabaseUser databaseUser, String strPassword, Plugin plugin );
+    void insert( DatabaseUser databaseUser, IPassword password, Plugin plugin );
 
     /**
      * Load the data of DatabaseUser from the table
@@ -89,10 +90,10 @@ public interface IDatabaseUserDAO
     /**
      * Update the record in the table
      * @param databaseUser The reference of databaseUser
-     * @param strNewPassword The new password to store
+     * @param newPassword The new password to store
      * @param plugin The Plugin using this data access service
      */
-    void updatePassword( DatabaseUser databaseUser, String strNewPassword, Plugin plugin );
+    void updatePassword( DatabaseUser databaseUser, IPassword newPassword, Plugin plugin );
 
     /**
      * Update the record in the table
@@ -101,15 +102,6 @@ public interface IDatabaseUserDAO
      * @param plugin The Plugin using this data access service
      */
     void updateResetPassword( DatabaseUser databaseUser, boolean bNewValue, Plugin plugin );
-
-    /**
-     * Load the password of the specified user
-     *
-     * @param nDatabaseUserId The Primary key of the databaseUser
-     * @param plugin The current plugin using this method
-     * @return String the user password
-     */
-    String selectPasswordByPrimaryKey( int nDatabaseUserId, Plugin plugin );
 
     /**
      * Load the list of databaseUsers
@@ -135,14 +127,13 @@ public interface IDatabaseUserDAO
     Collection<DatabaseUser> selectDatabaseUserListForEmail( String strEmail, Plugin plugin );
 
     /**
-     * Check the password for a DatabaseUser
+     * load the password for a DatabaseUser
      *
      * @param strLogin The user login of DatabaseUser
-     * @param strPassword The password of DatabaseUser
      * @param plugin The Plugin using this data access service
-     * @return true if password is ok
+     * @return the stored password of the user
      */
-    boolean checkPassword( String strLogin, String strPassword, Plugin plugin );
+    IPassword loadPassword( String strLogin, Plugin plugin );
 
     /**
      * Load the list of DatabaseUsers by a filter
@@ -166,7 +157,7 @@ public interface IDatabaseUserDAO
      * @param plugin The plugin
      * @return The collection of recent passwords used by the user.
      */
-    List<String> selectUserPasswordHistory( int nUserID, Plugin plugin );
+    List<IPassword> selectUserPasswordHistory( int nUserID, Plugin plugin );
 
     /**
      * Get the number of password change done by a user since the given date.
@@ -179,11 +170,11 @@ public interface IDatabaseUserDAO
 
     /**
      * Log a password change in the password history
-     * @param strPassword New password of the user
+     * @param password New password of the user
      * @param nUserId Id of the user
      * @param plugin The plugin
      */
-    void insertNewPasswordInHistory( String strPassword, int nUserId, Plugin plugin );
+    void insertNewPasswordInHistory( IPassword password, int nUserId, Plugin plugin );
 
     /**
      * Remove every password saved in the password history for a user.

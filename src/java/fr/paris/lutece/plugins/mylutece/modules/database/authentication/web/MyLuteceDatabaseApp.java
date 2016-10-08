@@ -85,6 +85,7 @@ import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.password.IPassword;
 import fr.paris.lutece.util.string.StringUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
@@ -122,6 +123,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_SITE_LINK = "site_link";
     private static final String MARK_LOGIN = "login";
     private static final String MARK_LOGIN_URL = "login_url";
+    private static final String MARK_PASSWORD_HISTORY_SIZE = "password_history_size";
 
     // Parameters
     private static final String PARAMETER_ACTION = "action";
@@ -169,6 +171,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String ERROR_LOGIN_ALREADY_EXISTS = "error_login_already_exists";
     private static final String ERROR_CAPTCHA = "error_captcha";
     private static final String ERROR_PASSWORD_MINIMUM_LENGTH = "password_minimum_length";
+    private static final String ERROR_PASSWORD_ALREADY_USED = "password_already_used";
 
     // Templates
     private static final String TEMPLATE_LOST_PASSWORD_PAGE = "skin/plugins/mylutece/modules/database/lost_password.html";
@@ -1060,6 +1063,11 @@ public class MyLuteceDatabaseApp implements XPageApplication
                     String strErrorCode = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin,
                             strPassword, userKey.getUserId( ) );
 
+                    if ( StringUtils.isBlank( strErrorCode ) )
+                    {
+                        strErrorCode = checkPasswordHistory( strPassword, userKey.getUserId( ), plugin );
+                    }
+
                     if ( strErrorCode != null )
                     {
                         url.addParameter( PARAMETER_ERROR_CODE, strErrorCode );
@@ -1077,6 +1085,43 @@ public class MyLuteceDatabaseApp implements XPageApplication
         }
 
         return url.getUrl( );
+    }
+
+    /**
+     * Checks, if configured, if a password is not already in the password history
+     * @param strPassword the password to check
+     * @param nUserId the user ID
+     * @param plugin the plugin
+     * @return an error string, or <code>null</code>
+     */
+    private String checkPasswordHistory( String strPassword, int nUserId, Plugin plugin )
+    {
+        int nPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( _userParamService, plugin, MARK_PASSWORD_HISTORY_SIZE );
+
+        if ( nPasswordHistorySize > 0 )
+        {
+            List<IPassword> passwordHistory = DatabaseUserHome.selectUserPasswordHistory( nUserId, plugin );
+
+            if ( nPasswordHistorySize < passwordHistory.size(  ) )
+            {
+                passwordHistory = passwordHistory.subList( 0, nPasswordHistorySize );
+            }
+
+            boolean passwordFound = false;
+            for ( IPassword password : passwordHistory )
+            {
+                if ( password.check( strPassword ) )
+                {
+                    passwordFound = true;
+                    break;
+                }
+            }
+            if ( passwordFound )
+            {
+                return ERROR_PASSWORD_ALREADY_USED;
+            }
+        }
+        return null;
     }
 
     /**
@@ -1212,6 +1257,11 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             strError = SecurityUtils.checkPasswordForFrontOffice( _userParamService, plugin, strNewPassword,
                     user.getUserId( ) );
+        }
+
+        if ( StringUtils.isBlank( strError ) )
+        {
+            strError = checkPasswordHistory( strNewPassword, user.getUserId( ), plugin );
         }
 
         if ( StringUtils.isBlank( strError ) )
