@@ -141,8 +141,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     //JSP
     private static final String JSP_DO_REMOVE_USER = "jsp/admin/plugins/mylutece/modules/database/DoRemoveUser.jsp";
     private static final String JSP_MANAGE_ADVANCED_PARAMETERS = "ManageAdvancedParameters.jsp";
-    private static final String JSP_URL_MANAGE_ADVANCED_PARAMETERS = "jsp/admin/plugins/mylutece/modules/database/ManageAdvancedParameters.jsp";
-    private static final String JSP_URL_MODIFY_PASSWORD_ENCRYPTION = "jsp/admin/plugins/mylutece/modules/database/DoModifyPasswordEncryption.jsp";
     private static final String JSP_URL_MODIFY_USER = "jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp";
     private static final String JSP_URL_MANAGE_ROLES_USER = "jsp/admin/plugins/mylutece/modules/database/ManageRolesUser.jsp";
     private static final String JSP_URL_MANAGE_GROUPS_USER = "jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp";
@@ -160,9 +158,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PROPERTY_PAGE_TITLE_MODIFY_USER = "module.mylutece.database.modify_user.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MANAGE_ROLES_USER = "module.mylutece.database.manage_roles_user.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MANAGE_GROUPS_USER = "module.mylutece.database.manage_groups_user.pageTitle";
-    private static final String PROPERTY_MESSAGE_CONFIRM_MODIFY_PASSWORD_ENCRYPTION = "module.mylutece.database.manage_advanced_parameters.message.confirmModifyPasswordEncryption";
-    private static final String PROPERTY_MESSAGE_NO_CHANGE_PASSWORD_ENCRYPTION = "module.mylutece.database.manage_advanced_parameters.message.noChangePasswordEncryption";
-    private static final String PROPERTY_MESSAGE_INVALID_ENCRYPTION_ALGORITHM = "module.mylutece.database.manage_advanced_parameters.message.invalidEncryptionAlgorithm";
     private static final String PROPERTY_MESSAGE_CONFIRM_USE_ASP = "mylutece.manage_advanced_parameters.message.confirmUseAdvancedSecurityParameters";
     private static final String PROPERTY_MESSAGE_CONFIRM_REMOVE_ASP = "mylutece.manage_advanced_parameters.message.confirmRemoveAdvancedSecurityParameters";
     private static final String PROPERTY_MESSAGE_TITLE_CHANGE_ANONYMIZE_USER = "mylutece.anonymize_user.titleAnonymizeUser";
@@ -175,7 +170,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PROPERTY_UNBLOCK_USER = "mylutece.ip.unblockUser";
     private static final String PROPERTY_NOTIFY_PASSWORD_EXPIRED = "mylutece.accountLifeTime.labelPasswordExpired";
     private static final String PROPERTY_MAIL_LOST_PASSWORD = "mylutece.accountLifeTime.labelLostPasswordMail";
-    private static final String PROPERTY_MAIL_PASSWORD_ENCRYPTION_CHANGED = "mylutece.accountLifeTime.labelPasswordEncryptionChangedMail";
     private static final String PROPERTY_IMPORT_USERS_FROM_FILE_PAGETITLE = "module.mylutece.database.import_users_from_file.pageTitle";
     private static final String PROPERTY_EXPORT_USERS_PAGETITLE = "module.mylutece.database.export_users.pageTitle";
 
@@ -203,8 +197,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_FIRST_NAME = "first_name";
     private static final String PARAMETER_EMAIL = "email";
     private static final String PARAMETER_CANCEL = "cancel";
-    private static final String PARAMETER_ENABLE_PASSWORD_ENCRYPTION = "enable_password_encryption";
-    private static final String PARAMETER_ENCRYPTION_ALGORITHM = "encryption_algorithm";
     private static final String PARAMETER_MODIFY_USER = "modify_user";
     private static final String PARAMETER_ASSIGN_ROLE = "assign_role";
     private static final String PARAMETER_ASSIGN_GROUP = "assign_group";
@@ -238,9 +230,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_MAIL_LOST_PASSWORD = "mylutece_database_mailLostPassword";
     private static final String PARAMETER_MAIL_LOST_PASSWORD_SENDER = "mail_lost_password_sender";
     private static final String PARAMETER_MAIL_LOST_PASSWORD_SUBJECT = "mail_lost_password_subject";
-    private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED = "mylutece_database_mailPasswordEncryptionChanged";
-    private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER = "mail_password_encryption_changed_sender";
-    private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT = "mail_password_encryption_changed_subject";
     private static final String PARAMETER_IMPORT_USERS_FILE = "import_file";
     private static final String PARAMETER_SKIP_FIRST_LINE = "ignore_first_line";
     private static final String PARAMETER_UPDATE_USERS = "update_existing_users";
@@ -302,7 +291,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String CONSTANT_EMAIL_TYPE_IP_BLOCKED = "ip_blocked";
     private static final String CONSTANT_EMAIL_PASSWORD_EXPIRED = "password_expired";
     private static final String CONSTANT_EMAIL_TYPE_LOST_PASSWORD = "lost_password";
-    private static final String CONSTANT_EMAIL_PASSWORD_ENCRYPTION_CHANGED = "password_encryption_changed";
     private static final String CONSTANT_EXTENSION_CSV_FILE = ".csv";
     private static final String CONSTANT_EXTENSION_XML_FILE = ".xml";
     private static final String CONSTANT_MIME_TYPE_CSV = "application/csv";
@@ -1032,109 +1020,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     }
 
     /**
-     * Returns the page of confirmation for modifying the password
-     * encryption
-     *
-     * @param request The Http Request
-     * @return the confirmation url
-     */
-    public String doConfirmModifyPasswordEncryption( HttpServletRequest request )
-    {
-        String strEnablePasswordEncryption = request.getParameter( PARAMETER_ENABLE_PASSWORD_ENCRYPTION );
-        String strEncryptionAlgorithm = request.getParameter( PARAMETER_ENCRYPTION_ALGORITHM );
-
-        strEnablePasswordEncryption = StringUtils.isNotBlank( strEnablePasswordEncryption )
-            ? strEnablePasswordEncryption : StringUtils.EMPTY;
-        strEncryptionAlgorithm = StringUtils.isNotBlank( strEncryptionAlgorithm ) ? strEncryptionAlgorithm
-                                                                                  : StringUtils.EMPTY;
-
-        boolean bEnablePasswordEncryption = Boolean.valueOf( strEnablePasswordEncryption );
-        boolean bOldEnablePasswordEncryption = _userParamService.isPasswordEncrypted( _plugin );
-        String strOldEncryptionAlgorithm = _userParamService.getEncryptionAlgorithm( _plugin );
-
-        String strUrl = StringUtils.EMPTY;
-
-        if ( ( bEnablePasswordEncryption == bOldEnablePasswordEncryption ) &&
-                strEncryptionAlgorithm.equals( strOldEncryptionAlgorithm ) )
-        {
-            strUrl = AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_NO_CHANGE_PASSWORD_ENCRYPTION,
-                    JSP_URL_MANAGE_ADVANCED_PARAMETERS, AdminMessage.TYPE_INFO );
-        }
-        else if ( bEnablePasswordEncryption && StringUtils.isBlank( strEncryptionAlgorithm ) )
-        {
-            strUrl = AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_INVALID_ENCRYPTION_ALGORITHM,
-                    JSP_URL_MANAGE_ADVANCED_PARAMETERS, AdminMessage.TYPE_STOP );
-        }
-        else
-        {
-            if ( !bEnablePasswordEncryption )
-            {
-                strEncryptionAlgorithm = StringUtils.EMPTY;
-            }
-
-            String strUrlModify = JSP_URL_MODIFY_PASSWORD_ENCRYPTION + "?" + PARAMETER_ENABLE_PASSWORD_ENCRYPTION +
-                "=" + strEnablePasswordEncryption + "&" + PARAMETER_ENCRYPTION_ALGORITHM + "=" +
-                strEncryptionAlgorithm;
-
-            strUrl = AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_CONFIRM_MODIFY_PASSWORD_ENCRYPTION,
-                    strUrlModify, AdminMessage.TYPE_CONFIRMATION );
-        }
-
-        return strUrl;
-    }
-
-    /**
-     * Modify the password encryption
-     * @param request HttpServletRequest
-     * @return The Jsp URL of the process result
-     * @throws AccessDeniedException If the user does not have the permission
-     */
-    public String doModifyPasswordEncryption( HttpServletRequest request )
-        throws AccessDeniedException
-    {
-        if ( !RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    DatabaseResourceIdService.PERMISSION_MANAGE, getUser(  ) ) )
-        {
-            throw new AccessDeniedException(  );
-        }
-
-        String strEnablePasswordEncryption = request.getParameter( PARAMETER_ENABLE_PASSWORD_ENCRYPTION );
-        String strEncryptionAlgorithm = request.getParameter( PARAMETER_ENCRYPTION_ALGORITHM );
-
-        strEnablePasswordEncryption = StringUtils.isNotBlank( strEnablePasswordEncryption )
-            ? strEnablePasswordEncryption : StringUtils.EMPTY;
-        strEncryptionAlgorithm = StringUtils.isNotBlank( strEncryptionAlgorithm ) ? strEncryptionAlgorithm
-                                                                                  : StringUtils.EMPTY;
-
-        boolean bEnablePasswordEncryption = Boolean.valueOf( strEnablePasswordEncryption );
-        boolean bOldEnablePasswordEncryption = _userParamService.isPasswordEncrypted( _plugin );
-        String strOldEncryptionAlgorithm = _userParamService.getEncryptionAlgorithm( _plugin );
-
-        if ( ( bEnablePasswordEncryption == bOldEnablePasswordEncryption ) &&
-                strEncryptionAlgorithm.equals( strOldEncryptionAlgorithm ) )
-        {
-            return JSP_MANAGE_ADVANCED_PARAMETERS;
-        }
-
-        ReferenceItem userParamEnablePwdEncryption = new ReferenceItem(  );
-        userParamEnablePwdEncryption.setCode( PARAMETER_ENABLE_PASSWORD_ENCRYPTION );
-        userParamEnablePwdEncryption.setName( strEnablePasswordEncryption );
-        userParamEnablePwdEncryption.setChecked( bEnablePasswordEncryption );
-
-        ReferenceItem userParamEncryptionAlgorithm = new ReferenceItem(  );
-        userParamEncryptionAlgorithm.setCode( PARAMETER_ENCRYPTION_ALGORITHM );
-        userParamEncryptionAlgorithm.setName( strEncryptionAlgorithm );
-
-        _userParamService.update( userParamEnablePwdEncryption, _plugin );
-        _userParamService.update( userParamEncryptionAlgorithm, _plugin );
-
-        _databaseService.changeUserPasswordAndNotify( AppPathService.getBaseUrl( request ), getPlugin(  ),
-            request.getLocale(  ) );
-
-        return JSP_MANAGE_ADVANCED_PARAMETERS;
-    }
-
-    /**
      * Do activate the user
      * @param request the Http
      * @return the jsp home
@@ -1511,13 +1396,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             strBodyKey = PARAMETER_MAIL_LOST_PASSWORD;
             strTitle = PROPERTY_MAIL_LOST_PASSWORD;
         }
-        else if ( CONSTANT_EMAIL_PASSWORD_ENCRYPTION_CHANGED.equalsIgnoreCase( strEmailType ) )
-        {
-            strSenderKey = PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER;
-            strSubjectKey = PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT;
-            strBodyKey = PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED;
-            strTitle = PROPERTY_MAIL_PASSWORD_ENCRYPTION_CHANGED;
-        }
 
         ReferenceItem referenceItem = _userParamService.findByKey( strSenderKey, getPlugin(  ) );
         String strSender = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
@@ -1593,12 +1471,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             strSenderKey = PARAMETER_MAIL_LOST_PASSWORD_SENDER;
             strSubjectKey = PARAMETER_MAIL_LOST_PASSWORD_SUBJECT;
             strBodyKey = PARAMETER_MAIL_LOST_PASSWORD;
-        }
-        else if ( CONSTANT_EMAIL_PASSWORD_ENCRYPTION_CHANGED.equalsIgnoreCase( strEmailType ) )
-        {
-            strSenderKey = PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SENDER;
-            strSubjectKey = PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT;
-            strBodyKey = PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED;
         }
 
         SecurityUtils.updateParameterValue( _userParamService, getPlugin(  ), strSenderKey,
