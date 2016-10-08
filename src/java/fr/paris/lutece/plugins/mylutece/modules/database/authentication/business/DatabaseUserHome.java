@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.util.password.IPassword;
+import fr.paris.lutece.util.password.IPasswordFactory;
 
 import java.sql.Timestamp;
 
@@ -52,6 +54,7 @@ public final class DatabaseUserHome
 {
     // Static variable pointed at the DAO instance
     private static IDatabaseUserDAO _dao = SpringContextService.getBean( "mylutece-database.databaseUserDAO" );
+    private static IPasswordFactory _passwordFactory = SpringContextService.getBean( IPasswordFactory.BEAN_NAME );
 
     /**
      * Private constructor - this class need not be instantiated
@@ -65,14 +68,14 @@ public final class DatabaseUserHome
      *
      * @param databaseUser The instance of the DatabaseUser which contains the
      *            informations to store
-     * @param strPassword The user's password
+     * @param password The user's password
      * @param plugin The current plugin using this method
      * @return The instance of DatabaseUser which has been created with its
      *         primary key.
      */
-    public static DatabaseUser create( DatabaseUser databaseUser, String strPassword, Plugin plugin )
+    public static DatabaseUser create( DatabaseUser databaseUser, IPassword password, Plugin plugin )
     {
-        _dao.insert( databaseUser, strPassword, plugin );
+        _dao.insert( databaseUser, password, plugin );
 
         return databaseUser;
     }
@@ -98,13 +101,13 @@ public final class DatabaseUserHome
      *
      * @param databaseUser The instance of the DatabaseUser which contains the
      *            data to store
-     * @param strNewPassword The new password to store
+     * @param newPassword The new password to store
      * @param plugin The current plugin using this method
      * @return The instance of the DatabaseUser which has been updated
      */
-    public static DatabaseUser updatePassword( DatabaseUser databaseUser, String strNewPassword, Plugin plugin )
+    public static DatabaseUser updatePassword( DatabaseUser databaseUser, IPassword newPassword, Plugin plugin )
     {
-        _dao.updatePassword( databaseUser, strNewPassword, plugin );
+        _dao.updatePassword( databaseUser, newPassword, plugin );
 
         return databaseUser;
     }
@@ -188,18 +191,6 @@ public final class DatabaseUserHome
     }
 
     /**
-     * Returns the password of the specified user
-     *
-     * @param nKey The Primary key of the databaseUser
-     * @param plugin The current plugin using this method
-     * @return An instance of DatabaseUser
-     */
-    public static String findPasswordByPrimaryKey( int nKey, Plugin plugin )
-    {
-        return _dao.selectPasswordByPrimaryKey( nKey, plugin );
-    }
-
-    /**
      * Check the password for a DatabaseUser
      *
      * @param strLogin The user login of DatabaseUser
@@ -209,7 +200,16 @@ public final class DatabaseUserHome
      */
     public static boolean checkPassword( String strLogin, String strPassword, Plugin plugin )
     {
-        return _dao.checkPassword( strLogin, strPassword, plugin );
+        IPassword storedPassword = _dao.loadPassword( strLogin, plugin );
+        boolean check = storedPassword.check( strPassword );
+        if ( check && storedPassword.isLegacy( ) )
+        {
+            // upgrade password storage
+            int nUserId = findDatabaseUserIdFromLogin( strLogin, plugin );
+            DatabaseUser databaseUser = findByPrimaryKey( nUserId, plugin );
+            updatePassword( databaseUser, _passwordFactory.getPasswordFromCleartext( strPassword ), plugin );
+        }
+        return check;
     }
 
     /**
@@ -240,7 +240,7 @@ public final class DatabaseUserHome
      * @param plugin The plugin
      * @return The collection of recent passwords used by the user.
      */
-    public static List<String> selectUserPasswordHistory( int nUserID, Plugin plugin )
+    public static List<IPassword> selectUserPasswordHistory( int nUserID, Plugin plugin )
     {
         return _dao.selectUserPasswordHistory( nUserID, plugin );
     }
@@ -264,9 +264,9 @@ public final class DatabaseUserHome
      * @param nUserId Id of the user
      * @param plugin The plugin
      */
-    public static void insertNewPasswordInHistory( String strPassword, int nUserId, Plugin plugin )
+    public static void insertNewPasswordInHistory( IPassword password, int nUserId, Plugin plugin )
     {
-        _dao.insertNewPasswordInHistory( strPassword, nUserId, plugin );
+        _dao.insertNewPasswordInHistory( password, nUserId, plugin );
     }
 
     /**

@@ -26,6 +26,7 @@
   <bean id="mylutece-database.databaseUserParameterService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService" />
   <bean id="mylutece-database.databaseService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService">
   	<property name="databaseUserParameterService" ref="mylutece-database.databaseUserParameterService" />
+  	<property name="passwordFactory" ref="passwordFactory" />
   </bean>
   <bean id="mylutece-database.databaseUserKeyService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService" />
   <bean id="mylutece-database.databaseAnonymizationService" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAnonymizationService" />

@@ -84,11 +84,10 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.service.workgroup.AdminWorkgroupService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.password.IPasswordFactory;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.xml.XmlUtil;
 
@@ -104,7 +103,6 @@ public final class DatabaseService
     private static final String AUTHENTICATION_BEAN_NAME = "mylutece-database.authentication";
 
     // CONSTANTS
-    private static final String COMMA = ",";
     private static final String AMPERSAND = "&";
     private static final String PLUGIN_JCAPTCHA = "jcaptcha";
     private static final String CONSTANT_XML_USER = "user";
@@ -126,7 +124,6 @@ public final class DatabaseService
     private static final String CONSTANT_XML_ATTRIBUTE_VALUE = "attribute-value";
 
     // MARKS
-    private static final String MARK_ENCRYPTION_ALGORITHMS_LIST = "encryption_algorithms_list";
     private static final String MARK_SEARCH_IS_SEARCH = "search_is_search";
     private static final String MARK_SORT_SEARCH_ATTRIBUTE = "sort_search_attribute";
     private static final String MARK_SEARCH_USER_FILTER = "search_user_filter";
@@ -138,9 +135,6 @@ public final class DatabaseService
     private static final String MARK_ENABLE_JCAPTCHA = "enable_jcaptcha";
     private static final String MARK_SITE_LINK = "site_link";
     private static final String MARK_BANNED_DOMAIN_NAMES = "banned_domain_names";
-
-    // PROPERTIES
-    private static final String PROPERTY_ENCRYPTION_ALGORITHMS_LIST = "encryption.algorithmsList";
 
     // PARAMETERS
     private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
@@ -156,6 +150,7 @@ public final class DatabaseService
     private static DatabaseService _singleton;
     private DatabaseUserParameterService _userParamService;
     private BaseAuthentication _baseAuthentication;
+    private IPasswordFactory _passwordFactory;
 
     /**
      * Private constructor
@@ -171,6 +166,15 @@ public final class DatabaseService
     public void setDatabaseUserParameterService( DatabaseUserParameterService userParamService )
     {
         _userParamService = userParamService;
+    }
+
+    /**
+     * Set the password factory
+     * @param passwordFactory the password factory
+     */
+    public void setPasswordFactory( IPasswordFactory passwordFactory )
+    {
+        _passwordFactory = passwordFactory;
     }
 
     /**
@@ -221,21 +225,12 @@ public final class DatabaseService
         if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
                     DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
         {
-            // Encryption Password
-            String strAlgorithms = AppPropertiesService.getProperty( PROPERTY_ENCRYPTION_ALGORITHMS_LIST );
+            model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable(  ) );
 
-            if ( StringUtils.isNotBlank( strAlgorithms ) )
+            if ( isPluginJcaptchaEnable(  ) )
             {
-                String[] listAlgorithms = strAlgorithms.split( COMMA );
-
-                model.put( MARK_ENCRYPTION_ALGORITHMS_LIST, listAlgorithms );
-                model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable(  ) );
-
-                if ( isPluginJcaptchaEnable(  ) )
-                {
-                    model.put( MARK_ENABLE_JCAPTCHA,
-                        SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin, MARK_ENABLE_JCAPTCHA ) );
-                }
+                model.put( MARK_ENABLE_JCAPTCHA,
+                    SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin, MARK_ENABLE_JCAPTCHA ) );
             }
 
             model.put( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL,
@@ -444,18 +439,10 @@ public final class DatabaseService
      */
     public DatabaseUser doCreateUser( DatabaseUser user, String strPassword, Plugin plugin )
     {
-        String strEncryptedPassword = strPassword;
-
-        if ( _userParamService.isPasswordEncrypted( plugin ) )
-        {
-            String strAlgorithm = _userParamService.getEncryptionAlgorithm( plugin );
-            strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
-        }
-
         user.setPasswordMaxValidDate( SecurityUtils.getPasswordMaxValidDate( _userParamService, plugin ) );
         user.setAccountMaxValidDate( SecurityUtils.getAccountMaxValidDate( _userParamService, plugin ) );
 
-        return DatabaseUserHome.create( user, strEncryptedPassword, plugin );
+        return DatabaseUserHome.create( user, _passwordFactory.getPasswordFromCleartext( strPassword ), plugin );
     }
 
     /**
@@ -469,21 +456,12 @@ public final class DatabaseService
         // Updates password
         if ( StringUtils.isNotBlank( strPassword ) )
         {
-            // Encrypts password or not
-            String strEncryptedPassword = strPassword;
-
-            if ( _userParamService.isPasswordEncrypted( plugin ) )
-            {
-                String strAlgorithm = _userParamService.getEncryptionAlgorithm( plugin );
-                strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
-            }
-
             DatabaseUser userStored = DatabaseUserHome.findByPrimaryKey( user.getUserId(  ), plugin );
 
             if ( userStored != null )
             {
                 userStored.setPasswordMaxValidDate( SecurityUtils.getPasswordMaxValidDate( _userParamService, plugin ) );
-                DatabaseUserHome.updatePassword( userStored, strEncryptedPassword, plugin );
+                DatabaseUserHome.updatePassword( userStored, _passwordFactory.getPasswordFromCleartext( strPassword ), plugin );
             }
         }
     }
@@ -524,15 +502,7 @@ public final class DatabaseService
      */
     public boolean checkPassword( String strUserGuid, String strPassword, Plugin plugin )
     {
-        String strEncryptedPassword = strPassword;
-
-        if ( _userParamService.isPasswordEncrypted( plugin ) )
-        {
-            String strAlgorithm = _userParamService.getEncryptionAlgorithm( plugin );
-            strEncryptedPassword = CryptoService.encrypt( strPassword, strAlgorithm );
-        }
-
-        return DatabaseUserHome.checkPassword( strUserGuid, strEncryptedPassword, plugin );
+        return DatabaseUserHome.checkPassword( strUserGuid, strPassword, plugin );
     }
 
     /**
@@ -627,8 +597,7 @@ public final class DatabaseService
      */
     public void doInsertNewPasswordInHistory( String strPassword, int nUserId, Plugin plugin )
     {
-        strPassword = SecurityUtils.buildPassword( _userParamService, plugin, strPassword );
-        DatabaseUserHome.insertNewPasswordInHistory( strPassword, nUserId, plugin );
+        DatabaseUserHome.insertNewPasswordInHistory( _passwordFactory.getPasswordFromCleartext( strPassword ), nUserId, plugin );
     }
 
     /**
