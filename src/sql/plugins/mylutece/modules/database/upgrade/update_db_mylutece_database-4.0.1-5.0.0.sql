@@ -1,5 +1,5 @@
-ALTER TABLE mylutece_database_user MODIFY COLUMN password LONG VARCHAR default NULL;
-ALTER TABLE mylutece_database_user_password_history MODIFY COLUMN password LONG VARCHAR default NULL;
+ALTER TABLE mylutece_database_user MODIFY COLUMN password LONG VARCHAR NOT NULL;
+ALTER TABLE mylutece_database_user_password_history MODIFY COLUMN password LONG VARCHAR NOT NULL;
 
 -- update password storage
 UPDATE mylutece_database_user SET password =

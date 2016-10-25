@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS mylutece_database_user;
 CREATE TABLE mylutece_database_user (
   mylutece_database_user_id int NOT NULL,
   login varchar(100) DEFAULT '' NOT NULL,
-  password long varchar DEFAULT '' NOT NULL,
+  password long varchar NOT NULL,
   name_given varchar(100) DEFAULT '' NOT NULL,
   name_family varchar(100) DEFAULT '' NOT NULL,
   email varchar(100) DEFAULT NULL,
