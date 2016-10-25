@@ -9,6 +9,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.util.password.IPassword;
+import fr.paris.lutece.util.password.IPasswordFactory;
 
 public class DatabaseUserHomeTest extends LuteceTestCase
 {
@@ -77,6 +78,25 @@ public class DatabaseUserHomeTest extends LuteceTestCase
 
         // check that the password is the same
         assertTrue( DatabaseUserHome.checkPassword( strLogin, password, plugin ) );
+    }
+
+    public void testRemoveRemovesPasswordHistory( )
+    {
+        DatabaseUser databaseUser = new DatabaseUser( );
+        databaseUser.setLogin( strLogin );
+        databaseUser.setFirstName( strLogin );
+        databaseUser.setLastName( strLogin );
+        IPasswordFactory passwordFactory = SpringContextService.getBean( IPasswordFactory.BEAN_NAME );
+        DatabaseUserHome.create( databaseUser, passwordFactory.getPasswordFromCleartext( strLogin ), plugin );
+
+        DatabaseUserHome.insertNewPasswordInHistory( passwordFactory.getPasswordFromCleartext( strLogin + "_2" ),
+                databaseUser.getUserId( ), plugin );
+
+        assertEquals( 1, DatabaseUserHome.selectUserPasswordHistory( databaseUser.getUserId( ), plugin ).size( ) );
+
+        DatabaseUserHome.remove( databaseUser, plugin );
+
+        assertEquals( 0, DatabaseUserHome.selectUserPasswordHistory( databaseUser.getUserId( ), plugin ).size( ) );
     }
 
     private String getRandomName( )
