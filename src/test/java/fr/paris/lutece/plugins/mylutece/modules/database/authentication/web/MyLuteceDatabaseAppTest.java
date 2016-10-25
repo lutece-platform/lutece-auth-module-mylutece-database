@@ -37,6 +37,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
     public void testDoCreateAccount( )
     {
+        waitForHistoryPrimaryKey( );
         MokeHttpServletRequest request = new MokeHttpServletRequest( );
         String strLogin = getRandomName( );
         request.addMokeParameters( "plugin_name", plugin.getName( ) );
@@ -65,6 +66,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
     public void testDoReinitPassword_checkPasswordHistory_emptyHistory( )
     {
+        waitForHistoryPrimaryKey( );
         DatabaseUser user = null;
         DatabaseUserKey userKey = null;
         int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter(
@@ -143,6 +145,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
     public void testDoReinitPassword_checkPasswordHistory_passwordInHistory( )
     {
+        waitForHistoryPrimaryKey( );
         DatabaseUser user = null;
         DatabaseUserKey userKey = null;
         int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter(
@@ -213,6 +216,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
     public void testDoChangePassword_checkPasswordHistory_emptyHistory( )
     {
+        waitForHistoryPrimaryKey( );
         DatabaseUser user = null;
         int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter(
                 DatabaseUserParameterService.getService( ), plugin, "password_history_size" );
@@ -277,6 +281,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
     public void testDoChangePassword_checkPasswordHistory_passwordInHistory( )
     {
+        waitForHistoryPrimaryKey( );
         DatabaseUser user = null;
         int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter(
                 DatabaseUserParameterService.getService( ), plugin, "password_history_size" );
@@ -345,4 +350,14 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
         }
     }
 
+    private static void waitForHistoryPrimaryKey() {
+        try
+        {
+            Thread.sleep( 1000 ); // Need this because the PRIMARY KEY uses the timestamp
+        }
+        catch( InterruptedException e )
+        {
+            throw new RuntimeException( e ); // Should not happen
+        }
+    }
 }
