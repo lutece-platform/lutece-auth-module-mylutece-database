@@ -8,6 +8,9 @@ UPDATE mylutece_database_user SET password =
 	'PLAINTEXT:')
 ,password);
 
+-- remove obsolete password history
+DELETE FROM mylutece_database_user_password_history WHERE mylutece_database_user_id NOT IN ( SELECT mylutece_database_user_id FROM mylutece_database_user );
+
 -- updating password history with best effort to guess format
 -- for PostgreSQL, replace 'REGEXP' by '~*' and 'NOT REGEXP' by '!~*'
 UPDATE mylutece_database_user_password_history SET password = CONCAT('MD5:',password) WHERE password REGEXP '^[0-9a-f]{32}$';

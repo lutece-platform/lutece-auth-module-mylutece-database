@@ -137,6 +137,7 @@ public final class DatabaseUserHome
     public static void remove( DatabaseUser databaseUser, Plugin plugin )
     {
         _dao.delete( databaseUser, plugin );
+        _dao.removeAllPasswordHistoryForUser( databaseUser.getUserId( ), plugin );
         LuteceUserService.userAttributesChanged( databaseUser.getLogin(  ) );
     }
 
