@@ -158,7 +158,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PROPERTY_PAGE_TITLE_MODIFY_USER = "module.mylutece.database.modify_user.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MANAGE_ROLES_USER = "module.mylutece.database.manage_roles_user.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MANAGE_GROUPS_USER = "module.mylutece.database.manage_groups_user.pageTitle";
-    private static final String PROPERTY_MESSAGE_CONFIRM_USE_ASP = "mylutece.manage_advanced_parameters.message.confirmUseAdvancedSecurityParameters";
+    private static final String PROPERTY_MESSAGE_CONFIRM_USE_ASP = "module.mylutece.database.manage_advanced_parameters.message.confirmUseAdvancedSecurityParameters";
     private static final String PROPERTY_MESSAGE_CONFIRM_REMOVE_ASP = "mylutece.manage_advanced_parameters.message.confirmRemoveAdvancedSecurityParameters";
     private static final String PROPERTY_MESSAGE_TITLE_CHANGE_ANONYMIZE_USER = "mylutece.anonymize_user.titleAnonymizeUser";
     private static final String PROPERTY_MESSAGE_NO_USER_SELECTED = "mylutece.message.noUserSelected";
@@ -1190,17 +1190,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
      */
     public String doUseAdvancedSecurityParameters( HttpServletRequest request )
     {
-        boolean isPwdEncryptionEnabled = _userParamService.isPasswordEncrypted( getPlugin(  ) );
-        String strEncryptionAlgorithm = _userParamService.getEncryptionAlgorithm( getPlugin(  ) );
-
         SecurityUtils.useAdvancedSecurityParameters( _userParamService, getPlugin(  ) );
-
-        if ( !isPwdEncryptionEnabled ||
-                !StringUtils.equals( strEncryptionAlgorithm, _userParamService.getEncryptionAlgorithm( getPlugin(  ) ) ) )
-        {
-            _databaseService.changeUserPasswordAndNotify( AppPathService.getBaseUrl( request ), getPlugin(  ),
-                request.getLocale(  ) );
-        }
 
         return JSP_MANAGE_ADVANCED_PARAMETERS;
     }
