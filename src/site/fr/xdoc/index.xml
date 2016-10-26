@@ -6,6 +6,12 @@
 	<body>
 		<section name="Module mylutece database">
 			<subsection name="Introduction">
+				<p>
+					Ce module module-mylutece-database fournit une implémentation
+					d'authentification des utilisateurs front office pour mylutece
+					basé sur des utilisateurs locaux stockés dans une table de la
+					base de données.
+				</p>
 			</subsection>
 		</section>
 	</body>

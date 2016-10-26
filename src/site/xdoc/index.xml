@@ -6,6 +6,11 @@
 	<body>
 		<section name="Module mylutece database">
 			<subsection name="Introduction">
+				<p>
+					This module module-mylutece-database provides a front office
+					user authentication implementation for mylutece based on local
+					users stored in a table in the database.
+				</p>
 			</subsection>
 		</section>
 	</body>

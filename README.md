@@ -3,6 +3,8 @@
 
 ##Introduction
 
+This module module-mylutece-database provides a front office user authentication implementation for mylutece based on localusers stored in a table in the database.
+
 
 [Maven documentation and reports](http://dev.lutece.paris.fr/plugins/module-mylutece-database/)
 
