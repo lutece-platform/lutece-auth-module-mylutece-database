@@ -45,7 +45,9 @@
 					</li>
 					<ol>
 						<li>
-							<a href="user-security.html#tentatives_connection">Front office connections</a>
+						<a href="user-security.html#tentatives_connection">
+							Front office connections
+						</a>
 						</li>
 						<li>
 							<a href="user-security.html#duree_de_vie">Account life time</a>
@@ -63,9 +65,9 @@
 				</p>
 				<p>
 					The security parameters management page can be accessed from the
-					"Users > Mylutece user management (Database)" menu, and by clicking
-					on the "Advanced parameters" button on the upper right of the
-					screen.
+					"Users > Mylutece user management (Database)" menu,
+					and by clicking on the "Advanced parameters" button on the
+					upper right of the screen.
 				</p>
 				<p>
 					Security parameters are located in the "Modification of security
@@ -111,7 +113,7 @@
 					algorithm can not be changed, nor the password encryption can be
 					disabled. Although, it is possible to modify advanced security
 					parameters in the "Modification of security parameters values"
-					panel. 
+					panel.
 				</p>
 				<p>
 					Security parameters can be deactivated by deleting their value,
@@ -140,7 +142,7 @@
 					If the check box "Passwords must contain upper and lower case
 					letters, numbers and special characters" is checked, user's
 					passwords will have to contain at least an upper and a lower case
-					letter, a number and a special character. 
+					letter, a number and a special character.
 				</p>
 				<p>
 					<strong>Warning, the modification of this values will not force
@@ -160,7 +162,7 @@
 				<p>
 					If advanced security parameters are activated, an admin user can
 					also set a password life time. It will force users to frequently
-					change their password. 
+					change their password.
 				</p>
 				<p>
 					Passwords life time, in days, can be set with the parameter "Days
@@ -180,7 +182,7 @@
 					To prevent users from changing their passwords many times to be
 					allowed to use the first one again, their is a maximum number of
 					password change in a given time. This can be set with two
-					parameters : 
+					parameters :
 				</p>
 				<ul>
 					<li>"Maximum number of password change in a given time"</li>
@@ -262,16 +264,15 @@
 					When an account expires, it is anonymized. Data of an anonymized
 					account are encrypted, and it can not be used anymore. Attributes
 					to anonymized can be chosen from the the anonymization management
-					page, accessible from the user management page ("Users > Mylutece
-					user management (Database)").
+					page, accessible from the user management page
+					("Users > Mylutece user management (Database)").
 				</p>
 				<p>
-					It is also possible to anonymize an account from the user management
-					screen ("Users > Mylutece user management (Database)") by clicking
-					the "anonymize" button. 
+					It is also possible to anonymize an account from the user management screen
+					("Users > Mylutece user management (Database)")
+					by clicking the "anonymize" button.
 				</p>
 			</subsection>
 		</section>
 	</body>
-</document>       
-             
+</document>
