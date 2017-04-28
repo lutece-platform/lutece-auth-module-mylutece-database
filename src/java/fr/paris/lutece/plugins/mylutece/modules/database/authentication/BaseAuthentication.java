@@ -44,6 +44,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
+import fr.paris.lutece.plugins.mylutece.service.MyLuteceIdentityService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.business.template.DatabaseTemplateHome;
@@ -61,6 +62,7 @@ import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.http.SecurityUtil;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Timestamp;
@@ -281,6 +283,13 @@ public class BaseAuthentication extends PortalAuthentication
         int nUserId = DatabaseHome.findUserIdFromLogin( strUserName, plugin );
         databaseService.updateUserExpirationDate( nUserId, plugin );
 
+        //add Identities Informations
+         Map<String,String> identityInformations= MyLuteceIdentityService.getInstance( ).getIdentityInformations( strUserName );
+         if(identityInformations!=null && !identityInformations.isEmpty( ))
+         {
+             user.getUserInfos( ).putAll( identityInformations );
+         }
+         
         return user;
     }
 
