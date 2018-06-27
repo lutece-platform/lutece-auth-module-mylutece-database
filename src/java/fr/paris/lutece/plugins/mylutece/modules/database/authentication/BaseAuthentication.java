@@ -44,7 +44,6 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
-import fr.paris.lutece.plugins.mylutece.service.MyLuteceIdentityService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.business.template.DatabaseTemplateHome;
@@ -157,7 +156,7 @@ public class BaseAuthentication extends PortalAuthentication
      * @throws LoginException The LoginException
      */
     @Override
-    public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request )
+    public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request )
         throws LoginException
     {
         DatabaseService databaseService = DatabaseService.getService(  );
@@ -255,12 +254,12 @@ public class BaseAuthentication extends PortalAuthentication
             }
         }
 
-        // Get roles
+        // Get database roles
         List<String> arrayRoles = DatabaseHome.findUserRolesFromLogin( strUserName, plugin );
 
         if ( !arrayRoles.isEmpty(  ) )
         {
-            user.setRoles( arrayRoles );
+            user.addRoles( arrayRoles );
         }
 
         // Get groups
@@ -282,14 +281,7 @@ public class BaseAuthentication extends PortalAuthentication
 
         int nUserId = DatabaseHome.findUserIdFromLogin( strUserName, plugin );
         databaseService.updateUserExpirationDate( nUserId, plugin );
-
-        //add Identities Informations
-         Map<String,String> identityInformations= MyLuteceIdentityService.getInstance( ).getIdentityInformations( strUserName );
-         if(identityInformations!=null && !identityInformations.isEmpty( ))
-         {
-             user.getUserInfos( ).putAll( identityInformations );
-         }
-         
+        
         return user;
     }
 
