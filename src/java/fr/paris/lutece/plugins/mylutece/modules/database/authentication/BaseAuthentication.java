@@ -52,8 +52,10 @@ import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.FailedLoginCaptchaException;
+import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -144,6 +146,30 @@ public class BaseAuthentication extends PortalAuthentication
     public String getAuthType( HttpServletRequest request )
     {
         return HttpServletRequest.BASIC_AUTH;
+    }
+
+    /**
+     * This methods checks the login info in the database.
+     *
+     * Unlike its parent, it does not throw LoginRedirectException.
+     *
+     * @param strUserName The username
+     * @param strUserPassword The password
+     * @param request The HttpServletRequest
+     * @return A LuteceUser object corresponding to the login
+     * @throws LoginException The LoginException
+     */
+    @Override
+    public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException
+    {
+        try
+        {
+            return super.login( strUserName, strUserPassword, request );
+        }
+        catch( LoginRedirectException lre )
+        {
+            throw new AppException( "Mylutece-database: impossible. this code should never be reached.", lre );
+        }
     }
 
     /**
