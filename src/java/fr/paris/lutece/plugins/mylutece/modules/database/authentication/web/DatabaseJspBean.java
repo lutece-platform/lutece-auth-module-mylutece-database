@@ -172,6 +172,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PROPERTY_MAIL_LOST_PASSWORD = "mylutece.accountLifeTime.labelLostPasswordMail";
     private static final String PROPERTY_IMPORT_USERS_FROM_FILE_PAGETITLE = "module.mylutece.database.import_users_from_file.pageTitle";
     private static final String PROPERTY_EXPORT_USERS_PAGETITLE = "module.mylutece.database.export_users.pageTitle";
+    private static final String PROPERTY_EXTERNAL_APPLICATION_EXISTS = "mylutece-database.externalApplicationExists";
 
     //Messages
     private static final String MESSAGE_CONFIRM_REMOVE_USER = "module.mylutece.database.message.confirmRemoveUser";
@@ -345,7 +346,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         reinitItemNavigators(  );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
-        Boolean applicationsExist = Boolean.FALSE;
+        Boolean applicationsExist = AppPropertiesService.getPropertyBoolean( PROPERTY_EXTERNAL_APPLICATION_EXISTS, false );
+        
         String strURL = getHomeUrl( request );
         UrlItem url = new UrlItem( strURL );
 
