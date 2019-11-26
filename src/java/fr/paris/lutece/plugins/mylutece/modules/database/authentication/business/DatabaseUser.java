@@ -76,6 +76,7 @@ public class DatabaseUser implements Serializable
     private int _nStatus;
     private Timestamp _passwordMaxValidDate;
     private Timestamp _accountMaxValidDate;
+    public static final Timestamp DEFAULT_DATE_LAST_LOGIN = Timestamp.valueOf( "1980-01-01 00:00:00" );
 
     /**
      * Returns the UserId

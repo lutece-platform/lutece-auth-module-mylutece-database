@@ -111,7 +111,7 @@ public class DatabaseDAO implements IDatabaseDAO
         user.setUserInfo( LuteceUser.NAME_GIVEN, strFirstName );
         user.setUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, strEmail );
 
-        if ( ( dateLastLogin != null ) && !dateLastLogin.equals( LuteceUser.DEFAULT_DATE_LAST_LOGIN ) )
+        if ( ( dateLastLogin != null ) && !dateLastLogin.equals( DatabaseUser.DEFAULT_DATE_LAST_LOGIN ) )
         {
             DateFormat dateFormat = new SimpleDateFormat(  );
             user.setUserInfo( LuteceUser.DATE_LAST_LOGIN, dateFormat.format( dateLastLogin ) );

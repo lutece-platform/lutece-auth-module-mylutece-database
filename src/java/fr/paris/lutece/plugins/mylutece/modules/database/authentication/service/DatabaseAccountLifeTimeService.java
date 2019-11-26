@@ -200,7 +200,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 
         StringBuilder sbUrl = new StringBuilder(  );
         // FIXME : get base URL in case the prod URL is null
-        sbUrl.append( AppPathService.getProdUrl(  ) );
+        sbUrl.append( AppPathService.getProdUrl( "" ) );
         sbUrl.append( JSP_URL_REACTIVATE_ACCOUNT );
         sbUrl.append( CONSTANT_AND );
         sbUrl.append( MARK_USER_ID );

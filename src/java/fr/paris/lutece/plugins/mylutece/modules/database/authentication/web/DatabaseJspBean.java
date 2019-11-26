@@ -1053,7 +1053,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         if ( !RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
                     DatabaseResourceIdService.PERMISSION_MANAGE, getUser(  ) ) )
         {
-            throw new AccessDeniedException(  );
+            throw new AccessDeniedException( "Access Denied" );
         }
 
         SecurityUtils.updateSecurityParameters( _userParamService, request, getPlugin(  ) );
