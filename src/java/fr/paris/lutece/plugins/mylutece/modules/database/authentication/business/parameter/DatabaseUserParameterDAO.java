@@ -46,69 +46,75 @@ import fr.paris.lutece.util.sql.DAOUtil;
  */
 public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
 {
-    private static final String SQL_QUERY_SELECT_USER_PARAMETERS_VALUE = " SELECT parameter_value FROM mylutece_database_user_parameter WHERE parameter_key = ? ";
-    private static final String SQL_QUERY_UPDATE_USER_PARAMETERS = " UPDATE mylutece_database_user_parameter SET parameter_value = ? WHERE parameter_key = ? ";
-    private static final String SQL_QUERY_SELECT_ALL = " SELECT parameter_key, parameter_value FROM mylutece_database_user_parameter ";
+	private static final String SQL_QUERY_SELECT_USER_PARAMETERS_VALUE = " SELECT parameter_value FROM mylutece_database_user_parameter WHERE parameter_key = ? ";
+	private static final String SQL_QUERY_UPDATE_USER_PARAMETERS = " UPDATE mylutece_database_user_parameter SET parameter_value = ? WHERE parameter_key = ? ";
+	private static final String SQL_QUERY_SELECT_ALL = " SELECT parameter_key, parameter_value FROM mylutece_database_user_parameter ";
 
-    /**
-    * {@inheritDoc}
-    */
-    public ReferenceItem load( String strParameterKey, Plugin plugin )
-    {
-        ReferenceItem userParam = null;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_PARAMETERS_VALUE, plugin );
-        daoUtil.setString( 1, strParameterKey );
-        daoUtil.executeQuery(  );
+	/**
+	 * {@inheritDoc}
+	 */
+	public ReferenceItem load( String strParameterKey, Plugin plugin )
+	{
+		ReferenceItem userParam = null;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_PARAMETERS_VALUE, plugin ) )
+		{
+			daoUtil.setString( 1, strParameterKey );
+			daoUtil.executeQuery(  );
 
-        if ( daoUtil.next(  ) )
-        {
-            userParam = new ReferenceItem(  );
-            userParam.setCode( strParameterKey );
-            userParam.setName( daoUtil.getString( 1 ) );
-            userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
-        }
+			if ( daoUtil.next(  ) )
+			{
+				userParam = new ReferenceItem(  );
+				userParam.setCode( strParameterKey );
+				userParam.setName( daoUtil.getString( 1 ) );
+				userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return userParam;
-    }
+		return userParam;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void store( ReferenceItem userParam, Plugin plugin )
-    {
-        int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_USER_PARAMETERS, plugin );
+	/**
+	 * {@inheritDoc}
+	 */
+	public void store( ReferenceItem userParam, Plugin plugin )
+	{
+		int nIndex = 1;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_USER_PARAMETERS, plugin ) )
+		{
 
-        daoUtil.setString( nIndex++, userParam.getName(  ) );
-        daoUtil.setString( nIndex++, userParam.getCode(  ) );
+			daoUtil.setString( nIndex++, userParam.getName(  ) );
+			daoUtil.setString( nIndex++, userParam.getCode(  ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
-    }
+			daoUtil.executeUpdate(  );
+			daoUtil.free(  );
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public ReferenceList selectAll( Plugin plugin )
-    {
-        ReferenceList listUserParams = new ReferenceList(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin );
-        daoUtil.executeQuery(  );
+	/**
+	 * {@inheritDoc}
+	 */
+	public ReferenceList selectAll( Plugin plugin )
+	{
+		ReferenceList listUserParams = new ReferenceList(  );
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin ) )
+		{
+			daoUtil.executeQuery(  );
 
-        while ( daoUtil.next(  ) )
-        {
-            int nIndex = 1;
-            ReferenceItem userParam = new ReferenceItem(  );
-            userParam.setCode( daoUtil.getString( nIndex++ ) );
-            userParam.setName( daoUtil.getString( nIndex++ ) );
-            userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
-            listUserParams.add( userParam );
-        }
+			while ( daoUtil.next(  ) )
+			{
+				int nIndex = 1;
+				ReferenceItem userParam = new ReferenceItem(  );
+				userParam.setCode( daoUtil.getString( nIndex++ ) );
+				userParam.setName( daoUtil.getString( nIndex++ ) );
+				userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+				listUserParams.add( userParam );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return listUserParams;
-    }
+		return listUserParams;
+	}
 }

@@ -45,96 +45,104 @@ import java.util.List;
  */
 public class GroupRoleDAO implements IGroupRoleDAO
 {
-    public static final String SQL_QUERY_FIND_ROLES_FROM_GROUP_ID = "SELECT role_key FROM mylutece_database_group_role WHERE group_key like ? ";
-    public static final String SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID = "SELECT group_key FROM mylutece_database_group_role WHERE role_key = ? ";
-    private static final String SQL_QUERY_DELETE_ROLES_FOR_GROUP = "DELETE FROM mylutece_database_group_role WHERE group_key like ?";
-    private static final String SQL_QUERY_INSERT_ROLE_FOR_GROUP = "INSERT INTO mylutece_database_group_role ( group_key, role_key ) VALUES ( ?, ? ) ";
+	public static final String SQL_QUERY_FIND_ROLES_FROM_GROUP_ID = "SELECT role_key FROM mylutece_database_group_role WHERE group_key like ? ";
+	public static final String SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID = "SELECT group_key FROM mylutece_database_group_role WHERE role_key = ? ";
+	private static final String SQL_QUERY_DELETE_ROLES_FOR_GROUP = "DELETE FROM mylutece_database_group_role WHERE group_key like ?";
+	private static final String SQL_QUERY_INSERT_ROLE_FOR_GROUP = "INSERT INTO mylutece_database_group_role ( group_key, role_key ) VALUES ( ?, ? ) ";
 
-    /**
-     * Find group's roles
-     *
-     * @param strGroupKey the group key
-     * @param plugin Plugin
-     * @return ArrayList the roles key list corresponding to the group
-     */
-    @Override
-    public List<String> selectGroupRoles( String strGroupKey, Plugin plugin )
-    {
-        int nParam = 0;
-        ArrayList<String> arrayRoles = new ArrayList<String>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_ROLES_FROM_GROUP_ID, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
-        daoUtil.executeQuery(  );
+	/**
+	 * Find group's roles
+	 *
+	 * @param strGroupKey the group key
+	 * @param plugin Plugin
+	 * @return ArrayList the roles key list corresponding to the group
+	 */
+	@Override
+	public List<String> selectGroupRoles( String strGroupKey, Plugin plugin )
+	{
+		int nParam = 0;
+		ArrayList<String> arrayRoles = new ArrayList<String>(  );
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_ROLES_FROM_GROUP_ID, plugin ) )
+		{
+			daoUtil.setString( ++nParam, strGroupKey );
+			daoUtil.executeQuery(  );
 
-        while ( daoUtil.next(  ) )
-        {
-            nParam = 0;
-            arrayRoles.add( daoUtil.getString( ++nParam ) );
-        }
+			while ( daoUtil.next(  ) )
+			{
+				nParam = 0;
+				arrayRoles.add( daoUtil.getString( ++nParam ) );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return arrayRoles;
-    }
+		return arrayRoles;
+	}
 
-    /**
-     * Find group's roles
-     *
-     * @param strRoleKey The Role key
-     * @param plugin Plugin
-     * @return ArrayList the groups key list corresponding to the role
-     */
-    @Override
-    public List<String> selectGroupRolesByRoleKey( String strRoleKey, Plugin plugin )
-    {
-        int nParam = 0;
-        ArrayList<String> arrayGroup = new ArrayList<String>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID, plugin );
-        daoUtil.setString( ++nParam, strRoleKey );
-        daoUtil.executeQuery(  );
+	/**
+	 * Find group's roles
+	 *
+	 * @param strRoleKey The Role key
+	 * @param plugin Plugin
+	 * @return ArrayList the groups key list corresponding to the role
+	 */
+	@Override
+	public List<String> selectGroupRolesByRoleKey( String strRoleKey, Plugin plugin )
+	{
+		int nParam = 0;
+		ArrayList<String> arrayGroup = new ArrayList<String>(  );
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID, plugin ) )
+		{
+			daoUtil.setString( ++nParam, strRoleKey );
+			daoUtil.executeQuery(  );
 
-        while ( daoUtil.next(  ) )
-        {
-            nParam = 0;
-            arrayGroup.add( daoUtil.getString( ++nParam ) );
-        }
+			while ( daoUtil.next(  ) )
+			{
+				nParam = 0;
+				arrayGroup.add( daoUtil.getString( ++nParam ) );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return arrayGroup;
-    }
+		return arrayGroup;
+	}
 
-    /**
-     * Delete roles for a group
-     * @param strGroupKey The key of the group
-     * @param plugin Plugin
-     */
-    @Override
-    public void deleteRoles( String strGroupKey, Plugin plugin )
-    {
-        int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ROLES_FOR_GROUP, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
+	/**
+	 * Delete roles for a group
+	 * @param strGroupKey The key of the group
+	 * @param plugin Plugin
+	 */
+	@Override
+	public void deleteRoles( String strGroupKey, Plugin plugin )
+	{
+		int nParam = 0;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ROLES_FOR_GROUP, plugin ))
+		{
+			daoUtil.setString( ++nParam, strGroupKey );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
-    }
+			daoUtil.executeUpdate(  );
+			daoUtil.free(  );
+		}
+	}
 
-    /**
-     * Assign a role to group
-     * @param strGroupKey The key of the group
-     * @param strRoleKey The key of the role
-     * @param plugin Plugin
-     */
-    @Override
-    public void createRole( String strGroupKey, String strRoleKey, Plugin plugin )
-    {
-        int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ROLE_FOR_GROUP, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
-        daoUtil.setString( ++nParam, strRoleKey );
+	/**
+	 * Assign a role to group
+	 * @param strGroupKey The key of the group
+	 * @param strRoleKey The key of the role
+	 * @param plugin Plugin
+	 */
+	@Override
+	public void createRole( String strGroupKey, String strRoleKey, Plugin plugin )
+	{
+		int nParam = 0;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ROLE_FOR_GROUP, plugin ) )
+		{
+			daoUtil.setString( ++nParam, strGroupKey );
+			daoUtil.setString( ++nParam, strRoleKey );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
-    }
+			daoUtil.executeUpdate(  );
+			daoUtil.free(  );
+		}
+	}
 }

@@ -47,186 +47,200 @@ import java.util.List;
  */
 public final class GroupDAO implements IGroupDAO
 {
-    // Constants
-    private static final String PERCENT = "%";
-    private static final String SQL_QUERY_SELECTALL = " SELECT group_key, group_description FROM mylutece_database_group ORDER BY group_key";
-    private static final String SQL_QUERY_SELECT_BY_KEY = " SELECT group_key, group_description FROM mylutece_database_group WHERE group_key = ? ORDER BY group_key";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO mylutece_database_group ( group_key, group_description ) VALUES ( ?, ? )";
-    private static final String SQL_QUERY_DELETE = " DELETE FROM mylutece_database_group WHERE group_key like ? ";
-    private static final String SQL_QUERY_UPDATE = " UPDATE mylutece_database_group SET group_key = ?, group_description = ? WHERE group_key like ?";
-    private static final String SQL_QUERY_SELECT_GROUP_FROM_SEARCH = " SELECT group_key, group_description FROM mylutece_database_group " +
-        " WHERE group_key LIKE ? AND group_description LIKE ? ORDER BY group_key ";
+	// Constants
+	private static final String PERCENT = "%";
+	private static final String SQL_QUERY_SELECTALL = " SELECT group_key, group_description FROM mylutece_database_group ORDER BY group_key";
+	private static final String SQL_QUERY_SELECT_BY_KEY = " SELECT group_key, group_description FROM mylutece_database_group WHERE group_key = ? ORDER BY group_key";
+	private static final String SQL_QUERY_INSERT = " INSERT INTO mylutece_database_group ( group_key, group_description ) VALUES ( ?, ? )";
+	private static final String SQL_QUERY_DELETE = " DELETE FROM mylutece_database_group WHERE group_key like ? ";
+	private static final String SQL_QUERY_UPDATE = " UPDATE mylutece_database_group SET group_key = ?, group_description = ? WHERE group_key like ?";
+	private static final String SQL_QUERY_SELECT_GROUP_FROM_SEARCH = " SELECT group_key, group_description FROM mylutece_database_group " +
+			" WHERE group_key LIKE ? AND group_description LIKE ? ORDER BY group_key ";
 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //Access methods to data
+	///////////////////////////////////////////////////////////////////////////////////////
+	//Access methods to data
 
-    /**
-     * Insert a new record in the table.
-     * @param group The Instance of the object Group
-     * @param plugin Plugin
-     */
-    @Override
-    public synchronized void insert( Group group, Plugin plugin )
-    {
-        int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+	/**
+	 * Insert a new record in the table.
+	 * @param group The Instance of the object Group
+	 * @param plugin Plugin
+	 */
+	@Override
+	public synchronized void insert( Group group, Plugin plugin )
+	{
+		int nParam = 0;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+		{
 
-        daoUtil.setString( ++nParam, group.getGroupKey(  ) );
-        daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
+			daoUtil.setString( ++nParam, group.getGroupKey(  ) );
+			daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
-    }
+			daoUtil.executeUpdate(  );
+			daoUtil.free(  );
+		}
+	}
 
-    /**
-     * load the data of Group from the table
-     * @param strGroupKey The indentifier of the object Group
-     * @param plugin Plugin
-     * @return The Instance of the object Group
-     */
-    @Override
-    public Group load( String strGroupKey, Plugin plugin )
-    {
-        int nParam;
-        Group group = null;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_KEY, plugin );
-        daoUtil.setString( 1, strGroupKey );
+	/**
+	 * load the data of Group from the table
+	 * @param strGroupKey The indentifier of the object Group
+	 * @param plugin Plugin
+	 * @return The Instance of the object Group
+	 */
+	@Override
+	public Group load( String strGroupKey, Plugin plugin )
+	{
+		int nParam;
+		Group group = null;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_KEY, plugin ) )
+		{
+			daoUtil.setString( 1, strGroupKey );
 
-        daoUtil.executeQuery(  );
+			daoUtil.executeQuery(  );
 
-        if ( daoUtil.next(  ) )
-        {
-            nParam = 0;
-            group = new Group(  );
-            group.setGroupKey( daoUtil.getString( ++nParam ) );
-            group.setGroupDescription( daoUtil.getString( ++nParam ) );
-        }
+			if ( daoUtil.next(  ) )
+			{
+				nParam = 0;
+				group = new Group(  );
+				group.setGroupKey( daoUtil.getString( ++nParam ) );
+				group.setGroupDescription( daoUtil.getString( ++nParam ) );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return group;
-    }
+		return group;
+	}
 
-    /**
-     * Delete a record from the table
-     * @param strGroupKey The indentifier of the object Group
-     * @param plugin Plugin
-     */
-    @Override
-    public void delete( String strGroupKey, Plugin plugin )
-    {
-        int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
-    }
+	/**
+	 * Delete a record from the table
+	 * @param strGroupKey The indentifier of the object Group
+	 * @param plugin Plugin
+	 */
+	@Override
+	public void delete( String strGroupKey, Plugin plugin )
+	{
+		int nParam = 0;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+		{
+			daoUtil.setString( ++nParam, strGroupKey );
+			daoUtil.executeUpdate(  );
+			daoUtil.free(  );
+		}
+	}
 
-    /**
-     * Update the record in the table
-     * @param group The instance of the Group to update
-     * @param plugin Plugin
-     */
-    @Override
-    public void store( Group group, Plugin plugin )
-    {
-        int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
+	/**
+	 * Update the record in the table
+	 * @param group The instance of the Group to update
+	 * @param plugin Plugin
+	 */
+	@Override
+	public void store( Group group, Plugin plugin )
+	{
+		int nParam = 0;
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+		{
 
-        daoUtil.setString( ++nParam, group.getGroupKey(  ) );
-        daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
-        daoUtil.setString( ++nParam, group.getGroupKey(  ) );
+			daoUtil.setString( ++nParam, group.getGroupKey(  ) );
+			daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
+			daoUtil.setString( ++nParam, group.getGroupKey(  ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
-    }
+			daoUtil.executeUpdate(  );
+			daoUtil.free(  );
+		}
+	}
 
-    /**
-     * Returns a list of all the right group
-     * @param plugin Plugin
-     * @return A ReferenceList of group objects
-     */
-    @Override
-    public ReferenceList selectGroupsList( Plugin plugin )
-    {
-        int nParam;
-        ReferenceList groupList = new ReferenceList(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery(  );
+	/**
+	 * Returns a list of all the right group
+	 * @param plugin Plugin
+	 * @return A ReferenceList of group objects
+	 */
+	@Override
+	public ReferenceList selectGroupsList( Plugin plugin )
+	{
+		int nParam;
+		ReferenceList groupList = new ReferenceList(  );
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+		{
+			daoUtil.executeQuery(  );
 
-        while ( daoUtil.next(  ) )
-        {
-            nParam = 0;
+			while ( daoUtil.next(  ) )
+			{
+				nParam = 0;
 
-            Group group = new Group(  );
-            group.setGroupKey( daoUtil.getString( ++nParam ) );
-            group.setGroupDescription( daoUtil.getString( ++nParam ) );
-            groupList.addItem( group.getGroupKey(  ), group.getGroupDescription(  ) );
-        }
+				Group group = new Group(  );
+				group.setGroupKey( daoUtil.getString( ++nParam ) );
+				group.setGroupDescription( daoUtil.getString( ++nParam ) );
+				groupList.addItem( group.getGroupKey(  ), group.getGroupDescription(  ) );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return groupList;
-    }
+		return groupList;
+	}
 
-    /**
-     * Load the list of groups
-     * @param plugin Plugin
-     * @return The Collection of the Groups
-     */
-    @Override
-    public Collection<Group> selectAll( Plugin plugin )
-    {
-        int nParam;
-        Collection<Group> listGroups = new ArrayList<Group>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery(  );
+	/**
+	 * Load the list of groups
+	 * @param plugin Plugin
+	 * @return The Collection of the Groups
+	 */
+	@Override
+	public Collection<Group> selectAll( Plugin plugin )
+	{
+		int nParam;
+		Collection<Group> listGroups = new ArrayList<Group>(  );
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+		{
+			daoUtil.executeQuery(  );
 
-        while ( daoUtil.next(  ) )
-        {
-            nParam = 0;
+			while ( daoUtil.next(  ) )
+			{
+				nParam = 0;
 
-            Group group = new Group(  );
-            group.setGroupKey( daoUtil.getString( ++nParam ) );
-            group.setGroupDescription( daoUtil.getString( ++nParam ) );
+				Group group = new Group(  );
+				group.setGroupKey( daoUtil.getString( ++nParam ) );
+				group.setGroupDescription( daoUtil.getString( ++nParam ) );
 
-            listGroups.add( group );
-        }
+				listGroups.add( group );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return listGroups;
-    }
+		return listGroups;
+	}
 
-    /**
-     * Return the filtered groups list
-     *
-     * @param gFilter filter
-     * @param plugin Plugin
-     * @return List of Group
-     */
-    @Override
-    public List<Group> selectByFilter( GroupFilter gFilter, Plugin plugin )
-    {
-        List<Group> listFilteredGroups = new ArrayList<Group>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_GROUP_FROM_SEARCH, plugin );
+	/**
+	 * Return the filtered groups list
+	 *
+	 * @param gFilter filter
+	 * @param plugin Plugin
+	 * @return List of Group
+	 */
+	@Override
+	public List<Group> selectByFilter( GroupFilter gFilter, Plugin plugin )
+	{
+		List<Group> listFilteredGroups = new ArrayList<Group>(  );
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_GROUP_FROM_SEARCH, plugin ) )
+		{
 
-        daoUtil.setString( 1, PERCENT + gFilter.getKey(  ) + PERCENT );
-        daoUtil.setString( 2, PERCENT + gFilter.getDescription(  ) + PERCENT );
+			daoUtil.setString( 1, PERCENT + gFilter.getKey(  ) + PERCENT );
+			daoUtil.setString( 2, PERCENT + gFilter.getDescription(  ) + PERCENT );
 
-        daoUtil.executeQuery(  );
+			daoUtil.executeQuery(  );
 
-        while ( daoUtil.next(  ) )
-        {
-            Group group = new Group(  );
-            group.setGroupKey( daoUtil.getString( 1 ) );
-            group.setGroupDescription( daoUtil.getString( 2 ) );
+			while ( daoUtil.next(  ) )
+			{
+				Group group = new Group(  );
+				group.setGroupKey( daoUtil.getString( 1 ) );
+				group.setGroupDescription( daoUtil.getString( 2 ) );
 
-            listFilteredGroups.add( group );
-        }
+				listFilteredGroups.add( group );
+			}
 
-        daoUtil.free(  );
+			daoUtil.free(  );
+		}
 
-        return listFilteredGroups;
-    }
+		return listFilteredGroups;
+	}
 }
