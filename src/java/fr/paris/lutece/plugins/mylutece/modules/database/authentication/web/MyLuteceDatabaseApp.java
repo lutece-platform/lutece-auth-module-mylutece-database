@@ -80,6 +80,7 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
+import fr.paris.lutece.portal.web.l10n.LocaleService;
 import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.ReferenceItem;
@@ -262,7 +263,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     public void init( HttpServletRequest request, Plugin plugin )
     {
-        _locale = request.getLocale( );
+        _locale = getLocale( request );
         _plugin = plugin;
     }
 
@@ -1689,8 +1690,20 @@ public class MyLuteceDatabaseApp implements XPageApplication
         DatabaseUserHome.remove( user, PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME ) );
         DatabaseHome.removeGroupsForUser( user.getUserId( ), _plugin );
         DatabaseHome.removeRolesForUser( user.getUserId( ), _plugin );
-        MyLuteceUserFieldService.doRemoveUserFields( user.getUserId( ), request, request.getLocale( ) );
+        MyLuteceUserFieldService.doRemoveUserFields( user.getUserId( ), request, getLocale( request ) );
         DatabaseUserKeyService.getService( ).removeByIdUser( user.getUserId( ) );
         SecurityService.getInstance( ).logoutUser( request );
+    }
+    
+    /**
+     * Default getLocale() implementation. Could be overriden
+     * 
+     * @param request
+     *            The HTTP request
+     * @return The Locale
+     */
+    protected Locale getLocale( HttpServletRequest request )
+    {
+        return LocaleService.getContextUserLocale( request );
     }
 }
