@@ -9,10 +9,10 @@ import java.util.Random;
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
-import fr.paris.lutece.portal.business.rbac.AdminRole;
-import fr.paris.lutece.portal.business.rbac.AdminRoleHome;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.business.rbac.RBACHome;
+import fr.paris.lutece.portal.business.rbac.RBACRole;
+import fr.paris.lutece.portal.business.rbac.RBACRoleHome;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.business.user.AdminUserHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -120,16 +120,16 @@ public class DatabaseServiceTest extends LuteceTestCase
     {
         AdminUserHome.removeRoleForUser( adminUser.getUserId( ), roleKey );
         RBACHome.removeForRoleKey( roleKey );
-        AdminRoleHome.remove( roleKey );
+        RBACRoleHome.remove( roleKey );
     }
 
     private String giveRights( AdminUser adminUser )
     {
         String roleKey = getRandomName( );
-        AdminRole role = new AdminRole( );
+        RBACRole role = new RBACRole( );
         role.setKey( roleKey );
         role.setDescription( roleKey );
-        AdminRoleHome.create( role );
+        RBACRoleHome.create( role );
         try
         {
             RBAC rBAC = new RBAC( );
