@@ -219,7 +219,7 @@ public final class DatabaseService
      */
     public Map<String, Object> getManageAdvancedParameters( AdminUser user )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
