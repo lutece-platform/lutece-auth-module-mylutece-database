@@ -124,7 +124,7 @@ public class DatabaseAnonymizationService implements IAnonymizationService
         DatabaseUserHome.update( user, _plugin );
 
         List<IAttribute> listAllAttributes = AttributeHome.findAll( locale, pluginMyLutece );
-        List<IAttribute> listAttributesText = new ArrayList<IAttribute>(  );
+        List<IAttribute> listAttributesText = new ArrayList<>(  );
 
         for ( IAttribute attribut : listAllAttributes )
         {

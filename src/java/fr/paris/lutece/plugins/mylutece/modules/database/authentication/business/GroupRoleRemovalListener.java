@@ -66,7 +66,7 @@ public class GroupRoleRemovalListener implements RemovalListener
 
         List<String> listGroupsKey = GroupRoleHome.findGroupRolesByRoleKey( strId, plugin );
 
-        if ( ( listGroupsKey != null ) && ( listGroupsKey.size(  ) > 0 ) )
+        if ( ( listGroupsKey != null ) && ( !listGroupsKey.isEmpty( ) ) )
         {
             return false;
         }

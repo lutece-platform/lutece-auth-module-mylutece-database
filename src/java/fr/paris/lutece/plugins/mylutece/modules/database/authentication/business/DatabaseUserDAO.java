@@ -260,7 +260,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public Collection<DatabaseUser> selectDatabaseUserList( Plugin plugin )
 	{
-		Collection<DatabaseUser> listDatabaseUsers = new ArrayList<DatabaseUser>(  );
+		Collection<DatabaseUser> listDatabaseUsers = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
 		{
 			daoUtil.executeQuery(  );
@@ -298,7 +298,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public Collection<DatabaseUser> selectDatabaseUserListForLogin( String strLogin, Plugin plugin )
 	{
-		Collection<DatabaseUser> listDatabaseUsers = new ArrayList<DatabaseUser>(  );
+		Collection<DatabaseUser> listDatabaseUsers = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_FOR_LOGIN, plugin ) )
 		{
 			daoUtil.setString( 1, strLogin );
@@ -328,7 +328,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public Collection<DatabaseUser> selectDatabaseUserListForEmail( String strEmail, Plugin plugin )
 	{
-		Collection<DatabaseUser> listDatabaseUsers = new ArrayList<DatabaseUser>(  );
+		Collection<DatabaseUser> listDatabaseUsers = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_FOR_EMAIL, plugin ) )
 		{
 			daoUtil.setString( 1, strEmail );
@@ -385,7 +385,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public List<DatabaseUser> selectDatabaseUsersListByFilter( DatabaseUserFilter duFilter, Plugin plugin )
 	{
-		List<DatabaseUser> listFilteredUsers = new ArrayList<DatabaseUser>(  );
+		List<DatabaseUser> listFilteredUsers = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_FROM_SEARCH, plugin ) )
 		{
 			daoUtil.setString( 1, PERCENT + duFilter.getLogin(  ) + PERCENT );
@@ -443,7 +443,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public List<IPassword> selectUserPasswordHistory( int nUserID, Plugin plugin )
 	{
-		List<IPassword> listPasswordHistory = new ArrayList<IPassword>(  );
+		List<IPassword> listPasswordHistory = new ArrayList<>(  );
 
 		try( DAOUtil daoUtil = new DAOUtil( SQL_SELECT_USER_PASSWORD_HISTORY, plugin ) )
 		{
@@ -526,7 +526,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 		{
 			daoUtil.setInt( 1, DatabaseUser.STATUS_EXPIRED );
 
-			List<Integer> listIdExpiredUser = new ArrayList<Integer>(  );
+			List<Integer> listIdExpiredUser = new ArrayList<>(  );
 			daoUtil.executeQuery(  );
 
 			while ( daoUtil.next(  ) )
@@ -551,7 +551,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 			daoUtil.setLong( 1, currentTimestamp.getTime(  ) );
 			daoUtil.setInt( 2, DatabaseUser.STATUS_EXPIRED );
 
-			List<Integer> listIdExpiredUser = new ArrayList<Integer>(  );
+			List<Integer> listIdExpiredUser = new ArrayList<>(  );
 			daoUtil.executeQuery(  );
 
 			while ( daoUtil.next(  ) )
@@ -576,7 +576,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 			daoUtil.setInt( 1, DatabaseUser.STATUS_EXPIRED );
 			daoUtil.setLong( 2, alertMaxDate.getTime(  ) );
 
-			List<Integer> listIdUserFirstAlertlist = new ArrayList<Integer>(  );
+			List<Integer> listIdUserFirstAlertlist = new ArrayList<>(  );
 			daoUtil.executeQuery(  );
 
 			while ( daoUtil.next(  ) )
@@ -604,7 +604,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 			daoUtil.setLong( 3, timeBetweenAlerts.getTime(  ) );
 			daoUtil.setLong( 4, alertMaxDate.getTime(  ) );
 
-			List<Integer> listIdUserFirstAlert = new ArrayList<Integer>(  );
+			List<Integer> listIdUserFirstAlert = new ArrayList<>(  );
 			daoUtil.executeQuery(  );
 
 			while ( daoUtil.next(  ) )
@@ -628,7 +628,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 		{
 			daoUtil.setTimestamp( 1, currentTimestamp );
 
-			List<Integer> idUserPasswordExpiredlist = new ArrayList<Integer>(  );
+			List<Integer> idUserPasswordExpiredlist = new ArrayList<>(  );
 			daoUtil.executeQuery(  );
 
 			while ( daoUtil.next(  ) )
@@ -648,7 +648,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public void updateUserStatus( List<Integer> listIdUser, int nNewStatus, Plugin plugin )
 	{
-		if ( ( listIdUser != null ) && ( listIdUser.size(  ) > 0 ) )
+		if ( ( listIdUser != null ) && ( !listIdUser.isEmpty( ) ) )
 		{
 			StringBuilder sbSQL = new StringBuilder(  );
 			sbSQL.append( SQL_QUERY_UPDATE_STATUS );
@@ -680,7 +680,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public void updateNbAlert( List<Integer> listIdUser, Plugin plugin )
 	{
-		if ( ( listIdUser != null ) && ( listIdUser.size(  ) > 0 ) )
+		if ( ( listIdUser != null ) && ( !listIdUser.isEmpty( ) ) )
 		{
 			StringBuilder sbSQL = new StringBuilder(  );
 			sbSQL.append( SQL_QUERY_UPDATE_NB_ALERT );
@@ -711,7 +711,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 	@Override
 	public void updateChangePassword( List<Integer> listIdUser, Plugin plugin )
 	{
-		if ( ( listIdUser != null ) && ( listIdUser.size(  ) > 0 ) )
+		if ( ( listIdUser != null ) && ( !listIdUser.isEmpty( ) ) )
 		{
 			StringBuilder sbSQL = new StringBuilder(  );
 			sbSQL.append( SQL_QUERY_UPDATE_RESET_PASSWORD_LIST_ID );

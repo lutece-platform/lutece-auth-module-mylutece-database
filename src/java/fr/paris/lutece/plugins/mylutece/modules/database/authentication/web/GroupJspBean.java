@@ -152,7 +152,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
-    private Map<String, ItemNavigator> _itemNavigators = new HashMap<String, ItemNavigator>(  );
+    private Map<String, ItemNavigator> _itemNavigators = new HashMap<>(  );
     private GroupFilter _gFilter;
     private String _strSortedAttributeName;
     private boolean _bIsAscSort;
@@ -184,7 +184,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
 
         boolean bIsSearch = _gFilter.setGroupFilter( request );
         List<Group> listFilteredGroups = GroupHome.findByFilter( _gFilter, getPlugin(  ) );
-        List<Group> listAvailableGroups = new ArrayList<Group>(  );
+        List<Group> listAvailableGroups = new ArrayList<>(  );
 
         for ( Group filteredGroup : listFilteredGroups )
         {
@@ -241,10 +241,10 @@ public class GroupJspBean extends PluginAdminPageJspBean
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        LocalizedPaginator<Group> paginator = new LocalizedPaginator<Group>( listAvailableGroups, _nItemsPerPage,
+        LocalizedPaginator<Group> paginator = new LocalizedPaginator<>( listAvailableGroups, _nItemsPerPage,
                 url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_GROUPS_LIST, paginator.getPageItems(  ) );
@@ -326,7 +326,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         setItemNavigator( PARAMETER_MODIFY_GROUP, selectedGroup.getGroupKey(  ),
             AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_GROUP );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         model.put( MARK_GROUP, selectedGroup );
         model.put( MARK_ITEM_NAVIGATOR, _itemNavigators.get( PARAMETER_MODIFY_GROUP ) );
         model.put( MARK_ASSIGNED_USERS_NUMBER, nAssignedUsersNumber );
@@ -437,7 +437,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         allRoleList = AdminWorkgroupService.getAuthorizedCollection( allRoleList, getUser(  ) );
 
         List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( selectedGroup.getGroupKey(  ), getPlugin(  ) );
-        Collection<Role> groupRoleList = new ArrayList<Role>(  );
+        Collection<Role> groupRoleList = new ArrayList<>(  );
 
         for ( String strRoleKey : groupRoleKeyList )
         {
@@ -454,7 +454,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         setItemNavigator( PARAMETER_ASSIGN_ROLE, selectedGroup.getGroupKey(  ),
             AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_ROLES_GROUP );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         model.put( MARK_ROLES_LIST, allRoleList );
         model.put( MARK_ROLES_LIST_FOR_GROUP, groupRoleList );
         model.put( MARK_GROUP, selectedGroup );
@@ -524,9 +524,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
             return null;
         }
 
-        Group group = GroupHome.findByPrimaryKey( strGroupKey, getPlugin(  ) );
-
-        return group;
+        return GroupHome.findByPrimaryKey( strGroupKey, getPlugin(  ) );
     }
 
     /**
@@ -536,13 +534,13 @@ public class GroupJspBean extends PluginAdminPageJspBean
     private List<Group> getAuthorizedGroups(  )
     {
         Collection<Group> allGroupList = GroupHome.findAll( getPlugin(  ) );
-        List<Group> groupList = new ArrayList<Group>(  );
+        List<Group> groupList = new ArrayList<>(  );
 
         for ( Group group : allGroupList )
         {
             List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( group.getGroupKey(  ), getPlugin(  ) );
 
-            if ( groupRoleKeyList.size(  ) == 0 )
+            if ( groupRoleKeyList.isEmpty( ) )
             {
                 groupList.add( group );
 
@@ -574,7 +572,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
     {
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_USERS_GROUP );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         String strURL = AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_USERS_GROUP;
         UrlItem url = new UrlItem( strURL );
 
@@ -630,7 +628,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
         // ITEM NAVIGATION
         setItemNavigator( PARAMETER_ASSIGN_USER, selectedGroup.getGroupKey(  ), url.getUrl(  ) );
 
-        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( listFilteredUsers,
+        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<>( listFilteredUsers,
                 _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
 
         model.put( MARK_GROUP, selectedGroup );
@@ -725,7 +723,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     private List<DatabaseUser> getListAssignedUsers( List<DatabaseUser> listAllAssignedUsers )
     {
-        List<DatabaseUser> listAssignedUsers = new ArrayList<DatabaseUser>(  );
+        List<DatabaseUser> listAssignedUsers = new ArrayList<>(  );
 
         for ( DatabaseUser user : listAllAssignedUsers )
         {
@@ -796,7 +794,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
             }
 
             List<Group> listFilteredGroups = GroupHome.findByFilter( _gFilter, getPlugin(  ) );
-            List<Group> listAvailableGroups = new ArrayList<Group>(  );
+            List<Group> listAvailableGroups = new ArrayList<>(  );
 
             for ( Group filteredGroup : listFilteredGroups )
             {
@@ -815,7 +813,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
                 Collections.sort( listAvailableGroups, new AttributeComparator( _strSortedAttributeName, _bIsAscSort ) );
             }
 
-            List<String> listIdsDatabaseUser = new ArrayList<String>(  );
+            List<String> listIdsDatabaseUser = new ArrayList<>(  );
             int nCurrentItemId = 0;
             int nIndex = 0;
 
@@ -849,7 +847,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
      */
     private void reinitItemNavigators(  )
     {
-        _itemNavigators = new HashMap<String, ItemNavigator>(  );
+        _itemNavigators = new HashMap<>(  );
         _strSortedAttributeName = StringUtils.EMPTY;
         _bIsAscSort = true;
     }

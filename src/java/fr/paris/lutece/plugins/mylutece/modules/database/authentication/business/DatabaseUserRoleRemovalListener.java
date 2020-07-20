@@ -64,7 +64,7 @@ public class DatabaseUserRoleRemovalListener implements RemovalListener
         Collection<String> listLogins = DatabaseHome.findDatabaseUsersListForRoleKey( strId,
                 PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME ) );
 
-        if ( ( listLogins != null ) && ( listLogins.size(  ) > 0 ) )
+        if ( ( listLogins != null ) && ( !listLogins.isEmpty( ) ) )
         {
             return false;
         }

@@ -61,7 +61,7 @@ public class GroupRoleDAO implements IGroupRoleDAO
 	public List<String> selectGroupRoles( String strGroupKey, Plugin plugin )
 	{
 		int nParam = 0;
-		ArrayList<String> arrayRoles = new ArrayList<String>(  );
+		ArrayList<String> arrayRoles = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_ROLES_FROM_GROUP_ID, plugin ) )
 		{
 			daoUtil.setString( ++nParam, strGroupKey );
@@ -90,7 +90,7 @@ public class GroupRoleDAO implements IGroupRoleDAO
 	public List<String> selectGroupRolesByRoleKey( String strRoleKey, Plugin plugin )
 	{
 		int nParam = 0;
-		ArrayList<String> arrayGroup = new ArrayList<String>(  );
+		ArrayList<String> arrayGroup = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID, plugin ) )
 		{
 			daoUtil.setString( ++nParam, strRoleKey );

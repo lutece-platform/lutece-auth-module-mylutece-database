@@ -106,7 +106,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     {
         Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         Plugin mylutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>(  );
+        List<CSVMessageDescriptor> listMessages = new ArrayList<>(  );
         int nIndex = 0;
 
         String strAccessCode = strLineDataArray[nIndex++];
@@ -211,7 +211,7 @@ public class ImportDatabaseUserService extends CSVReaderService
 
                         if ( listValues == null )
                         {
-                            listValues = new ArrayList<String>(  );
+                            listValues = new ArrayList<>(  );
                         }
 
                         listValues.add( strAttributeValue );
@@ -242,7 +242,7 @@ public class ImportDatabaseUserService extends CSVReaderService
         {
             List<String> listValues = mapAttributesValues.get( attribute.getIdAttribute(  ) );
 
-            if ( ( listValues != null ) && ( listValues.size(  ) > 0 ) )
+            if ( ( listValues != null ) && ( !listValues.isEmpty( ) ) )
             {
                 int nIdField = 0;
                 boolean bMyLuteceAttribute = ( attribute.getPlugin(  ) == null ) ||
@@ -323,7 +323,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     {
         int nMinColumnNumber = CONSTANT_MINIMUM_COLUMNS_PER_LINE;
         Plugin databasePlugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>(  );
+        List<CSVMessageDescriptor> listMessages = new ArrayList<>(  );
 
         if ( ( strLineDataArray == null ) || ( strLineDataArray.length < nMinColumnNumber ) )
         {
@@ -362,7 +362,7 @@ public class ImportDatabaseUserService extends CSVReaderService
                 Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail,
                         databasePlugin );
 
-                if ( ( listUsers != null ) && ( listUsers.size(  ) > 0 ) )
+                if ( ( listUsers != null ) && ( !listUsers.isEmpty( ) ) )
                 {
                     String strMessage = I18nService.getLocalizedString( MESSAGE_EMAIL_ALREADY_USED, locale );
                     CSVMessageDescriptor error = new CSVMessageDescriptor( CSVMessageLevel.ERROR, nLineNumber,
@@ -382,7 +382,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     protected List<CSVMessageDescriptor> getEndOfProcessMessages( int nNbLineParses, int nNbLinesWithoutErrors,
         Locale locale )
     {
-        List<CSVMessageDescriptor> listMessages = new ArrayList<CSVMessageDescriptor>(  );
+        List<CSVMessageDescriptor> listMessages = new ArrayList<>(  );
         Object[] args = { nNbLineParses, nNbLinesWithoutErrors };
         String strMessageContent = I18nService.getLocalizedString( MESSAGE_USERS_IMPORTED, args, locale );
         CSVMessageDescriptor message = new CSVMessageDescriptor( CSVMessageLevel.INFO, 0, strMessageContent );
@@ -406,7 +406,7 @@ public class ImportDatabaseUserService extends CSVReaderService
         String strEmailSubject = I18nService.getLocalizedString( MESSAGE_ACCOUNT_IMPORTED_MAIL_SUBJECT,
                 new String[] { strSiteName }, locale );
         String strBaseURL = strProdUrl;
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         model.put( MARK_USER, user );
         model.put( MARK_SITE_NAME, strSiteName );
         model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );

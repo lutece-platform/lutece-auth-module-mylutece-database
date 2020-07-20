@@ -42,6 +42,11 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 public class EmailDatabaseUser extends DatabaseUser
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8826045127457154428L;
+
+	/**
      * {@inheritDoc}
      */
     public String getLogin(  )

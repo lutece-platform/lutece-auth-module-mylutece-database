@@ -188,7 +188,7 @@ public final class GroupDAO implements IGroupDAO
 	public Collection<Group> selectAll( Plugin plugin )
 	{
 		int nParam;
-		Collection<Group> listGroups = new ArrayList<Group>(  );
+		Collection<Group> listGroups = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
 		{
 			daoUtil.executeQuery(  );
@@ -220,7 +220,7 @@ public final class GroupDAO implements IGroupDAO
 	@Override
 	public List<Group> selectByFilter( GroupFilter gFilter, Plugin plugin )
 	{
-		List<Group> listFilteredGroups = new ArrayList<Group>(  );
+		List<Group> listFilteredGroups = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_GROUP_FROM_SEARCH, plugin ) )
 		{
 
