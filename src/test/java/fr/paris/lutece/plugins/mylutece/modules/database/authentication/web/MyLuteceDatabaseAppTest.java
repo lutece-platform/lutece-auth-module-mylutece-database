@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.mock.web.MockHttpServletRequest;
+
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
@@ -19,7 +21,6 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.test.LuteceTestCase;
-import fr.paris.lutece.test.MokeHttpServletRequest;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.password.IPassword;
 
@@ -37,15 +38,15 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
     public void testDoCreateAccount( )
     {
-        MokeHttpServletRequest request = new MokeHttpServletRequest( );
+        MockHttpServletRequest request = new MockHttpServletRequest( );
         String strLogin = getRandomName( );
-        request.addMokeParameters( "plugin_name", plugin.getName( ) );
-        request.addMokeParameters( "login", strLogin );
-        request.addMokeParameters( "email", strLogin + "@junit.fr" );
-        request.addMokeParameters( "password", "junitjunit" );
-        request.addMokeParameters( "confirmation_password", "junitjunit" );
-        request.addMokeParameters( "first_name", strLogin );
-        request.addMokeParameters( "last_name", strLogin );
+        request.addParameter( "plugin_name", plugin.getName( ) );
+        request.addParameter( "login", strLogin );
+        request.addParameter( "email", strLogin + "@junit.fr" );
+        request.addParameter( "password", "junitjunit" );
+        request.addParameter( "confirmation_password", "junitjunit" );
+        request.addParameter( "first_name", strLogin );
+        request.addParameter( "last_name", strLogin );
 
         MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
@@ -87,12 +88,12 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             userParam.setName( Integer.toString( 1 ) );
             userParam.setCode( "password_history_size" );
             DatabaseUserParameterService.getService( ).update( userParam, plugin );
-            MokeHttpServletRequest request = new MokeHttpServletRequest( );
-            request.addMokeParameters( "key", userKey.getKey( ) );
+            MockHttpServletRequest request = new MockHttpServletRequest( );
+            request.addParameter( "key", userKey.getKey( ) );
             String strNewPassword = "junitjunit" + getRandomName( );
-            request.addMokeParameters( "plugin_name", plugin.getName( ) );
-            request.addMokeParameters( "password", strNewPassword );
-            request.addMokeParameters( "confirmation_password", strNewPassword );
+            request.addParameter( "plugin_name", plugin.getName( ) );
+            request.addParameter( "password", strNewPassword );
+            request.addParameter( "confirmation_password", strNewPassword );
 
             MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
@@ -169,11 +170,11 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             DatabaseService.getService( ).doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
             int previousPasswordHistorySize = DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin )
                     .size( );
-            MokeHttpServletRequest request = new MokeHttpServletRequest( );
-            request.addMokeParameters( "plugin_name", plugin.getName( ) );
-            request.addMokeParameters( "key", userKey.getKey( ) );
-            request.addMokeParameters( "password", strNewPassword );
-            request.addMokeParameters( "confirmation_password", strNewPassword );
+            MockHttpServletRequest request = new MockHttpServletRequest( );
+            request.addParameter( "plugin_name", plugin.getName( ) );
+            request.addParameter( "key", userKey.getKey( ) );
+            request.addParameter( "password", strNewPassword );
+            request.addParameter( "confirmation_password", strNewPassword );
 
             MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
@@ -231,13 +232,13 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             userParam.setCode( "password_history_size" );
             DatabaseUserParameterService.getService( ).update( userParam, plugin );
             String strNewPassword = "junitjunit" + getRandomName( );
-            MokeHttpServletRequest request = new MokeHttpServletRequest( );
+            MockHttpServletRequest request = new MockHttpServletRequest( );
             BaseUser loggedInUser = DatabaseHome.findLuteceUserByLogin( strLogin, plugin, new BaseAuthentication( ) );
             SecurityService.getInstance( ).registerUser( request, loggedInUser );
-            request.addMokeParameters( "plugin_name", plugin.getName( ) );
-            request.addMokeParameters( "old_password", strPassword );
-            request.addMokeParameters( "new_password", strNewPassword );
-            request.addMokeParameters( "confirmation_password", strNewPassword );
+            request.addParameter( "plugin_name", plugin.getName( ) );
+            request.addParameter( "old_password", strPassword );
+            request.addParameter( "new_password", strNewPassword );
+            request.addParameter( "confirmation_password", strNewPassword );
 
             MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
@@ -298,13 +299,13 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             DatabaseService.getService( ).doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
             int previousPasswordHistorySize = DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin )
                     .size( );
-            MokeHttpServletRequest request = new MokeHttpServletRequest( );
+            MockHttpServletRequest request = new MockHttpServletRequest( );
             BaseUser loggedInUser = DatabaseHome.findLuteceUserByLogin( strLogin, plugin, new BaseAuthentication( ) );
             SecurityService.getInstance( ).registerUser( request, loggedInUser );
-            request.addMokeParameters( "plugin_name", plugin.getName( ) );
-            request.addMokeParameters( "old_password", strPassword );
-            request.addMokeParameters( "new_password", strNewPassword );
-            request.addMokeParameters( "confirmation_password", strNewPassword );
+            request.addParameter( "plugin_name", plugin.getName( ) );
+            request.addParameter( "old_password", strPassword );
+            request.addParameter( "new_password", strNewPassword );
+            request.addParameter( "confirmation_password", strNewPassword );
 
             MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 

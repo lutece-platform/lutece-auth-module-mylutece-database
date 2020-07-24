@@ -310,7 +310,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private int _nItemsPerPage;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
-    private Map<String, ItemNavigator> _itemNavigators = new HashMap<String, ItemNavigator>(  );
+    private Map<String, ItemNavigator> _itemNavigators = new HashMap<>(  );
     private DatabaseUserFilter _duFilter;
     private String _strSortedAttributeName;
     private boolean _bIsAscSort = true;
@@ -345,7 +345,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         // Reinit session
         reinitItemNavigators(  );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         Boolean applicationsExist = AppPropertiesService.getPropertyBoolean( PROPERTY_EXTERNAL_APPLICATION_EXISTS, false );
         
         String strURL = getHomeUrl( request );
@@ -389,7 +389,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             url.addParameter( Parameters.SORTED_ASC, strAscSort );
         }
 
-        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<DatabaseUser>( listFilteredUsers,
+        LocalizedPaginator<DatabaseUser> paginator = new LocalizedPaginator<>( listFilteredUsers,
                 _nItemsPerPage, url.getUrl(  ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
 
         boolean bPermissionAdvancedParameter = RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE,
@@ -429,7 +429,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             attribute.setListAttributeFields( listAttributeFields );
         }
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
 
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_ATTRIBUTES_LIST, listAttributes );
@@ -487,7 +487,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         if ( StringUtils.isBlank( strError ) &&
-                ( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).size(  ) != 0 ) )
+                ( !DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).isEmpty( ) ) )
         {
             strError = AdminMessageService.getMessageUrl( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP );
         }
@@ -552,7 +552,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         // Specific attributes
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         List<IAttribute> listAttributes = AttributeHome.findAll( getLocale(  ), myLutecePlugin );
-        Map<String, List<MyLuteceUserField>> map = new HashMap<String, List<MyLuteceUserField>>(  );
+        Map<String, List<MyLuteceUserField>> map = new HashMap<>(  );
 
         for ( IAttribute attribute : listAttributes )
         {
@@ -563,7 +563,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             List<MyLuteceUserField> listUserFields = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( selectedUser.getUserId(  ),
                     attribute.getIdAttribute(  ), myLutecePlugin );
 
-            if ( listUserFields.size(  ) == 0 )
+            if ( listUserFields.isEmpty( ) )
             {
                 MyLuteceUserField userField = new MyLuteceUserField(  );
                 userField.setValue( StringUtils.EMPTY );
@@ -573,7 +573,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             map.put( String.valueOf( attribute.getIdAttribute(  ) ), listUserFields );
         }
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
 
         model.put( MARK_PLUGIN_NAME, _plugin.getName(  ) );
         model.put( MARK_USER, selectedUser );
@@ -641,7 +641,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
                 return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MODIFY_USER, AdminMessage.TYPE_ERROR );
             }
             else if ( !databaseUser.getLogin(  ).equalsIgnoreCase( strLogin ) &&
-                    ( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).size(  ) != 0 ) )
+                    ( !DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, _plugin ).isEmpty( ) ) )
             {
                 strError = AdminMessageService.getMessageUrl( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP );
             }
@@ -759,7 +759,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         allRoleList = AdminWorkgroupService.getAuthorizedCollection( allRoleList, getUser(  ) );
 
         List<String> userRoleKeyList = DatabaseHome.findUserRolesFromLogin( selectedUser.getLogin(  ), _plugin );
-        Collection<Role> userRoleList = new ArrayList<Role>(  );
+        Collection<Role> userRoleList = new ArrayList<>(  );
 
         for ( String strRoleKey : userRoleKeyList )
         {
@@ -778,7 +778,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         Boolean applicationsExist = Boolean.FALSE;
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         model.put( MARK_ROLES_LIST, allRoleList );
         model.put( MARK_ROLES_LIST_FOR_USER, userRoleList );
         model.put( MARK_USER, selectedUser );
@@ -868,13 +868,13 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         Collection<Group> allGroupList = GroupHome.findAll( getPlugin(  ) );
-        Collection<Group> groupList = new ArrayList<Group>(  );
+        Collection<Group> groupList = new ArrayList<>(  );
 
         for ( Group group : allGroupList )
         {
             List<String> groupRoleKeyList = GroupRoleHome.findGroupRoles( group.getGroupKey(  ), getPlugin(  ) );
 
-            if ( groupRoleKeyList.size(  ) == 0 )
+            if ( groupRoleKeyList.isEmpty( ) )
             {
                 groupList.add( group );
 
@@ -895,7 +895,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         List<String> userGroupKeyList = DatabaseHome.findUserGroupsFromLogin( selectedUser.getLogin(  ), _plugin );
-        Collection<Group> userGroupList = new ArrayList<Group>(  );
+        Collection<Group> userGroupList = new ArrayList<>(  );
 
         for ( String strGroupKey : userGroupKeyList )
         {
@@ -914,7 +914,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         Boolean applicationsExist = Boolean.FALSE;
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         model.put( MARK_GROUPS_LIST, groupList );
         model.put( MARK_GROUPS_LIST_FOR_USER, userGroupList );
         model.put( MARK_USER, selectedUser );
@@ -994,9 +994,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         int nUserId = Integer.parseInt( strUserId );
 
-        DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nUserId, _plugin );
-
-        return user;
+        return DatabaseUserHome.findByPrimaryKey( nUserId, _plugin );
     }
 
     /**
@@ -1117,7 +1115,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
                 _duFilter = new DatabaseUserFilter(  );
             }
 
-            List<String> listIdsDatabaseUser = new ArrayList<String>(  );
+            List<String> listIdsDatabaseUser = new ArrayList<>(  );
             List<DatabaseUser> listUsers = _databaseService.getAuthorizedUsers( getUser(  ), _plugin );
             List<DatabaseUser> listFilteredUsers = _databaseService.getListFilteredUsers( request, _duFilter, listUsers );
 
@@ -1161,7 +1159,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
      */
     private void reinitItemNavigators(  )
     {
-        _itemNavigators = new HashMap<String, ItemNavigator>(  );
+        _itemNavigators = new HashMap<>(  );
         _strSortedAttributeName = StringUtils.EMPTY;
         _bIsAscSort = true;
     }
@@ -1216,10 +1214,10 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
      */
     public String getChangeFieldAnonymizeAdminUsers( HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
 
         List<IAttribute> listAllAttributes = AttributeHome.findAll( getLocale(  ), getPlugin(  ) );
-        List<IAttribute> listAttributesText = new ArrayList<IAttribute>(  );
+        List<IAttribute> listAttributesText = new ArrayList<>(  );
 
         for ( IAttribute attribut : listAllAttributes )
         {
@@ -1263,7 +1261,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             Boolean.valueOf( request.getParameter( PARAMETER_EMAIL ) ), pluginMyLutece );
 
         List<IAttribute> listAllAttributes = AttributeHome.findAll( getLocale(  ), pluginMyLutece );
-        List<IAttribute> listAttributesText = new ArrayList<IAttribute>(  );
+        List<IAttribute> listAttributesText = new ArrayList<>(  );
 
         for ( IAttribute attribut : listAllAttributes )
         {
@@ -1333,7 +1331,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     {
         String strEmailType = request.getParameter( PARAMETER_EMAIL_TYPE );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         String strSenderKey = StringUtils.EMPTY;
         String strSubjectKey = StringUtils.EMPTY;
         String strBodyKey = StringUtils.EMPTY;
@@ -1489,7 +1487,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         setPageTitleProperty( PROPERTY_IMPORT_USERS_FROM_FILE_PAGETITLE );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
 
         model.put( MARK_LIST_MESSAGES, request.getAttribute( ATTRIBUTE_IMPORT_USERS_LIST_MESSAGES ) );
 
@@ -1589,7 +1587,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         setPageTitleProperty( PROPERTY_EXPORT_USERS_PAGETITLE );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
 
         ReferenceList refListXsl = XslExportHome.getRefListByPlugin( getPlugin(  ) );
 
@@ -1655,7 +1653,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         for ( DatabaseUser user : listUsers )
         {
-            if ( !( user.getStatus(  ) == DatabaseUser.STATUS_ANONYMIZED ) )
+            if ( user.getStatus(  ) != DatabaseUser.STATUS_ANONYMIZED )
             {
                 sbXml.append( _databaseService.getXmlFromUser( user, bExportRoles, bExportWorkgroups,
                         bExportAttributes, listAttributes, getLocale(  ) ) );

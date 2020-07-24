@@ -107,27 +107,11 @@ public final class DatabaseUserFactory
         {
             databaseUser = (DatabaseUser) SpringContextService.getBean( _strBeanDatabaseUser );
         }
-        catch ( BeanDefinitionStoreException e )
+        catch ( BeanDefinitionStoreException|NoSuchBeanDefinitionException|CannotLoadBeanClassException e )
         {
             if ( AppLogService.isDebugEnabled(  ) )
             {
-                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName(  ) +
-                    "' - CAUSE : " + e.getMessage(  ) );
-            }
-        }
-        catch ( NoSuchBeanDefinitionException e )
-        {
-            if ( AppLogService.isDebugEnabled(  ) )
-            {
-                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName(  ) +
-                    "' - CAUSE : " + e.getMessage(  ) );
-            }
-        }
-        catch ( CannotLoadBeanClassException e )
-        {
-            if ( AppLogService.isDebugEnabled(  ) )
-            {
-                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName(  ) +
+                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + ((BeanDefinitionStoreException) e).getBeanName(  ) +
                     "' - CAUSE : " + e.getMessage(  ) );
             }
         }

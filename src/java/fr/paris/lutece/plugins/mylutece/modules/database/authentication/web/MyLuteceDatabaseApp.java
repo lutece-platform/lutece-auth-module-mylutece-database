@@ -80,6 +80,7 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
+import fr.paris.lutece.portal.web.l10n.LocaleService;
 import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.ReferenceItem;
@@ -262,7 +263,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     public void init( HttpServletRequest request, Plugin plugin )
     {
-        _locale = request.getLocale( );
+        _locale = getLocale( request );
         _plugin = plugin;
     }
 
@@ -511,7 +512,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strValidationSuccess = request.getParameter( PARAMETER_ACTION_VALIDATION_SUCCESS );
 
     	
-    	Map<String, Object> model = new HashMap<String, Object>( );
+    	Map<String, Object> model = new HashMap<>( );
         LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
         
         if ( luteceUser == null )
@@ -582,7 +583,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getViewAccountPage( XPage page, HttpServletRequest request )throws UserNotSignedException
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( luteceUser == null )
@@ -620,7 +621,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getCreateAccountPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         DatabaseUser user = _userFactory.newDatabaseUser( );
 
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
@@ -810,7 +811,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                 String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_VALIDATION_OBJECT, _locale );
 
                 // Send validation email
-                Map<String, Object> model = new HashMap<String, Object>( );
+                Map<String, Object> model = new HashMap<>( );
                 model.put( MARK_VALIDATION_URL, _userKeyService.getValidationUrl( userKey.getKey( ), request ) );
                 model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
 
@@ -996,7 +997,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             strKey = key.getKey( );
 
             String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<>( );
             model.put( MARK_ERROR_CODE, strErrorCode );
 
             if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
@@ -1132,7 +1133,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getLostPasswordPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strStateSending = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
@@ -1158,7 +1159,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getLostLoginPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strStateSending = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
@@ -1184,7 +1185,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getChangePasswordPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strSuccess = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
 
@@ -1334,7 +1335,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         listUser = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail, _plugin );
 
-        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size( ) == 0 ) ) )
+        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || listUser.isEmpty( ) ) )
         {
             strError = ERROR_UNKNOWN_EMAIL;
         }
@@ -1374,7 +1375,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                     }
                     else
                     {
-                        HashMap<String, Object> model = new HashMap<String, Object>( );
+                        HashMap<String, Object> model = new HashMap<>( );
                         model.put( PARAMETER_NEW_PASSWORD, strPassword );
                         model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
 
@@ -1442,7 +1443,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         listUser = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail, _plugin );
 
-        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size( ) == 0 ) ) )
+        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || listUser.isEmpty( ) ) )
         {
             strError = ERROR_UNKNOWN_EMAIL;
         }
@@ -1470,7 +1471,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                     }
                     else
                     {
-                        HashMap<String, Object> model = new HashMap<String, Object>( );
+                        HashMap<String, Object> model = new HashMap<>( );
                         model.put( MARK_LOGIN, user.getLogin( ) );
                         model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
                         model.put( MARK_LOGIN_URL, AppPathService.getBaseUrl( request ) + JSP_URL_MYLUTECE_LOGIN );
@@ -1533,9 +1534,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             return null;
         }
 
-        DatabaseUser user = listUsers.iterator( ).next( );
-
-        return user;
+        return listUsers.iterator( ).next( );
     }
 
     /**
@@ -1689,8 +1688,20 @@ public class MyLuteceDatabaseApp implements XPageApplication
         DatabaseUserHome.remove( user, PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME ) );
         DatabaseHome.removeGroupsForUser( user.getUserId( ), _plugin );
         DatabaseHome.removeRolesForUser( user.getUserId( ), _plugin );
-        MyLuteceUserFieldService.doRemoveUserFields( user.getUserId( ), request, request.getLocale( ) );
+        MyLuteceUserFieldService.doRemoveUserFields( user.getUserId( ), request, getLocale( request ) );
         DatabaseUserKeyService.getService( ).removeByIdUser( user.getUserId( ) );
         SecurityService.getInstance( ).logoutUser( request );
+    }
+    
+    /**
+     * Default getLocale() implementation. Could be overriden
+     * 
+     * @param request
+     *            The HTTP request
+     * @return The Locale
+     */
+    protected Locale getLocale( HttpServletRequest request )
+    {
+        return LocaleService.getContextUserLocale( request );
     }
 }

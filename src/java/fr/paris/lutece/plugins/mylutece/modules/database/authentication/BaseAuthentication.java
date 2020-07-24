@@ -63,7 +63,6 @@ import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.http.SecurityUtil;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Timestamp;
@@ -438,7 +437,7 @@ public class BaseAuthentication extends PortalAuthentication
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         Collection<BaseUser> baseUsers = DatabaseHome.findDatabaseUsersList( plugin, this );
-        Collection<LuteceUser> luteceUsers = new ArrayList<LuteceUser>(  );
+        Collection<LuteceUser> luteceUsers = new ArrayList<>(  );
 
         for ( BaseUser user : baseUsers )
         {
@@ -458,9 +457,7 @@ public class BaseAuthentication extends PortalAuthentication
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
-        BaseUser user = DatabaseHome.findLuteceUserByLogin( userLogin, plugin, this );
-
-        return user;
+        return DatabaseHome.findLuteceUserByLogin( userLogin, plugin, this );
     }
 
     /**
@@ -473,7 +470,7 @@ public class BaseAuthentication extends PortalAuthentication
     public String[] getRolesByUser( LuteceUser user )
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        Set<String> setRoles = new HashSet<String>(  );
+        Set<String> setRoles = new HashSet<>(  );
         String[] strGroups = user.getGroups(  );
         String[] strRoles = user.getRoles(  );
 
@@ -561,7 +558,7 @@ public class BaseAuthentication extends PortalAuthentication
 
             String strLink = SecurityUtils.buildResetConnectionLogUrl( nIntervalMinutes, request );
 
-            Map<String, Object> model = new HashMap<String, Object>(  );
+            Map<String, Object> model = new HashMap<>(  );
             model.put( MARK_URL, strLink );
             model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
 
