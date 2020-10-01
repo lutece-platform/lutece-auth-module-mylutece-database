@@ -1387,13 +1387,13 @@ public class MyLuteceDatabaseApp implements XPageApplication
                         ReferenceItem referenceItem = _userParamService.findByKey( PARAMETER_MAIL_LOST_PASSWORD_SENDER,
                                 plugin );
                         String strSender = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName( );
-			String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
+                        String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
 
                         referenceItem = _userParamService.findByKey( PARAMETER_MAIL_LOST_PASSWORD_SUBJECT, plugin );
 
                         String strSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName( );
 
-                        MailService.sendMailHtml( strEmail, strName, strSenderEmail, strSubject, template.getHtml( ) );
+                        MailService.sendMailHtml( strEmail, strName, strSender, strSubject, template.getHtml( ) );
                     }
                 }
             }
