@@ -3,14 +3,14 @@
     <parent>
         <artifactId>lutece-global-pom</artifactId>
         <groupId>fr.paris.lutece.tools</groupId>
-        <version>4.0.4</version>
+        <version>5.1.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-mylutece-database</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>5.0.4-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <name>Lutece mylutece database module</name>
 
     <repositories>
@@ -26,13 +26,13 @@
         <dependency>
             <groupId>fr.paris.lutece</groupId>
             <artifactId>lutece-core</artifactId>
-            <version>[6.0.0-SNAPSHOT,)</version>
+            <version>[7.0.0-SNAPSHOT,)</version>
             <type>lutece-core</type>
         </dependency>
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-mylutece</artifactId>
-            <version>[3.3.6-SNAPSHOT,)</version>
+            <version>[4.0.0-SNAPSHOT,)</version>
             <type>lutece-plugin</type>
         </dependency>
     </dependencies>

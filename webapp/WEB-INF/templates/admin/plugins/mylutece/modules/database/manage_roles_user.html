@@ -1,78 +1,62 @@
-<div class="row-fluid">
-   <div class="span12" >
-	    <fieldset>
-	    <legend>
-		<#if user.status = 10>
-			#i18n{module.mylutece.database.manage_roles_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}
-		<#else>
-			#i18n{module.mylutece.database.manage_roles_user.titleUser} ${user.lastName} ${user.firstName}
-		</#if>
-		</legend>
-	    <ul class="nav nav-tabs">
-			<#if user.status != 10>
-			<li>
-				<a href="jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}" >
-					#i18n{module.mylutece.database.modify_user.labelIdentity}
-				</a>
-			</li>
-			</#if>
-			<li>
-				<a href="jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}">#i18n{module.mylutece.database.manage_users.linkManageGroups}</a>
-			</li>
-			<li class="active">
-				<a href="#" >
-				#i18n{module.mylutece.database.manage_users.linkManageRoles}
-				</a>
-			</li>
-			<#if external_application_exist >
-			<li>
-				<a href="jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}"  title="#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}" >
-					#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}
-				</a>
-			</li>
-			</#if>
-			<li class="pull-right">
-				<@item_navigation item_navigator=item_navigator />
-			</li>
-		</ul>
-	    <form class="form-horizontal" method="post" action="jsp/admin/plugins/mylutece/modules/database/DoAssignRoleUser.jsp">
-		<input type="hidden" name="mylutece_database_user_id" value="${user.userId}" />
-        <input type="hidden" name="plugin_name" value="${plugin_name}" />
-	    <table class="table table-striped table-condensed">
-			<tr>
-				<th>#i18n{module.mylutece.database.manage_roles_user.colName}</th>
-	            <th>#i18n{module.mylutece.database.manage_roles_user.colLabel}</th>
-	            <th></th>
-	        </tr>
-	        <#list role_list as role >
-				<#if role.role != "none">
-	            <tr>
-	                <td>${role.role}</td>
-	                <td>${role.roleDescription}</td>
-	                <td>
-	                    <#assign checkedString = '' > 
-	                    <#list user_role_list as user_role >
-	                    <#if user_role.role = role.role >
-	                    <#assign checkedString >
-	                    checked="checked"
-	                    </#assign>
-	                    <#break>
-	                    </#if>
-	                    </#list>
-	                    <input type="checkbox" class="checkbox" name="mylutece_database_role_id" value="${role.role}" ${checkedString} />
-					</td>
-	            </tr>
-	            </#if>
-	        </#list>
-	        </table>
-			<div class="form-actions">
-			<button class="btn btn-primary btn-small" type="submit" >
-				<i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.manage_roles_user.btnAssign}
-			</button>
-			<button class="btn btn-primary btn-small" type="button" onclick="javascript:window.history.back();">
-				<i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{portal.admin.message.buttonCancel}
-			</button>
-		</div>
-		</form>
-	</div>
-</div>
+<@row>
+	<@columns>
+	    <@tabs>
+			<@tabList>
+				<#if user.status != 10>
+					<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}' title='#i18n{module.mylutece.database.modify_user.labelIdentity}' />
+				</#if>
+				<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ManageGroupsUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}' title='#i18n{module.mylutece.database.manage_users.linkManageGroups}' />
+				<@tabLink active=true href='#' title='#i18n{module.mylutece.database.manage_users.linkManageRoles}' />
+				<#if external_application_exist >
+				<@tabLink href='jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}' title='#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}' />
+				</#if>
+			</@tabList>
+			<@tabContent>
+				<@item_navigation item_navigator=item_navigator align='right' />
+		
+				<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/DoAssignRoleUser.jsp'>
+					<@input type='hidden' name='mylutece_database_user_id' value='${user.userId}' />
+					<@input type='hidden' name='plugin_name' value='${plugin_name}' />
+					<fieldset>
+						<legend>
+						<#if user.status = 10>
+							#i18n{module.mylutece.database.manage_roles_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}
+						<#else>
+							#i18n{module.mylutece.database.manage_roles_user.titleUser} ${user.lastName} ${user.firstName}
+						</#if>
+						</legend>
+						<@table>
+							<tr>
+								<th>#i18n{module.mylutece.database.manage_roles_user.colName}</th>
+								<th>#i18n{module.mylutece.database.manage_roles_user.colLabel}</th>
+								<th></th>
+							</tr>
+							<#list role_list as role >
+								<#if role.role != "none">
+								<tr>
+									<td>${role.role}</td>
+									<td>${role.roleDescription}</td>
+									<td>
+										<#assign checked = false />
+										<#list user_role_list as user_role >
+											<#if user_role.role = role.role >
+												<#assign checked = true />
+												<#break>
+											</#if>
+										</#list>
+										<@checkBox name='mylutece_database_role_id' id=role.role?replace('\\s+','','r') value='${role.role}' checked=checked />
+									</td>
+								</tr>
+								</#if>
+							</#list>
+						</@table>
+						<@formGroup>
+							<@button type='submit' title='#i18n{module.mylutece.database.manage_roles_user.btnAssign}' buttonIcon='check' />
+							<@button type='button' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
+						</@formGroup>
+					</fieldset>
+				</@tform>
+			</@tabContent>
+		</@tabs>
+	</@columns>
+</@row>

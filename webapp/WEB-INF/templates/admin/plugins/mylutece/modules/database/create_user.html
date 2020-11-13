@@ -1,78 +1,59 @@
-<div class="row-fluid" >
-	<div class="offset1 span10">
-	<fieldset>
-	<legend>#i18n{module.mylutece.database.create_user.tableTitle}</legend>
-	<p class="lead">#i18n{module.mylutece.database.create_user.labelIdentity}</p>
-	<form class="form-horizontal" method="post" name="create_user" action="jsp/admin/plugins/mylutece/modules/database/DoCreateUser.jsp">
-	<input type="hidden" name="plugin_name" value="${plugin_name}" />
-	<#if show_input_login>
-	<div class="control-group">
-	<label class="control-label" for="login">#i18n{module.mylutece.database.create_user.login} * : </label>
-		<div class="controls">
-				<input type="text"  name="login" maxlength="100" size="35" tabindex="1" value="" />
-		</div>
-	</div>
-	</#if>
-	<div class="control-group">
-	<label class="control-label" for="email">#i18n{module.mylutece.database.create_user.eMail} * </label>
-		<div class="controls">
-			<input type="text" name="email" maxlength="100" size="35" tabindex="2" value="" />
-		</div>
-	</div>
-	<div class="control-group">
-	<label class="control-label" for="first_password">#i18n{module.mylutece.database.create_user.firstPassword} *</label>
-		<div class="controls">
-			<input type="password" id="first_password" name="first_password" maxlength="100" size="35" tabindex="3" value="" />
-		</div>
-	</div>
-	<div class="control-group">
-	<label class="control-label" class="control-label" for="second_password">#i18n{module.mylutece.database.create_user.secondPassword} * : </label>
-		<div class="controls">
-			<input type="password"  name="second_password" maxlength="100" size="35" tabindex="3" value="" />
-		</div>
-	</div>
-	<div class="control-group">
-	<label class="control-label" for="first_password">#i18n{portal.users.create_user.passwordComplexity}</label>
-		<div class="controls">
-			<div id="progressbar" class="progress progress-striped" style="width:220px;">
-				<div id="progress" ><div id="complexity">0%</div></div>
-			</div>
-		</div>
-	</div>
-	<div class="control-group">
-	<label class="control-label" class="control-label" for="last_name">#i18n{module.mylutece.database.create_user.lastName} * : </label>
-		<div class="controls">
-			<input type="text" name="last_name" maxlength="100" size="35" tabindex="4"  value="" />
-		</div>
-	</div>
-	<div class="control-group">
-	<label class="control-label" class="control-label" for="first_name">#i18n{module.mylutece.database.create_user.firstName} * : </label>
-		<div class="controls">
-			<input type="text"  name="first_name" maxlength="100" size="35" tabindex="5" value="" />
-		</div>
-	</div>
-	<#if attributes_list?has_content>
-		<p class="lead">#i18n{module.mylutece.database.create_user.labelComplementaryAttributes}</p>
-		<#list attributes_list as attribute>
-			${attribute.getHtmlFormAttribute( locale )}
-		</#list>
-	</#if>
-	<div class="form-actions">
-		<button class="btn btn-primary btn-small" type="submit" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{module.mylutece.database.create_user.btnCreate}</button>
-		<button class="btn btn-primary btn-small" type="button" onclick="javascript:window.history.back();" ><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{portal.admin.message.buttonCancel}</button>
-	</div>
-	</fieldset>
-	</form>
-	</div>
-</div>
-<script src="js/jquery.complexify.js"></script>
+<@row>
+	<@columns>
+		<@box>
+			<@boxHeader title='#i18n{module.mylutece.database.create_user.tableTitle}' />
+			<@boxBody>
+				<@tform method='post' name='create_user' action='jsp/admin/plugins/mylutece/modules/database/DoCreateUser.jsp'>
+					<@input type='hidden' name='plugin_name' value='${plugin_name}' />
+					<@fieldSet legend='#i18n{module.mylutece.database.create_user.labelIdentity}'>
+						<#if show_input_login>
+						<@formGroup labelFor='login' labelKey='#i18n{module.mylutece.database.create_user.login}' mandatory=true>
+							<@input type='text' name='login' maxlength=100 inputSize=35 value='' />
+						</@formGroup>
+						</#if>
+						<@formGroup labelFor='email' labelKey='#i18n{module.mylutece.database.create_user.eMail}' mandatory=true>
+							<@input type='text' name='email' maxlength=100 inputSize=35 value='' />
+						</@formGroup>
+						<@formGroup labelFor='first_password' labelKey='#i18n{module.mylutece.database.create_user.firstPassword}' mandatory=true>
+							<@input type='password' id='first_password' name='first_password' maxlength=100 inputSize=35 value='' />
+						</@formGroup>
+						<@formGroup labelFor='second_password' labelKey='#i18n{module.mylutece.database.create_user.secondPassword}' mandatory=true>
+							<@input type='password' name='second_password' maxlength=100 inputSize=35 value='' />
+						</@formGroup>
+						<@formGroup labelFor='first_password' labelKey='#i18n{portal.users.create_user.passwordComplexity}'>
+							<@progressBar id='first_password' />
+						</@formGroup>
+						<@formGroup labelFor='last_name' labelKey='#i18n{module.mylutece.database.create_user.lastName}' mandatory=true>
+							<@input type='text' name='last_name' maxlength=100 inputSize=35 value='' />
+						</@formGroup>
+						<@formGroup labelFor='first_name' labelKey='#i18n{module.mylutece.database.create_user.firstName}' mandatory=true>
+							<@input type='text' name='first_name' maxlength=100 inputSize=35 value='' />
+						</@formGroup>
+					</@fieldSet>
+					<#if attributes_list?has_content>
+					<@fieldSet legend='#i18n{module.mylutece.database.create_user.labelComplementaryAttributes}'>
+						<#list attributes_list as attribute>
+							${attribute.getHtmlFormAttribute( locale )}
+						</#list>
+					</@fieldSet>
+					</#if>
+					<@formGroup>
+						<@button type='submit' title='#i18n{module.mylutece.database.create_user.btnCreate}' buttonIcon='check' />
+						<@button type='submit' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' cancel=true /> 
+					</@formGroup>
+				</@tform>
+			</@boxBody>
+		</@box>
+	</@columns>
+</@row>
+<script src="js/admin/jquery/plugins/jquery.complexify.js"></script>
 <script>
 $(document).ready(function(){	
 	$("#first_password").complexify({}, function (valid, complexity) {
 		if (!valid) {
-			$('#progress').css({'width':complexity + '%'}).removeClass('bar bar-success').addClass('bar bar-danger');
+			$('#progressbar').css({'width':complexity + '%'}).removeClass('bg-success').addClass('bg-danger');
 		} else {
-			$('#progress').css({'width':complexity + '%'}).removeClass('bar bar-danger').addClass('bar bar-success');
+			$('#progressbar').css({'width':complexity + '%'}).removeClass('bg-danger').addClass('bg-success');
 			}
 		$('#complexity').html(Math.round(complexity) + '%');
 	});
