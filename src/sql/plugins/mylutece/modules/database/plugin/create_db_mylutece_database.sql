@@ -14,7 +14,7 @@ CREATE TABLE mylutece_database_user (
   password_max_valid_date TIMESTAMP NULL,
   account_max_valid_date BIGINT NULL,
   nb_alerts_sent INTEGER DEFAULT 0 NOT NULL,
-  last_login TIMESTAMP DEFAULT '1980-01-01',
+  last_login TIMESTAMP DEFAULT '1980-01-01 00:00:00',
   PRIMARY KEY (mylutece_database_user_id)
 );
 
@@ -84,7 +84,7 @@ DROP TABLE IF EXISTS mylutece_database_user_password_history;
 CREATE  TABLE mylutece_database_user_password_history (
   mylutece_database_user_id INT NOT NULL ,
   password long VARCHAR NOT NULL ,
-  date_password_change TIMESTAMP NOT NULL DEFAULT NOW() ,
+  date_password_change TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   PRIMARY KEY (mylutece_database_user_id, date_password_change)
 );
 
