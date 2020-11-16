@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,40 +48,41 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
 /**
  * This class provides Data Access methods for authentication (role retrieval).
  *
  */
 public class DatabaseDAO implements IDatabaseDAO
 {
-    private static final String SQL_QUERY_FIND_USER_BY_LOGIN = "SELECT mylutece_database_user_id, login, name_family, name_given, email, last_login" +
-        " FROM mylutece_database_user WHERE login like ? ";
+    private static final String SQL_QUERY_FIND_USER_BY_LOGIN = "SELECT mylutece_database_user_id, login, name_family, name_given, email, last_login"
+            + " FROM mylutece_database_user WHERE login like ? ";
     private static final String SQL_QUERY_FIND_RESET_PASSWORD = "SELECT reset_password FROM mylutece_database_user WHERE login like ? ";
-    private static final String SQL_QUERY_FIND_ROLES_FROM_LOGIN = "SELECT b.role_key FROM mylutece_database_user a, mylutece_database_user_role b" +
-        " WHERE a.mylutece_database_user_id = b.mylutece_database_user_id AND a.login like ? ";
-    private static final String SQL_QUERY_FIND_LOGINS_FROM_ROLE = "SELECT a.login FROM mylutece_database_user a, mylutece_database_user_role b" +
-        " WHERE  a.mylutece_database_user_id = b.mylutece_database_user_id AND b.role_key = ? ";
+    private static final String SQL_QUERY_FIND_ROLES_FROM_LOGIN = "SELECT b.role_key FROM mylutece_database_user a, mylutece_database_user_role b"
+            + " WHERE a.mylutece_database_user_id = b.mylutece_database_user_id AND a.login like ? ";
+    private static final String SQL_QUERY_FIND_LOGINS_FROM_ROLE = "SELECT a.login FROM mylutece_database_user a, mylutece_database_user_role b"
+            + " WHERE  a.mylutece_database_user_id = b.mylutece_database_user_id AND b.role_key = ? ";
     private static final String SQL_QUERY_DELETE_ROLES_FOR_USER = "DELETE FROM mylutece_database_user_role WHERE mylutece_database_user_id = ?";
     private static final String SQL_QUERY_INSERT_ROLE_FOR_USER = "INSERT INTO mylutece_database_user_role ( mylutece_database_user_id, role_key ) VALUES ( ?, ? ) ";
-    private static final String SQL_QUERY_FIND_GROUPS_FROM_LOGIN = "SELECT b.group_key FROM mylutece_database_user a, mylutece_database_user_group b" +
-        " WHERE a.mylutece_database_user_id = b.mylutece_database_user_id AND a.login like ? ";
+    private static final String SQL_QUERY_FIND_GROUPS_FROM_LOGIN = "SELECT b.group_key FROM mylutece_database_user a, mylutece_database_user_group b"
+            + " WHERE a.mylutece_database_user_id = b.mylutece_database_user_id AND a.login like ? ";
     private static final String SQL_QUERY_DELETE_GROUPS_FOR_USER = "DELETE FROM mylutece_database_user_group WHERE mylutece_database_user_id = ?";
     private static final String SQL_QUERY_INSERT_GROUP_FOR_USER = "INSERT INTO mylutece_database_user_group ( mylutece_database_user_id, group_key ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user ";
-    private static final String SQL_QUERY_FIND_USERS_FROM_GROUP_KEY = "SELECT a.mylutece_database_user_id, a.login, a.name_family, a.name_given, a.email FROM mylutece_database_user a " +
-        " INNER JOIN mylutece_database_user_group b ON a.mylutece_database_user_id = b.mylutece_database_user_id WHERE b.group_key = ? ";
+    private static final String SQL_QUERY_FIND_USERS_FROM_GROUP_KEY = "SELECT a.mylutece_database_user_id, a.login, a.name_family, a.name_given, a.email FROM mylutece_database_user a "
+            + " INNER JOIN mylutece_database_user_group b ON a.mylutece_database_user_id = b.mylutece_database_user_id WHERE b.group_key = ? ";
     private static final String SQL_QUERY_FIND_PASSWORD_MAX_VALID_DATE = "SELECT password_max_valid_date FROM mylutece_database_user WHERE login like ? ";
     private static final String SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN = "UPDATE mylutece_database_user SET reset_password = ? WHERE login like ? ";
     private static final String SQL_QUERY_SELECT_USER_ID_FROM_LOGIN = "SELECT mylutece_database_user_id FROM mylutece_database_user WHERE login like ? ";
 
-
     /**
      * Find DatabaseUser by login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
-     * @param authenticationService the LuteceAuthentication object
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
+     * @param authenticationService
+     *            the LuteceAuthentication object
      * @return DatabaseUser the user corresponding to the login
      */
     @Override
@@ -121,8 +122,10 @@ public class DatabaseDAO implements IDatabaseDAO
     /**
      * Check if a user has reset his password from his login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
      * @return boolean true if the password vhas been reset, false otherwise
      */
     @Override
@@ -145,8 +148,11 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Gets the password max valid date of a user from his login.
-     * @param strLogin the login of the user
-     * @param plugin The plugin
+     * 
+     * @param strLogin
+     *            the login of the user
+     * @param plugin
+     *            The plugin
      * @return The date of end of validity of the password of the user, or null if none has been set.
      */
     @Override
@@ -169,8 +175,11 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Load the list of {@link BaseUser}
-     * @param plugin The Plugin using this data access service
-     * @param authenticationService the authentication service
+     * 
+     * @param plugin
+     *            The Plugin using this data access service
+     * @param authenticationService
+     *            the authentication service
      * @return The Collection of the {@link BaseUser}
      */
     @Override
@@ -200,8 +209,10 @@ public class DatabaseDAO implements IDatabaseDAO
     /**
      * Find user's roles by login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
      * @return ArrayList the roles key list corresponding to the login
      */
     @Override
@@ -223,8 +234,11 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Delete roles for a user
-     * @param nIdUser The id of the user
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param plugin
+     *            The Plugin using this data access service
      */
     @Override
     public void deleteRolesForUser( int nIdUser, Plugin plugin )
@@ -239,9 +253,13 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Assign a role to user
-     * @param nIdUser The id of the user
-     * @param strRoleKey The key of the role
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strRoleKey
+     *            The key of the role
+     * @param plugin
+     *            The Plugin using this data access service
      */
     @Override
     public void createRoleForUser( int nIdUser, String strRoleKey, Plugin plugin )
@@ -258,8 +276,10 @@ public class DatabaseDAO implements IDatabaseDAO
     /**
      * Find user's groups by login
      *
-     * @param strLogin The login
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            The login
+     * @param plugin
+     *            The Plugin using this data access service
      * @return ArrayList the group key list corresponding to the login
      */
     @Override
@@ -282,8 +302,11 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Load the list of DatabaseUsers for a Lutece role
-     * @param strRoleKey The role key of DatabaseUser
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param strRoleKey
+     *            The role key of DatabaseUser
+     * @param plugin
+     *            The Plugin using this data access service
      * @return The Collection of the DatabaseUsers
      */
     @Override
@@ -307,8 +330,11 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Delete groups for a user
-     * @param nIdUser The id of the user
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param plugin
+     *            The Plugin using this data access service
      */
     @Override
     public void deleteGroupsForUser( int nIdUser, Plugin plugin )
@@ -323,9 +349,13 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Assign a group to user
-     * @param nIdUser The id of the user
-     * @param strGroupKey The key of the group
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strGroupKey
+     *            The key of the group
+     * @param plugin
+     *            The Plugin using this data access service
      */
     @Override
     public void createGroupForUser( int nIdUser, String strGroupKey, Plugin plugin )
@@ -341,8 +371,11 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Find assigned users to the given group
-     * @param strGroupKey The group key
-     * @param plugin Plugin
+     * 
+     * @param strGroupKey
+     *            The group key
+     * @param plugin
+     *            Plugin
      * @return a list of DatabaseUser
      */
     @Override
@@ -372,9 +405,13 @@ public class DatabaseDAO implements IDatabaseDAO
 
     /**
      * Update the reset password attribut of a user from his login
-     * @param strUserName Login of the user to update
-     * @param bNewValue New value
-     * @param plugin The plugin
+     * 
+     * @param strUserName
+     *            Login of the user to update
+     * @param bNewValue
+     *            New value
+     * @param plugin
+     *            The plugin
      */
     @Override
     public void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin )

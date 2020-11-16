@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.util;
 
 import java.util.UUID;
 
-
 /**
  *
  * DatabaseUtils
@@ -46,18 +45,19 @@ public final class DatabaseUtils
     /**
      * Private constructor
      */
-    private DatabaseUtils(  )
+    private DatabaseUtils( )
     {
     }
 
     /**
      * Generate a new random key
+     * 
      * @return a new random key
      */
-    public static String generateNewKey(  )
+    public static String generateNewKey( )
     {
-        UUID key = UUID.randomUUID(  );
+        UUID key = UUID.randomUUID( );
 
-        return key.toString(  );
+        return key.toString( );
     }
 }

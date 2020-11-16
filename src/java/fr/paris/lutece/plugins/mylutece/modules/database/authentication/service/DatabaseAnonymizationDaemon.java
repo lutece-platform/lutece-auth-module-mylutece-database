@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 import fr.paris.lutece.plugins.mylutece.service.AbstractAnonymizationDaemon;
 import fr.paris.lutece.plugins.mylutece.service.IAnonymizationService;
 
-
 /**
  * User anonymization daemon
  *
@@ -48,9 +47,9 @@ public class DatabaseAnonymizationDaemon extends AbstractAnonymizationDaemon
     /**
      * Default constructor of the daemon
      */
-    public DatabaseAnonymizationDaemon(  )
+    public DatabaseAnonymizationDaemon( )
     {
-        super(  );
+        super( );
         setPluginName( DatabasePlugin.PLUGIN_NAME );
     }
 
@@ -58,16 +57,16 @@ public class DatabaseAnonymizationDaemon extends AbstractAnonymizationDaemon
      * {@inheritDoc}
      */
     @Override
-    public IAnonymizationService getAnonymizationService(  )
+    public IAnonymizationService getAnonymizationService( )
     {
-        return DatabaseAnonymizationService.getService(  );
+        return DatabaseAnonymizationService.getService( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getDaemonName(  )
+    public String getDaemonName( )
     {
         return DAEMON_NAME;
     }

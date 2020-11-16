@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import java.util.Locale;
 
 import org.apache.commons.collections.CollectionUtils;
 
-
 /**
  * Group Removal Listener
  */
@@ -53,10 +52,12 @@ public class GroupRoleRemovalListener implements RemovalListener
     private static final String PROPERTY_ROLE_CANNOT_BE_REMOVED = "portal.group.message.roleCannotBeRemoved";
 
     /**
-    * Check if the object can be safely removed
-    * @param strId The object id
-    * @return true if the object can be removed otherwise false
-    */
+     * Check if the object can be safely removed
+     * 
+     * @param strId
+     *            The object id
+     * @return true if the object can be removed otherwise false
+     */
     public boolean canBeRemoved( String strId )
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -73,8 +74,11 @@ public class GroupRoleRemovalListener implements RemovalListener
 
     /**
      * Gives a message explaining why the object can't be removed
-     * @param strId The object id
-     * @param locale The current locale
+     * 
+     * @param strId
+     *            The object id
+     * @param locale
+     *            The current locale
      * @return The message
      */
     public String getRemovalRefusedMessage( String strId, Locale locale )

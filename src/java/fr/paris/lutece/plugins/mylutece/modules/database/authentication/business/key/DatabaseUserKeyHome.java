@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
-
 /**
  *
  * DatabaseUserKeyHome
@@ -53,13 +52,15 @@ public final class DatabaseUserKeyHome
     /**
      * Private constructor - this class need not be instantiated
      */
-    private DatabaseUserKeyHome(  )
+    private DatabaseUserKeyHome( )
     {
     }
 
     /**
      * Create a new key
-     * @param userKey the key
+     * 
+     * @param userKey
+     *            the key
      */
     public static void create( DatabaseUserKey userKey )
     {
@@ -68,7 +69,9 @@ public final class DatabaseUserKeyHome
 
     /**
      * Remove a key from a given key
-     * @param strKey the key
+     * 
+     * @param strKey
+     *            the key
      */
     public static void remove( String strKey )
     {
@@ -77,7 +80,9 @@ public final class DatabaseUserKeyHome
 
     /**
      * Remove a key from a given id user
-     * @param nUserId the id user
+     * 
+     * @param nUserId
+     *            the id user
      */
     public static void removeByIdUser( int nUserId )
     {
@@ -86,7 +91,9 @@ public final class DatabaseUserKeyHome
 
     /**
      * Find a key from a given key
-     * @param strKey the key
+     * 
+     * @param strKey
+     *            the key
      * @return a {@link DatabaseUserKey}
      */
     public static DatabaseUserKey findByPrimaryKey( String strKey )
@@ -96,7 +103,9 @@ public final class DatabaseUserKeyHome
 
     /**
      * Find a key from a given login
-     * @param login the user's login
+     * 
+     * @param login
+     *            the user's login
      * @return a {@link DatabaseUserKey}
      */
     public static DatabaseUserKey findKeyByLogin( String login )

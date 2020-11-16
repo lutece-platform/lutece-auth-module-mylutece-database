@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ import fr.paris.lutece.util.ReferenceList;
 
 import org.apache.commons.lang.StringUtils;
 
-
 /**
  *
  * DatabaseUserParameterHome
@@ -56,16 +55,19 @@ public final class DatabaseUserParameterHome
     /**
      * Private constructor
      */
-    private DatabaseUserParameterHome(  )
+    private DatabaseUserParameterHome( )
     {
     }
 
     /**
-    * Load the parameter value
-    * @param strParameterKey the parameter key
-    * @param plugin the plugin
-    * @return The parameter value
-    */
+     * Load the parameter value
+     * 
+     * @param strParameterKey
+     *            the parameter key
+     * @param plugin
+     *            the plugin
+     * @return The parameter value
+     */
     public static ReferenceItem findByKey( String strParameterKey, Plugin plugin )
     {
         return _dao.load( strParameterKey, plugin );
@@ -73,8 +75,11 @@ public final class DatabaseUserParameterHome
 
     /**
      * Update the parameter value
-     * @param userParam The parameter
-     * @param plugin the plugin
+     * 
+     * @param userParam
+     *            The parameter
+     * @param plugin
+     *            the plugin
      */
     public static void update( ReferenceItem userParam, Plugin plugin )
     {
@@ -83,7 +88,9 @@ public final class DatabaseUserParameterHome
 
     /**
      * Find all parameters
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return a ReferenceList
      */
     public static ReferenceList findAll( Plugin plugin )
@@ -93,24 +100,27 @@ public final class DatabaseUserParameterHome
 
     /**
      * Get the integer value of a security parameter
-     * @param strParameterkey The key of the parameter
-     * @param plugin the plugin
+     * 
+     * @param strParameterkey
+     *            The key of the parameter
+     * @param plugin
+     *            the plugin
      * @return The integer value of a security parameter
      */
     public static int getIntegerSecurityParameter( String strParameterkey, Plugin plugin )
     {
         ReferenceItem refItem = findByKey( strParameterkey, plugin );
 
-        if ( ( refItem == null ) || StringUtils.isEmpty( refItem.getName(  ) ) )
+        if ( ( refItem == null ) || StringUtils.isEmpty( refItem.getName( ) ) )
         {
             return 0;
         }
 
         try
         {
-            return Integer.parseInt( refItem.getName(  ) );
+            return Integer.parseInt( refItem.getName( ) );
         }
-        catch ( NumberFormatException e )
+        catch( NumberFormatException e )
         {
             return 0;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ import fr.paris.lutece.util.ReferenceList;
 import java.util.Collection;
 import java.util.List;
 
-
 /**
  * This class provides instances management methods (create, find, ...) for Group right objects
  */
@@ -52,15 +51,17 @@ public final class GroupHome
     /**
      * Creates a new GroupHome object.
      */
-    private GroupHome(  )
+    private GroupHome( )
     {
     }
 
     /**
      * Creation of an instance of a mode
      *
-     * @param group An instance of a group which contains the informations to create
-     * @param plugin Plugin
+     * @param group
+     *            An instance of a group which contains the informations to create
+     * @param plugin
+     *            Plugin
      * @return The instance of a mode which has been created with its primary key.
      */
     public static Group create( Group group, Plugin plugin )
@@ -73,8 +74,10 @@ public final class GroupHome
     /**
      * Update of the mode which is specified
      *
-     * @param group The instance of the group which contains the data to store
-     * @param plugin Plugin
+     * @param group
+     *            The instance of the group which contains the data to store
+     * @param plugin
+     *            Plugin
      * @return The instance of the mode which has been updated
      */
     public static Group update( Group group, Plugin plugin )
@@ -87,8 +90,10 @@ public final class GroupHome
     /**
      * Remove the mode whose identifier is specified in parameter
      *
-     * @param strGroupKey The identifier of the group to remove
-     * @param plugin Plugin
+     * @param strGroupKey
+     *            The identifier of the group to remove
+     * @param plugin
+     *            Plugin
      */
     public static void remove( String strGroupKey, Plugin plugin )
     {
@@ -101,8 +106,10 @@ public final class GroupHome
     /**
      * Returns an instance of an group whose identifier is specified in parameter
      *
-     * @param strGroupKey The mode primary key
-     * @param plugin Plugin
+     * @param strGroupKey
+     *            The mode primary key
+     * @param plugin
+     *            Plugin
      * @return an instance of a group
      */
     public static Group findByPrimaryKey( String strGroupKey, Plugin plugin )
@@ -113,7 +120,8 @@ public final class GroupHome
     /**
      * Return the list of all groups
      *
-     * @param plugin Plugin
+     * @param plugin
+     *            Plugin
      * @return A ReferenceList of groups
      */
     public static ReferenceList getGroupsList( Plugin plugin )
@@ -124,7 +132,8 @@ public final class GroupHome
     /**
      * Returns the groups list
      *
-     * @param plugin Plugin
+     * @param plugin
+     *            Plugin
      * @return Collection of Group
      */
     public static Collection<Group> findAll( Plugin plugin )
@@ -135,8 +144,10 @@ public final class GroupHome
     /**
      * Return the filtered groups list
      *
-     * @param gFilter filter
-     * @param plugin Plugin
+     * @param gFilter
+     *            filter
+     * @param plugin
+     *            Plugin
      * @return List of Group
      */
     public static List<Group> findByFilter( GroupFilter gFilter, Plugin plugin )

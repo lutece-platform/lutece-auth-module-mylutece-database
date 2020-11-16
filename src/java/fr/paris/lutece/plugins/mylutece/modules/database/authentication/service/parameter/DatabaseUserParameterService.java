@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,6 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  *
  * DatabaseUserParameterService
@@ -63,23 +62,27 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
     /**
      * Private constructor
      */
-    private DatabaseUserParameterService(  )
+    private DatabaseUserParameterService( )
     {
     }
 
     /**
      * Get the instance of the service
+     * 
      * @return the instance of the service
      */
-    public static DatabaseUserParameterService getService(  )
+    public static DatabaseUserParameterService getService( )
     {
         return SpringContextService.getBean( BEAN_DATABASE_USER_PARAMETER_SERVICE );
     }
 
     /**
      * Get the parameter from a given key
-     * @param strParameterKey the key
-     * @param plugin the plugin
+     * 
+     * @param strParameterKey
+     *            the key
+     * @param plugin
+     *            the plugin
      * @return the parameter
      */
     public ReferenceItem findByKey( String strParameterKey, Plugin plugin )
@@ -89,8 +92,11 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
 
     /**
      * Update a parameter
-     * @param userParam the parameter
-     * @param plugin the plugin
+     * 
+     * @param userParam
+     *            the parameter
+     * @param plugin
+     *            the plugin
      */
     public void update( ReferenceItem userParam, Plugin plugin )
     {
@@ -102,7 +108,9 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
 
     /**
      * Find all parameters
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return a ReferenceList
      */
     public ReferenceList findAll( Plugin plugin )
@@ -112,9 +120,10 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
 
     /**
      * Check if the passwords must be encrypted or not
-     * @param plugin the plugin
-     * @return <code>false</code>. Passwords are in fact salted and hashed, but we don't want
-     * plugin-mylutece to try and hash the password itself
+     * 
+     * @param plugin
+     *            the plugin
+     * @return <code>false</code>. Passwords are in fact salted and hashed, but we don't want plugin-mylutece to try and hash the password itself
      */
     public boolean isPasswordEncrypted( Plugin plugin )
     {
@@ -123,7 +132,9 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
 
     /**
      * Get the encryption algorithm
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return the encryption algorithm
      */
     public String getEncryptionAlgorithm( Plugin plugin )
@@ -133,7 +144,9 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
 
     /**
      * Check if the account creation must be validated by email
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return true if it must be validated by email, false otherwise
      */
     public boolean isAccountCreationValidationEmail( Plugin plugin )
@@ -141,7 +154,7 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
         boolean bIsValidationEmail = false;
         ReferenceItem userParam = findByKey( PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL, plugin );
 
-        if ( ( userParam != null ) && userParam.isChecked(  ) )
+        if ( ( userParam != null ) && userParam.isChecked( ) )
         {
             bIsValidationEmail = true;
         }
@@ -158,7 +171,7 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
         boolean bIsAutoLogin = false;
         ReferenceItem userParam = findByKey( PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL, plugin );
 
-        if ( ( userParam != null ) && userParam.isChecked(  ) )
+        if ( ( userParam != null ) && userParam.isChecked( ) )
         {
             bIsAutoLogin = true;
         }
@@ -168,7 +181,9 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
 
     /**
      * Check if the jcaptcha is enable or not
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return true if it is enable, false otherwise
      */
     public boolean isJcaptchaEnable( Plugin plugin )
@@ -176,8 +191,7 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
         boolean bIsEnable = false;
         ReferenceItem userParam = findByKey( PARAMETER_ENABLE_JCAPTCHA, plugin );
 
-        if ( ( userParam != null ) && userParam.isChecked(  ) &&
-                DatabaseService.getService(  ).isPluginJcaptchaEnable(  ) )
+        if ( ( userParam != null ) && userParam.isChecked( ) && DatabaseService.getService( ).isPluginJcaptchaEnable( ) )
         {
             bIsEnable = true;
         }

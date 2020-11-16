@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
-
 /**
  *
  * DatabaseUserFactory
@@ -55,22 +54,25 @@ public final class DatabaseUserFactory
     /**
      * Private constructor
      */
-    private DatabaseUserFactory(  )
+    private DatabaseUserFactory( )
     {
     }
 
     /**
      * Get the instance of the factory
+     * 
      * @return the instance of the factory
      */
-    public static DatabaseUserFactory getFactory(  )
+    public static DatabaseUserFactory getFactory( )
     {
         return SpringContextService.getBean( BEAN_DATABASE_USER_FACTORY );
     }
 
     /**
      * Set the bean database user
-     * @param strBeanDatabaseUser the bean database user
+     * 
+     * @param strBeanDatabaseUser
+     *            the bean database user
      */
     public void setBeanDatabaseUser( String strBeanDatabaseUser )
     {
@@ -79,7 +81,9 @@ public final class DatabaseUserFactory
 
     /**
      * Set true if the email is used as login, false otherwise
-     * @param bIsEmailUsedAsLogin true if the email is used as login, false otherwise
+     * 
+     * @param bIsEmailUsedAsLogin
+     *            true if the email is used as login, false otherwise
      */
     public void setEmailUsedAsLogin( boolean bIsEmailUsedAsLogin )
     {
@@ -88,18 +92,20 @@ public final class DatabaseUserFactory
 
     /**
      * Check if the email is used as login
+     * 
      * @return true if the email is used as login, false otherwise
      */
-    public boolean isEmailUsedAsLogin(  )
+    public boolean isEmailUsedAsLogin( )
     {
         return _bIsEmailUsedAsLogin;
     }
 
     /**
-    * Instanciate a new {@link DatabaseUser} defined in <b>database_context.xml</b>
-    * @return a new instance of {@link DatabaseUser}
-    */
-    public DatabaseUser newDatabaseUser(  )
+     * Instanciate a new {@link DatabaseUser} defined in <b>database_context.xml</b>
+     * 
+     * @return a new instance of {@link DatabaseUser}
+     */
+    public DatabaseUser newDatabaseUser( )
     {
         DatabaseUser databaseUser = null;
 
@@ -107,35 +113,32 @@ public final class DatabaseUserFactory
         {
             databaseUser = SpringContextService.getBean( _strBeanDatabaseUser );
         }
-        catch ( BeanDefinitionStoreException e )
+        catch( BeanDefinitionStoreException e )
         {
-            if ( AppLogService.isDebugEnabled(  ) )
+            if ( AppLogService.isDebugEnabled( ) )
             {
-                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName(  ) +
-                    "' - CAUSE : " + e.getMessage(  ) );
+                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName( ) + "' - CAUSE : " + e.getMessage( ) );
             }
         }
-        catch ( NoSuchBeanDefinitionException e )
+        catch( NoSuchBeanDefinitionException e )
         {
-            if ( AppLogService.isDebugEnabled(  ) )
+            if ( AppLogService.isDebugEnabled( ) )
             {
-                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName(  ) +
-                    "' - CAUSE : " + e.getMessage(  ) );
+                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName( ) + "' - CAUSE : " + e.getMessage( ) );
             }
         }
-        catch ( CannotLoadBeanClassException e )
+        catch( CannotLoadBeanClassException e )
         {
-            if ( AppLogService.isDebugEnabled(  ) )
+            if ( AppLogService.isDebugEnabled( ) )
             {
-                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName(  ) +
-                    "' - CAUSE : " + e.getMessage(  ) );
+                AppLogService.debug( "DatabaseUserFactory ERROR : could not load bean '" + e.getBeanName( ) + "' - CAUSE : " + e.getMessage( ) );
             }
         }
 
-        // New DatabaseUser by default if the plugin cannot load the DatabaseUser by Spring 
+        // New DatabaseUser by default if the plugin cannot load the DatabaseUser by Spring
         if ( databaseUser == null )
         {
-            databaseUser = new DatabaseUser(  );
+            databaseUser = new DatabaseUser( );
         }
 
         return databaseUser;

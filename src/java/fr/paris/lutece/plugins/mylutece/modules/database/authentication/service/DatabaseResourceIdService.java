@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Locale;
 
-
 /**
  * RBAC Resource Id Service to allow roles on AdminUser Services
  */
@@ -59,19 +58,19 @@ public class DatabaseResourceIdService extends ResourceIdService
     /**
      * Initializes the service
      */
-    public void register(  )
+    public void register( )
     {
-        ResourceType rt = new ResourceType(  );
-        rt.setResourceIdServiceClass( DatabaseResourceIdService.class.getName(  ) );
+        ResourceType rt = new ResourceType( );
+        rt.setResourceIdServiceClass( DatabaseResourceIdService.class.getName( ) );
         rt.setResourceTypeKey( RESOURCE_TYPE );
         rt.setResourceTypeLabelKey( PROPERTY_LABEL_RESOURCE_TYPE );
 
-        Permission p = new Permission(  );
+        Permission p = new Permission( );
         p.setPermissionKey( PERMISSION_MANAGE );
         p.setPermissionTitleKey( PROPERTY_LABEL_MANAGE );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_IMPORT_EXPORT_DATABASE_USERS );
         p.setPermissionTitleKey( PROPERTY_LABEL_IMPORT_EXPORT_DATABASE_USERS );
         rt.registerPermission( p );
@@ -81,7 +80,9 @@ public class DatabaseResourceIdService extends ResourceIdService
 
     /**
      * Returns a list of resource ids
-     * @param locale The current locale
+     * 
+     * @param locale
+     *            The current locale
      * @return A list of resource ids
      */
     public ReferenceList getResourceIdList( Locale locale )
@@ -91,8 +92,11 @@ public class DatabaseResourceIdService extends ResourceIdService
 
     /**
      * Returns the Title of a given resource
-     * @param strAdminUserId The Id of the admin user
-     * @param locale The current locale
+     * 
+     * @param strAdminUserId
+     *            The Id of the admin user
+     * @param locale
+     *            The current locale
      * @return The Title of a given resource
      */
     public String getTitle( String strAdminUserId, Locale locale )

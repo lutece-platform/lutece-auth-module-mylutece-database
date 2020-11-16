@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import fr.paris.lutece.portal.service.security.ILuteceUserProviderService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 
-
 /**
  * ILuteceUserProviderService implementation of module mylutece database
  */
@@ -52,14 +51,14 @@ public class DatabaseUserProviderService implements ILuteceUserProviderService
     public LuteceUser getLuteceUserFromName( String strName )
     {
         return DatabaseHome.findLuteceUserByLogin( strName, PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME ),
-            SecurityService.getInstance(  ).getAuthenticationService(  ) );
+                SecurityService.getInstance( ).getAuthenticationService( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean canUsersBeCached(  )
+    public boolean canUsersBeCached( )
     {
         return true;
     }

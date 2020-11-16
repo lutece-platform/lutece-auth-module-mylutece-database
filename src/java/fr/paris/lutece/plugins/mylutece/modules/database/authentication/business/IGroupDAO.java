@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import fr.paris.lutece.util.ReferenceList;
 import java.util.Collection;
 import java.util.List;
 
-
 /**
  *
  *
@@ -49,24 +48,30 @@ public interface IGroupDAO
     /**
      * Delete a record from the table
      *
-     * @param strGroupKey The indentifier of the object Group
-     * @param plugin Plugin
+     * @param strGroupKey
+     *            The indentifier of the object Group
+     * @param plugin
+     *            Plugin
      */
     void delete( String strGroupKey, Plugin plugin );
 
     /**
      * Insert a new record in the table.
      *
-     * @param group The Instance of the object Group
-     * @param plugin Plugin
+     * @param group
+     *            The Instance of the object Group
+     * @param plugin
+     *            Plugin
      */
     void insert( Group group, Plugin plugin );
 
     /**
      * load the data of Group from the table
      *
-     * @param strGroupKey The indentifier of the object Group
-     * @param plugin Plugin
+     * @param strGroupKey
+     *            The indentifier of the object Group
+     * @param plugin
+     *            Plugin
      * @return The Instance of the object Group
      */
     Group load( String strGroupKey, Plugin plugin );
@@ -74,7 +79,8 @@ public interface IGroupDAO
     /**
      * Returns a list of all the right group
      *
-     * @param plugin Plugin
+     * @param plugin
+     *            Plugin
      * @return A ReferenceList of group objects
      */
     ReferenceList selectGroupsList( Plugin plugin );
@@ -82,7 +88,8 @@ public interface IGroupDAO
     /**
      * Load the list of groups
      *
-     * @param plugin Plugin
+     * @param plugin
+     *            Plugin
      * @return The Collection of the Groups
      */
     Collection<Group> selectAll( Plugin plugin );
@@ -90,16 +97,20 @@ public interface IGroupDAO
     /**
      * Update the record in the table
      *
-     * @param group The instance of the Group to update
-     * @param plugin Plugin
+     * @param group
+     *            The instance of the Group to update
+     * @param plugin
+     *            Plugin
      */
     void store( Group group, Plugin plugin );
 
     /**
      * Return the filtered groups list
      *
-     * @param gFilter filter
-     * @param plugin Plugin
+     * @param gFilter
+     *            filter
+     * @param plugin
+     *            Plugin
      * @return List of Group
      */
     List<Group> selectByFilter( GroupFilter gFilter, Plugin plugin );

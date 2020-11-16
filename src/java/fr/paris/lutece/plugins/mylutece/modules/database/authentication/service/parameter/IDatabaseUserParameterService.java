@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 import fr.paris.lutece.plugins.mylutece.service.IUserParameterService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
-
 /**
  * User parameter service
  *
@@ -45,22 +44,28 @@ public interface IDatabaseUserParameterService extends IUserParameterService
 {
     /**
      * Check if the account creation must be validated by email
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return true if it must be validated by email, false otherwise
      */
     boolean isAccountCreationValidationEmail( Plugin plugin );
 
     /**
      * Check if the jcaptcha is enable or not
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return true if it is enable, false otherwise
      */
     boolean isJcaptchaEnable( Plugin plugin );
 
     /**
      * Check if the user must be automatically logged after validation email
-     * @param plugin the plugin
-     * @return true  if the user must be automatically logged after validation email
+     * 
+     * @param plugin
+     *            the plugin
+     * @return true if the user must be automatically logged after validation email
      */
     boolean isAutoLoginAfterValidationEmail( Plugin plugin );
 }

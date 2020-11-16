@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,37 +38,36 @@ import fr.paris.lutece.plugins.mylutece.service.AbstractAccountLifeTimeDaemon;
 import fr.paris.lutece.plugins.mylutece.service.IAccountLifeTimeService;
 import fr.paris.lutece.plugins.mylutece.service.IUserParameterService;
 
-
 /**
  * Account life time daemon of module mylutece directory
  */
 public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
 {
     private static final String DAEMON_NAME = "DatabaseAccountLifeTimeDaemon";
-    private DatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService(  );
+    private DatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService( );
 
     /**
      * Default constructor
      */
-    public DatabaseAccountLifeTimeDaemon(  )
+    public DatabaseAccountLifeTimeDaemon( )
     {
-        super(  );
+        super( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public IAccountLifeTimeService getAccountLifeTimeService(  )
+    public IAccountLifeTimeService getAccountLifeTimeService( )
     {
-        return DatabaseAccountLifeTimeService.getService(  );
+        return DatabaseAccountLifeTimeService.getService( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public IUserParameterService getParameterService(  )
+    public IUserParameterService getParameterService( )
     {
         return _parameterService;
     }
@@ -77,7 +76,7 @@ public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
      * {@inheritDoc}
      */
     @Override
-    public String getDaemonName(  )
+    public String getDaemonName( )
     {
         return DAEMON_NAME;
     }

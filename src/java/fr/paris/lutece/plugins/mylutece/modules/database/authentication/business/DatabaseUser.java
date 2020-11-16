@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 import java.io.Serializable;
 
 import java.sql.Timestamp;
-
 
 /**
  * This class represents the business object DatabaseUser
@@ -83,7 +82,7 @@ public class DatabaseUser implements Serializable
      *
      * @return The UserId
      */
-    public int getUserId(  )
+    public int getUserId( )
     {
         return _nUserId;
     }
@@ -91,7 +90,8 @@ public class DatabaseUser implements Serializable
     /**
      * Sets the UserId
      *
-     * @param nUserId The UserId
+     * @param nUserId
+     *            The UserId
      */
     public void setUserId( int nUserId )
     {
@@ -103,7 +103,7 @@ public class DatabaseUser implements Serializable
      *
      * @return The Email
      */
-    public String getEmail(  )
+    public String getEmail( )
     {
         return _strEmail;
     }
@@ -111,7 +111,8 @@ public class DatabaseUser implements Serializable
     /**
      * Sets the Email
      *
-     * @param strEmail The email
+     * @param strEmail
+     *            The email
      */
     public void setEmail( String strEmail )
     {
@@ -123,7 +124,7 @@ public class DatabaseUser implements Serializable
      *
      * @return The first name
      */
-    public String getFirstName(  )
+    public String getFirstName( )
     {
         return _strFirstName;
     }
@@ -131,7 +132,8 @@ public class DatabaseUser implements Serializable
     /**
      * Sets the first name
      *
-     * @param strFirstName The first name
+     * @param strFirstName
+     *            The first name
      */
     public void setFirstName( String strFirstName )
     {
@@ -143,7 +145,7 @@ public class DatabaseUser implements Serializable
      *
      * @return The last name
      */
-    public String getLastName(  )
+    public String getLastName( )
     {
         return _strLastName;
     }
@@ -151,7 +153,8 @@ public class DatabaseUser implements Serializable
     /**
      * Sets the last name
      *
-     * @param strLastName The last name
+     * @param strLastName
+     *            The last name
      */
     public void setLastName( String strLastName )
     {
@@ -163,7 +166,7 @@ public class DatabaseUser implements Serializable
      *
      * @return The login
      */
-    public String getLogin(  )
+    public String getLogin( )
     {
         return _strLogin;
     }
@@ -171,7 +174,8 @@ public class DatabaseUser implements Serializable
     /**
      * Sets the login
      *
-     * @param strLogin The login
+     * @param strLogin
+     *            The login
      */
     public void setLogin( String strLogin )
     {
@@ -180,16 +184,19 @@ public class DatabaseUser implements Serializable
 
     /**
      * Get the status of the user
+     * 
      * @return The status of the user
      */
-    public int getStatus(  )
+    public int getStatus( )
     {
         return _nStatus;
     }
 
     /**
      * Set the status of the user
-     * @param nStatus The status of the user
+     * 
+     * @param nStatus
+     *            The status of the user
      */
     public void setStatus( int nStatus )
     {
@@ -198,17 +205,19 @@ public class DatabaseUser implements Serializable
 
     /**
      * Check if the user is active
+     * 
      * @return true if it is active, false otherwise
      */
-    public boolean isActive(  )
+    public boolean isActive( )
     {
         return ( ( _nStatus >= STATUS_ACTIVATED ) && ( _nStatus < STATUS_EXPIRED ) );
     }
 
     /**
      * Set the password maximum valide date of a user
-     * @param passwordMaxValidDate The new value of the password maximum valide
-     *            date of a user
+     * 
+     * @param passwordMaxValidDate
+     *            The new value of the password maximum valide date of a user
      */
     public void setPasswordMaxValidDate( Timestamp passwordMaxValidDate )
     {
@@ -217,25 +226,29 @@ public class DatabaseUser implements Serializable
 
     /**
      * Get the password maximum valide date of a user
+     * 
      * @return The password maximum valide date of a user
      */
-    public Timestamp getPasswordMaxValidDate(  )
+    public Timestamp getPasswordMaxValidDate( )
     {
         return this._passwordMaxValidDate;
     }
 
     /**
      * Get the maximum valid date of the account of the user
+     * 
      * @return The maximum valid date of the account of the user
      */
-    public Timestamp getAccountMaxValidDate(  )
+    public Timestamp getAccountMaxValidDate( )
     {
         return _accountMaxValidDate;
     }
 
     /**
      * Set the maximum valid date of the account of the user
-     * @param accountMaxValidDate The maximum valid date
+     * 
+     * @param accountMaxValidDate
+     *            The maximum valid date
      */
     public void setAccountMaxValidDate( Timestamp accountMaxValidDate )
     {

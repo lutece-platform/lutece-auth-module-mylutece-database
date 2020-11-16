@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  *
  * DatabaseAdminDashboardComponent
@@ -67,13 +66,13 @@ public class DatabaseAdminDashboardComponent extends AdminDashboardComponent
     @Override
     public String getDashboardData( AdminUser user, HttpServletRequest request )
     {
-        if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    DatabaseResourceIdService.PERMISSION_MANAGE, (User) user ) )
+        if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, DatabaseResourceIdService.PERMISSION_MANAGE,
+                (User) user ) )
         {
-            Map<String, Object> model = DatabaseService.getService(  ).getManageAdvancedParameters( user );
-            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ADMIN_DASHBOARD, user.getLocale(  ), model );
+            Map<String, Object> model = DatabaseService.getService( ).getManageAdvancedParameters( user );
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ADMIN_DASHBOARD, user.getLocale( ), model );
 
-            return template.getHtml(  );
+            return template.getHtml( );
         }
 
         return StringUtils.EMPTY;
