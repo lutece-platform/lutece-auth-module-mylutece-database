@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS mylutece_database_user_password_history;
 CREATE  TABLE mylutece_database_user_password_history (
   mylutece_database_user_id INT NOT NULL ,
   password VARCHAR(100) NOT NULL ,
-  date_password_change TIMESTAMP NOT NULL DEFAULT NOW() ,
+  date_password_change TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   PRIMARY KEY (mylutece_database_user_id, date_password_change)
   );
 
