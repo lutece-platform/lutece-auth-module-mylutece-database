@@ -60,20 +60,18 @@ public class GroupRoleDAO implements IGroupRoleDAO
     @Override
     public List<String> selectGroupRoles( String strGroupKey, Plugin plugin )
     {
-        int nParam = 0;
-        ArrayList<String> arrayRoles = new ArrayList<String>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_ROLES_FROM_GROUP_ID, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        ArrayList<String> arrayRoles = new ArrayList<>(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_ROLES_FROM_GROUP_ID, plugin ) )
         {
-            nParam = 0;
-            arrayRoles.add( daoUtil.getString( ++nParam ) );
+            daoUtil.setString( 1, strGroupKey );
+            daoUtil.executeQuery(  );
+    
+            while ( daoUtil.next(  ) )
+            {
+                int nParam = 0;
+                arrayRoles.add( daoUtil.getString( ++nParam ) );
+            }
         }
-
-        daoUtil.free(  );
-
         return arrayRoles;
     }
 
@@ -87,19 +85,18 @@ public class GroupRoleDAO implements IGroupRoleDAO
     @Override
     public List<String> selectGroupRolesByRoleKey( String strRoleKey, Plugin plugin )
     {
-        int nParam = 0;
-        ArrayList<String> arrayGroup = new ArrayList<String>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID, plugin );
-        daoUtil.setString( ++nParam, strRoleKey );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        ArrayList<String> arrayGroup = new ArrayList<>(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_GROUPS_FROM_ROLE_ID, plugin ) )
         {
-            nParam = 0;
-            arrayGroup.add( daoUtil.getString( ++nParam ) );
+            daoUtil.setString( 1, strRoleKey );
+            daoUtil.executeQuery(  );
+    
+            while ( daoUtil.next(  ) )
+            {
+                int nParam = 0;
+                arrayGroup.add( daoUtil.getString( ++nParam ) );
+            }
         }
-
-        daoUtil.free(  );
 
         return arrayGroup;
     }
@@ -113,11 +110,12 @@ public class GroupRoleDAO implements IGroupRoleDAO
     public void deleteRoles( String strGroupKey, Plugin plugin )
     {
         int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ROLES_FOR_GROUP, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ROLES_FOR_GROUP, plugin ) )
+        {
+            daoUtil.setString( ++nParam, strGroupKey );
+    
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -130,11 +128,12 @@ public class GroupRoleDAO implements IGroupRoleDAO
     public void createRole( String strGroupKey, String strRoleKey, Plugin plugin )
     {
         int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ROLE_FOR_GROUP, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
-        daoUtil.setString( ++nParam, strRoleKey );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ROLE_FOR_GROUP, plugin ) )
+        {
+            daoUtil.setString( ++nParam, strGroupKey );
+            daoUtil.setString( ++nParam, strRoleKey );
+    
+            daoUtil.executeUpdate(  );
+            }
     }
 }

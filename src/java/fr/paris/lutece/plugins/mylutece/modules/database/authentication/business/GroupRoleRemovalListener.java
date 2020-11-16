@@ -42,6 +42,8 @@ import fr.paris.lutece.portal.service.util.RemovalListener;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.collections.CollectionUtils;
+
 
 /**
  * Group Removal Listener
@@ -66,12 +68,7 @@ public class GroupRoleRemovalListener implements RemovalListener
 
         List<String> listGroupsKey = GroupRoleHome.findGroupRolesByRoleKey( strId, plugin );
 
-        if ( ( listGroupsKey != null ) && ( listGroupsKey.size(  ) > 0 ) )
-        {
-            return false;
-        }
-
-        return true;
+        return CollectionUtils.isEmpty( listGroupsKey );
     }
 
     /**

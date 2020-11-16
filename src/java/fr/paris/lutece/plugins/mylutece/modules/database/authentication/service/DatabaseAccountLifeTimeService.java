@@ -47,7 +47,6 @@ import fr.paris.lutece.portal.service.util.CryptoService;
 import java.sql.Timestamp;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -194,7 +193,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
     public void addParametersToModel( Map<String, String> model, Integer nIdUser )
     {
         DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nIdUser, _plugin );
-        DateFormat dateFormat = SimpleDateFormat.getDateInstance( DateFormat.SHORT, Locale.getDefault(  ) );
+        DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT, Locale.getDefault(  ) );
 
         String accountMaxValidDate = dateFormat.format( new Date( user.getAccountMaxValidDate(  ).getTime(  ) ) );
 
