@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import java.util.Locale;
 
 import org.apache.commons.collections.CollectionUtils;
 
-
 /**
  * DatabaseUser Removal Listener
  */
@@ -52,10 +51,12 @@ public class DatabaseUserRoleRemovalListener implements RemovalListener
     private static final String PROPERTY_ROLE_CANNOT_BE_REMOVED = "module.mylutece.database.message.roleCannotBeRemoved";
 
     /**
-    * Check if the object can be safely removed
-    * @param strId The object id
-    * @return true if the object can be removed otherwise false
-    */
+     * Check if the object can be safely removed
+     * 
+     * @param strId
+     *            The object id
+     * @return true if the object can be removed otherwise false
+     */
     public boolean canBeRemoved( String strId )
     {
         if ( strId == null )
@@ -63,21 +64,23 @@ public class DatabaseUserRoleRemovalListener implements RemovalListener
             return true;
         }
 
-        Collection<String> listLogins = DatabaseHome.findDatabaseUsersListForRoleKey( strId,
-                PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME ) );
+        Collection<String> listLogins = DatabaseHome.findDatabaseUsersListForRoleKey( strId, PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME ) );
 
         return CollectionUtils.isEmpty( listLogins );
     }
 
     /**
      * Gives a message explaining why the object can't be removed
-     * @param strId The object id
-     * @param locale The current locale
+     * 
+     * @param strId
+     *            The object id
+     * @param locale
+     *            The current locale
      * @return The message
      */
     public String getRemovalRefusedMessage( String strId, Locale locale )
     {
-        // Build a message Faq for using this role Lutece 
+        // Build a message Faq for using this role Lutece
         return I18nService.getLocalizedString( PROPERTY_ROLE_CANNOT_BE_REMOVED, locale );
     }
 }

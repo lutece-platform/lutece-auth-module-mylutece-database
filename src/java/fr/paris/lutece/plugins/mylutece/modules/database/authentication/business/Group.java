@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 
 import fr.paris.lutece.portal.service.rbac.RBACResource;
 
-
 /**
  * This class represents business objects group
  */
@@ -47,16 +46,19 @@ public class Group implements RBACResource
 
     /**
      * Gets the group key
+     * 
      * @return the group key
      */
-    public String getGroupKey(  )
+    public String getGroupKey( )
     {
         return _strGroupKey;
     }
 
     /**
      * Sets the group key
-     * @param strGroupKey the group key
+     * 
+     * @param strGroupKey
+     *            the group key
      */
     public void setGroupKey( String strGroupKey )
     {
@@ -65,16 +67,19 @@ public class Group implements RBACResource
 
     /**
      * Gets the group description
+     * 
      * @return the group description
      */
-    public String getGroupDescription(  )
+    public String getGroupDescription( )
     {
         return _strGroupDescription;
     }
 
     /**
      * Sets the group description
-     * @param strGroupDescription the group description
+     * 
+     * @param strGroupDescription
+     *            the group description
      */
     public void setGroupDescription( String strGroupDescription )
     {
@@ -83,18 +88,20 @@ public class Group implements RBACResource
 
     /**
      * RBAC resource implmentation
+     * 
      * @return The resource type code
      */
-    public String getResourceTypeCode(  )
+    public String getResourceTypeCode( )
     {
         return RESOURCE_TYPE;
     }
 
     /**
      * RBAC resource implmentation
+     * 
      * @return The resourceId
      */
-    public String getResourceId(  )
+    public String getResourceId( )
     {
         return getGroupKey( );
     }

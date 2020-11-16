@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,10 +36,8 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 
-
 /**
- * This class implements The Lutece User in a database configuration.
- * User roles are retrieve from the database.
+ * This class implements The Lutece User in a database configuration. User roles are retrieve from the database.
  */
 public class BaseUser extends LuteceUser
 {
@@ -47,10 +45,13 @@ public class BaseUser extends LuteceUser
     private String _strEmail;
 
     /**
-    * Constructor
-    * @param strUserName The user's name
-    * @param authenticationService The authentication service that authenticates the user
-    */
+     * Constructor
+     * 
+     * @param strUserName
+     *            The user's name
+     * @param authenticationService
+     *            The authentication service that authenticates the user
+     */
     public BaseUser( String strUserName, LuteceAuthentication authenticationService )
     {
         super( strUserName, authenticationService );
@@ -60,13 +61,14 @@ public class BaseUser extends LuteceUser
      * @return the Email
      */
     @Override
-    public String getEmail(  )
+    public String getEmail( )
     {
         return _strEmail;
     }
 
     /**
-     * @param strEmail the Email to set
+     * @param strEmail
+     *            the Email to set
      */
     public void setEmail( String strEmail )
     {

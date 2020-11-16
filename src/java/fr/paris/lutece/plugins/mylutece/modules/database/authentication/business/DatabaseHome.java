@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
-
 /**
  * This class provides instances management methods (create, find, ...) for databaseUser objects
  */
@@ -55,20 +54,22 @@ public final class DatabaseHome
     /**
      * Private constructor - this class need not be instantiated
      */
-    private DatabaseHome(  )
+    private DatabaseHome( )
     {
     }
 
     /**
      * Find users by login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
-     * @param authenticationService the LuteceAuthentication object
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
+     * @param authenticationService
+     *            the LuteceAuthentication object
      * @return DatabaseUser the user corresponding to the login
      */
-    public static BaseUser findLuteceUserByLogin( String strLogin, Plugin plugin,
-        LuteceAuthentication authenticationService )
+    public static BaseUser findLuteceUserByLogin( String strLogin, Plugin plugin, LuteceAuthentication authenticationService )
     {
         return _dao.selectLuteceUserByLogin( strLogin, plugin, authenticationService );
     }
@@ -76,8 +77,10 @@ public final class DatabaseHome
     /**
      * Gets the reset password attribute of the user from his login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
      * @return True if the password has to be changed, false otherwise
      */
     public static boolean findResetPasswordFromLogin( String strLogin, Plugin plugin )
@@ -87,8 +90,11 @@ public final class DatabaseHome
 
     /**
      * Gets the expiration date of the user's password
-     * @param strLogin The login of the user
-     * @param plugin The plugin
+     * 
+     * @param strLogin
+     *            The login of the user
+     * @param plugin
+     *            The plugin
      * @return The expiration date of the user's password
      */
     public static Timestamp findPasswordMaxValideDateFromLogin( String strLogin, Plugin plugin )
@@ -98,8 +104,11 @@ public final class DatabaseHome
 
     /**
      * Load the list of {@link BaseUser}
-     * @param plugin The Plugin using this data access service
-     * @param authenticationService the authentication service
+     * 
+     * @param plugin
+     *            The Plugin using this data access service
+     * @param authenticationService
+     *            the authentication service
      * @return The Collection of the {@link BaseUser}
      */
     public static Collection<BaseUser> findDatabaseUsersList( Plugin plugin, LuteceAuthentication authenticationService )
@@ -110,8 +119,10 @@ public final class DatabaseHome
     /**
      * Find user's roles by login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
      * @return ArrayList the role key list corresponding to the login
      */
     public static List<String> findUserRolesFromLogin( String strLogin, Plugin plugin )
@@ -121,8 +132,11 @@ public final class DatabaseHome
 
     /**
      * Delete roles for a user
-     * @param nIdUser The id of the user
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param plugin
+     *            The Plugin using this data access service
      */
     public static void removeRolesForUser( int nIdUser, Plugin plugin )
     {
@@ -131,9 +145,13 @@ public final class DatabaseHome
 
     /**
      * Assign a role to user
-     * @param nIdUser The id of the user
-     * @param strRoleKey The key of the role
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strRoleKey
+     *            The key of the role
+     * @param plugin
+     *            The Plugin using this data access service
      */
     public static void addRoleForUser( int nIdUser, String strRoleKey, Plugin plugin )
     {
@@ -143,8 +161,10 @@ public final class DatabaseHome
     /**
      * Find user's groups by login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
      * @return ArrayList the group key list corresponding to the login
      */
     public static List<String> findUserGroupsFromLogin( String strLogin, Plugin plugin )
@@ -154,8 +174,11 @@ public final class DatabaseHome
 
     /**
      * Delete groups for a user
-     * @param nIdUser The id of the user
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param plugin
+     *            The Plugin using this data access service
      */
     public static void removeGroupsForUser( int nIdUser, Plugin plugin )
     {
@@ -164,9 +187,13 @@ public final class DatabaseHome
 
     /**
      * Assign a group to user
-     * @param nIdUser The id of the user
-     * @param strGroupKey The key of the group
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strGroupKey
+     *            The key of the group
+     * @param plugin
+     *            The Plugin using this data access service
      */
     public static void addGroupForUser( int nIdUser, String strGroupKey, Plugin plugin )
     {
@@ -176,8 +203,10 @@ public final class DatabaseHome
     /**
      * Returns a collection of DatabaseUser objects for a Lutece role
      *
-     * @param strRoleKey The role of the databseUser
-     * @param plugin The current plugin using this method
+     * @param strRoleKey
+     *            The role of the databseUser
+     * @param plugin
+     *            The current plugin using this method
      * @return A collection of logins
      */
     public static Collection<String> findDatabaseUsersListForRoleKey( String strRoleKey, Plugin plugin )
@@ -187,8 +216,11 @@ public final class DatabaseHome
 
     /**
      * Find assigned users to the given group
-     * @param strGroupKey The group key
-     * @param plugin Plugin
+     * 
+     * @param strGroupKey
+     *            The group key
+     * @param plugin
+     *            Plugin
      * @return a list of DatabaseUser
      */
     public static List<DatabaseUser> findGroupUsersFromGroupKey( String strGroupKey, Plugin plugin )
@@ -198,9 +230,13 @@ public final class DatabaseHome
 
     /**
      * Update the reset password attribut of a user from his login
-     * @param strUserName Login of the user to update
-     * @param bNewValue New value
-     * @param plugin the plugin
+     * 
+     * @param strUserName
+     *            Login of the user to update
+     * @param bNewValue
+     *            New value
+     * @param plugin
+     *            the plugin
      */
     public static void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin )
     {
@@ -209,8 +245,11 @@ public final class DatabaseHome
 
     /**
      * Get the id of a user from his login
-     * @param strLogin Login of the user
-     * @param plugin The plugin
+     * 
+     * @param strLogin
+     *            Login of the user
+     * @param plugin
+     *            The plugin
      * @return The id of the user
      */
     public static int findUserIdFromLogin( String strLogin, Plugin plugin )

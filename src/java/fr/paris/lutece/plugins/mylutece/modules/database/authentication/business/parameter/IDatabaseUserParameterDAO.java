@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
-
 /**
  *
  * IDefaultUserParameterDAO
@@ -46,23 +45,31 @@ import fr.paris.lutece.util.ReferenceList;
 public interface IDatabaseUserParameterDAO
 {
     /**
-    * Load the parameter value
-    * @param strParameterKey the parameter key
-    * @param plugin the plugin
-    * @return The parameter value
-    */
+     * Load the parameter value
+     * 
+     * @param strParameterKey
+     *            the parameter key
+     * @param plugin
+     *            the plugin
+     * @return The parameter value
+     */
     ReferenceItem load( String strParameterKey, Plugin plugin );
 
     /**
      * Update the parameter value
-     * @param userParam The parameter
-     * @param plugin the plugin
+     * 
+     * @param userParam
+     *            The parameter
+     * @param plugin
+     *            the plugin
      */
     void store( ReferenceItem userParam, Plugin plugin );
 
     /**
      * Select all user parameters
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return a {@link ReferenceList}
      */
     ReferenceList selectAll( Plugin plugin );

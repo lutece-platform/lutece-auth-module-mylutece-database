@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
 
-
 /**
  * class DatabasePlugin
  */
@@ -50,9 +49,9 @@ public class DatabasePlugin extends PluginDefaultImplementation
      * Initialize the module Database
      */
     @Override
-    public void init(  )
+    public void init( )
     {
         // Initialize the Database service
-        DatabaseService.getService(  ).init(  );
+        DatabaseService.getService( ).init( );
     }
 }

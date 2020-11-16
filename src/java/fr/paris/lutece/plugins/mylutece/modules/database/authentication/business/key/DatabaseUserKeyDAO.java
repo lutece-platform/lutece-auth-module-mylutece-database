@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
-
 /**
  *
  * DatabaseUserKeyDAO
@@ -60,10 +59,10 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
         int nIndex = 0;
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
         {
-            daoUtil.setString( ++nIndex, userKey.getKey(  ) );
-            daoUtil.setInt( ++nIndex, userKey.getUserId(  ) );
-    
-            daoUtil.executeUpdate(  );
+            daoUtil.setString( ++nIndex, userKey.getKey( ) );
+            daoUtil.setInt( ++nIndex, userKey.getUserId( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -77,12 +76,12 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {
             daoUtil.setString( 1, strKey );
-            daoUtil.executeQuery(  );
-    
-            if ( daoUtil.next(  ) )
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
             {
                 int nIndex = 0;
-                userKey = new DatabaseUserKey(  );
+                userKey = new DatabaseUserKey( );
                 userKey.setKey( daoUtil.getString( ++nIndex ) );
                 userKey.setUserId( daoUtil.getInt( ++nIndex ) );
             }
@@ -98,7 +97,7 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE + SQL_WHERE + SQL_USER_KEY, plugin ) )
         {
             daoUtil.setString( 1, strKey );
-            daoUtil.executeUpdate(  );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -110,7 +109,7 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE + SQL_WHERE + SQL_USER_ID, plugin ) )
         {
             daoUtil.setInt( 1, nUserId );
-            daoUtil.executeUpdate(  );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -124,12 +123,12 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_LOGIN, plugin ) )
         {
             daoUtil.setString( 1, login );
-            daoUtil.executeQuery(  );
-    
-            if ( daoUtil.next(  ) )
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
             {
                 int nIndex = 0;
-                userKey = new DatabaseUserKey(  );
+                userKey = new DatabaseUserKey( );
                 userKey.setKey( daoUtil.getString( ++nIndex ) );
                 userKey.setUserId( daoUtil.getInt( ++nIndex ) );
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 
 import java.util.List;
 
-
 /**
  * Interface for the GroupRoleDAO
  */
@@ -46,8 +45,10 @@ public interface IGroupRoleDAO
     /**
      * Find group's roles
      *
-     * @param strGroupKey the group key
-     * @param plugin Plugin
+     * @param strGroupKey
+     *            the group key
+     * @param plugin
+     *            Plugin
      * @return ArrayList the role key list corresponding to the group
      */
     List<String> selectGroupRoles( String strGroupKey, Plugin plugin );
@@ -55,24 +56,33 @@ public interface IGroupRoleDAO
     /**
      * Find group's roles
      *
-     * @param strRoleKey The Role key
-     * @param plugin Plugin
+     * @param strRoleKey
+     *            The Role key
+     * @param plugin
+     *            Plugin
      * @return ArrayList the groups key list corresponding to the role
      */
     List<String> selectGroupRolesByRoleKey( String strRoleKey, Plugin plugin );
 
     /**
      * Delete roles for a user
-     * @param strGroupKey The key of the group
-     * @param plugin Plugin
+     * 
+     * @param strGroupKey
+     *            The key of the group
+     * @param plugin
+     *            Plugin
      */
     void deleteRoles( String strGroupKey, Plugin plugin );
 
     /**
      * Assign a role to group
-     * @param strGroupKey The key of the group
-     * @param strRoleKey The key of the role
-     * @param plugin Plugin
+     * 
+     * @param strGroupKey
+     *            The key of the group
+     * @param strRoleKey
+     *            The key of the role
+     * @param plugin
+     *            Plugin
      */
     void createRole( String strGroupKey, String strRoleKey, Plugin plugin );
 }

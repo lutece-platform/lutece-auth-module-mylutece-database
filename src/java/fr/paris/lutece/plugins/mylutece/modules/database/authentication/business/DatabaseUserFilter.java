@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * This class provides a filter for users search function
  */
@@ -70,7 +69,7 @@ public class DatabaseUserFilter
     /**
      * Initialize each component of the object
      */
-    public void init(  )
+    public void init( )
     {
         _strLogin = "";
         _strLastName = "";
@@ -80,16 +79,19 @@ public class DatabaseUserFilter
 
     /**
      * Get the access code
+     * 
      * @return The access code
      */
-    public String getLogin(  )
+    public String getLogin( )
     {
         return _strLogin;
     }
 
     /**
      * Set the access code
-     * @param strAccessCode The Access Code
+     * 
+     * @param strAccessCode
+     *            The Access Code
      */
     public void setAccessCode( String strAccessCode )
     {
@@ -98,16 +100,19 @@ public class DatabaseUserFilter
 
     /**
      * Get the last name
+     * 
      * @return The last name
      */
-    public String getLastName(  )
+    public String getLastName( )
     {
         return _strLastName;
     }
 
     /**
      * Set the last name
-     * @param strLastName The Last Name
+     * 
+     * @param strLastName
+     *            The Last Name
      */
     public void setLastName( String strLastName )
     {
@@ -116,16 +121,19 @@ public class DatabaseUserFilter
 
     /**
      * Get the first name
+     * 
      * @return The first name
      */
-    public String getFirstName(  )
+    public String getFirstName( )
     {
         return _strFirstName;
     }
 
     /**
      * Set the first name
-     * @param strFirstName The First Name
+     * 
+     * @param strFirstName
+     *            The First Name
      */
     public void setFirstName( String strFirstName )
     {
@@ -134,16 +142,19 @@ public class DatabaseUserFilter
 
     /**
      * Get the email
+     * 
      * @return The email
      */
-    public String getEmail(  )
+    public String getEmail( )
     {
         return _strEmail;
     }
 
     /**
      * Set the email
-     * @param strEmail The email
+     * 
+     * @param strEmail
+     *            The email
      */
     public void setEmail( String strEmail )
     {
@@ -152,7 +163,9 @@ public class DatabaseUserFilter
 
     /**
      * Set the value of the AdminUserFilter
-     * @param request HttpServletRequest
+     * 
+     * @param request
+     *            HttpServletRequest
      * @return true if there is a search
      */
     public boolean setDatabaseUserFilter( HttpServletRequest request )
@@ -170,7 +183,7 @@ public class DatabaseUserFilter
         }
         else
         {
-            init(  );
+            init( );
         }
 
         return bIsSearch;
@@ -178,24 +191,22 @@ public class DatabaseUserFilter
 
     /**
      * Build url attributes
-     * @param url the url
+     * 
+     * @param url
+     *            the url
      */
     public void setUrlAttributes( UrlItem url )
     {
-        url.addParameter( PARAMETER_SEARCH_IS_SEARCH, Boolean.TRUE.toString(  ) );
+        url.addParameter( PARAMETER_SEARCH_IS_SEARCH, Boolean.TRUE.toString( ) );
 
         try
         {
-            url.addParameter( PARAMETER_SEARCH_LOGIN,
-                URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-            url.addParameter( PARAMETER_SEARCH_LAST_NAME,
-                URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-            url.addParameter( PARAMETER_SEARCH_FIRST_NAME,
-                URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-            url.addParameter( PARAMETER_SEARCH_EMAIL,
-                URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_LOGIN, URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_LAST_NAME, URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_FIRST_NAME, URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            url.addParameter( PARAMETER_SEARCH_EMAIL, URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
         }
-        catch ( UnsupportedEncodingException e )
+        catch( UnsupportedEncodingException e )
         {
             AppLogService.error( e );
         }
@@ -203,29 +214,30 @@ public class DatabaseUserFilter
 
     /**
      * Build url attributes
+     * 
      * @return the url attributes
      */
-    public String getUrlAttributes(  )
+    public String getUrlAttributes( )
     {
-        StringBuilder sbUrlAttributes = new StringBuilder(  );
+        StringBuilder sbUrlAttributes = new StringBuilder( );
         sbUrlAttributes.append( PARAMETER_SEARCH_IS_SEARCH + EQUAL + Boolean.TRUE );
 
         try
         {
-            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_LOGIN + EQUAL +
-                URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_LAST_NAME + EQUAL +
-                URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_FIRST_NAME + EQUAL +
-                URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
-            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_EMAIL + EQUAL +
-                URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append(
+                    AMPERSAND + PARAMETER_SEARCH_LOGIN + EQUAL + URLEncoder.encode( _strLogin, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_LAST_NAME + EQUAL
+                    + URLEncoder.encode( _strLastName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append( AMPERSAND + PARAMETER_SEARCH_FIRST_NAME + EQUAL
+                    + URLEncoder.encode( _strFirstName, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
+            sbUrlAttributes.append(
+                    AMPERSAND + PARAMETER_SEARCH_EMAIL + EQUAL + URLEncoder.encode( _strEmail, AppPropertiesService.getProperty( PROPERTY_ENCODING_URL ) ) );
         }
-        catch ( UnsupportedEncodingException e )
+        catch( UnsupportedEncodingException e )
         {
             AppLogService.error( e );
         }
 
-        return sbUrlAttributes.toString(  );
+        return sbUrlAttributes.toString( );
     }
 }

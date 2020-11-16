@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
 
-
 /**
  *
  * DefaultUserParameterDAO
@@ -51,22 +50,22 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
     private static final String SQL_QUERY_SELECT_ALL = " SELECT parameter_key, parameter_value FROM mylutece_database_user_parameter ";
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     public ReferenceItem load( String strParameterKey, Plugin plugin )
     {
         ReferenceItem userParam = null;
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_PARAMETERS_VALUE, plugin ) )
         {
             daoUtil.setString( 1, strParameterKey );
-            daoUtil.executeQuery(  );
-    
-            if ( daoUtil.next(  ) )
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
             {
-                userParam = new ReferenceItem(  );
+                userParam = new ReferenceItem( );
                 userParam.setCode( strParameterKey );
                 userParam.setName( daoUtil.getString( 1 ) );
-                userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+                userParam.setChecked( Boolean.valueOf( userParam.getName( ) ) );
             }
         }
         return userParam;
@@ -80,10 +79,10 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
         int nIndex = 0;
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_USER_PARAMETERS, plugin ) )
         {
-            daoUtil.setString( ++nIndex, userParam.getName(  ) );
-            daoUtil.setString( ++nIndex, userParam.getCode(  ) );
-    
-            daoUtil.executeUpdate(  );
+            daoUtil.setString( ++nIndex, userParam.getName( ) );
+            daoUtil.setString( ++nIndex, userParam.getCode( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -92,18 +91,18 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
      */
     public ReferenceList selectAll( Plugin plugin )
     {
-        ReferenceList listUserParams = new ReferenceList(  );
+        ReferenceList listUserParams = new ReferenceList( );
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin ) )
         {
-            daoUtil.executeQuery(  );
-    
-            while ( daoUtil.next(  ) )
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
             {
                 int nIndex = 0;
-                ReferenceItem userParam = new ReferenceItem(  );
+                ReferenceItem userParam = new ReferenceItem( );
                 userParam.setCode( daoUtil.getString( ++nIndex ) );
                 userParam.setName( daoUtil.getString( ++nIndex ) );
-                userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+                userParam.setChecked( Boolean.valueOf( userParam.getName( ) ) );
                 listUserParams.add( userParam );
             }
         }

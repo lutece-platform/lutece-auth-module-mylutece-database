@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldListenerService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
-
 /**
  *
  * DatabaseMyLuteceUserFieldListenerService
@@ -49,15 +48,16 @@ public final class DatabaseMyLuteceUserFieldListenerService
     /**
      * Private constructor
      */
-    private DatabaseMyLuteceUserFieldListenerService(  )
+    private DatabaseMyLuteceUserFieldListenerService( )
     {
     }
 
     /**
      * Get MyLuteceUserFieldListenerService
+     * 
      * @return the service
      */
-    public static MyLuteceUserFieldListenerService getService(  )
+    public static MyLuteceUserFieldListenerService getService( )
     {
         return SpringContextService.getBean( BEAN_DATABASE_MYLUTECE_USER_FIELD_SERVICE );
     }

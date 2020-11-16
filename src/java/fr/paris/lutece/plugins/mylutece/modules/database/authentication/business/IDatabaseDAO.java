@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
-
 /**
  *
  * @author Etienne
@@ -52,9 +51,12 @@ public interface IDatabaseDAO
     /**
      * Find users by login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
-     * @param authenticationService the LuteceAuthentication object
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
+     * @param authenticationService
+     *            the LuteceAuthentication object
      * @return BaseUser the user corresponding to the login
      */
     BaseUser selectLuteceUserByLogin( String strLogin, Plugin plugin, LuteceAuthentication authenticationService );
@@ -62,26 +64,34 @@ public interface IDatabaseDAO
     /**
      * Check if a user has reset his password from his login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
-     * @param authenticationService the LuteceAuthentication object
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
+     * @param authenticationService
+     *            the LuteceAuthentication object
      * @return boolean true if the password vhas been reset, false otherwise
      */
     boolean selectResetPasswordFromLogin( String strLogin, Plugin plugin );
 
     /**
      * Gets the password max valid date of a user from his login.
-     * @param strLogin the login of the user
-     * @param plugin The plugin
-     * @return The date of end of validity of the password of the user, or null
-     *         if none has been set.
+     * 
+     * @param strLogin
+     *            the login of the user
+     * @param plugin
+     *            The plugin
+     * @return The date of end of validity of the password of the user, or null if none has been set.
      */
     Timestamp selectPasswordMaxValideDateFromLogin( String strLogin, Plugin plugin );
 
     /**
      * Load the list of {@link BaseUser}
-     * @param plugin The Plugin using this data access service
-     * @param authenticationService the authentication service
+     * 
+     * @param plugin
+     *            The Plugin using this data access service
+     * @param authenticationService
+     *            the authentication service
      * @return The Collection of the {@link BaseUser}
      */
     Collection<BaseUser> selectLuteceUserList( Plugin plugin, LuteceAuthentication authenticationService );
@@ -89,79 +99,110 @@ public interface IDatabaseDAO
     /**
      * Select the list of DatabaseUsers for a login
      *
-     * @param strLogin The login of DatabaseUser
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            The login of DatabaseUser
+     * @param plugin
+     *            The Plugin using this data access service
      * @return The Collection of the DatabaseUsers
      */
     List<String> selectUserRolesFromLogin( String strLogin, Plugin plugin );
 
     /**
      * Delete roles for a user
-     * @param nIdUser The id of the user
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param plugin
+     *            The Plugin using this data access service
      */
     void deleteRolesForUser( int nIdUser, Plugin plugin );
 
     /**
      * Assign a role to user
-     * @param nIdUser The id of the user
-     * @param strRoleKey The key of the role
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strRoleKey
+     *            The key of the role
+     * @param plugin
+     *            The Plugin using this data access service
      */
     void createRoleForUser( int nIdUser, String strRoleKey, Plugin plugin );
 
     /**
      * Find user's groups by login
      *
-     * @param strLogin the login
-     * @param plugin The Plugin using this data access service
+     * @param strLogin
+     *            the login
+     * @param plugin
+     *            The Plugin using this data access service
      * @return ArrayList the group key list corresponding to the login
      */
     List<String> selectUserGroupsFromLogin( String strLogin, Plugin plugin );
 
     /**
      * Load the list of DatabaseUsers for a Lutece role
-     * @param strRoleKey The role key of DatabaseUser
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param strRoleKey
+     *            The role key of DatabaseUser
+     * @param plugin
+     *            The Plugin using this data access service
      * @return The Collection of the logins
      */
     Collection<String> selectLoginListForRoleKey( String strRoleKey, Plugin plugin );
 
     /**
      * Delete groups for a user
-     * @param nIdUser The id of the user
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param plugin
+     *            The Plugin using this data access service
      */
     void deleteGroupsForUser( int nIdUser, Plugin plugin );
 
     /**
      * Assign a group to user
-     * @param nIdUser The id of the user
-     * @param strGroupKey The key of the group
-     * @param plugin The Plugin using this data access service
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strGroupKey
+     *            The key of the group
+     * @param plugin
+     *            The Plugin using this data access service
      */
     void createGroupForUser( int nIdUser, String strGroupKey, Plugin plugin );
 
     /**
      * Find assigned users to the given group
-     * @param strGroupKey The group key
-     * @param plugin Plugin
+     * 
+     * @param strGroupKey
+     *            The group key
+     * @param plugin
+     *            Plugin
      * @return a list of DatabaseUser
      */
     List<DatabaseUser> selectGroupUsersFromGroupKey( String strGroupKey, Plugin plugin );
 
     /**
      * Update the reset password attribut of a user from his login
-     * @param strUserName Login of the user to update
-     * @param bNewValue New value
-     * @param plugin The plugin
+     * 
+     * @param strUserName
+     *            Login of the user to update
+     * @param bNewValue
+     *            New value
+     * @param plugin
+     *            The plugin
      */
     void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin );
 
     /**
      * Get the id of a user from his login
-     * @param strLogin Login of the user
-     * @param plugin The plugin
+     * 
+     * @param strLogin
+     *            Login of the user
+     * @param plugin
+     *            The plugin
      * @return The id of the user
      */
     int findUserIdFromLogin( String strLogin, Plugin plugin );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleRemovalListener;
 import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 
-
 /**
  * Group Service
  */
@@ -45,16 +44,16 @@ public final class GroupService
     /**
      * Private Constructor
      */
-    private GroupService(  )
+    private GroupService( )
     {
     }
 
     /**
      * Initialize
      */
-    public static void init(  )
+    public static void init( )
     {
         // Initialize group
-        RoleRemovalListenerService.getService(  ).registerListener( new GroupRoleRemovalListener(  ) );
+        RoleRemovalListenerService.getService( ).registerListener( new GroupRoleRemovalListener( ) );
     }
 }

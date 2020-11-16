@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key;
 
-
 /**
  *
  * DatabaseUserKey
@@ -46,7 +45,9 @@ public class DatabaseUserKey
 
     /**
      * Set the key
-     * @param strKey the key
+     * 
+     * @param strKey
+     *            the key
      */
     public void setKey( String strKey )
     {
@@ -55,16 +56,19 @@ public class DatabaseUserKey
 
     /**
      * Get the key
+     * 
      * @return the key
      */
-    public String getKey(  )
+    public String getKey( )
     {
         return _strKey;
     }
 
     /**
      * Set the user id
-     * @param nUserId the user id
+     * 
+     * @param nUserId
+     *            the user id
      */
     public void setUserId( int nUserId )
     {
@@ -73,9 +77,10 @@ public class DatabaseUserKey
 
     /**
      * Get the user id
+     * 
      * @return the id user
      */
-    public int getUserId(  )
+    public int getUserId( )
     {
         return _nUserId;
     }

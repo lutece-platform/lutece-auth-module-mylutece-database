@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 /**
  * Service to handle account life time
  *
@@ -79,9 +78,10 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 
     /**
      * Get an instance of the service
+     * 
      * @return An instance of the service
      */
-    public static DatabaseAccountLifeTimeService getService(  )
+    public static DatabaseAccountLifeTimeService getService( )
     {
         return SpringContextService.getBean( BEAN_DATABASE_ACCOUNT_LIFE_TIME_SERVICE );
     }
@@ -90,7 +90,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
      * {@inheritDoc}
      */
     @Override
-    public Plugin getPlugin(  )
+    public Plugin getPlugin( )
     {
         return _plugin;
     }
@@ -117,8 +117,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> getIdUsersToSendOtherAlert( Timestamp alertMaxDate, Timestamp timeBetweenAlerts,
-        int maxNumberAlerts )
+    public List<Integer> getIdUsersToSendOtherAlert( Timestamp alertMaxDate, Timestamp timeBetweenAlerts, int maxNumberAlerts )
     {
         return DatabaseUserHome.getIdUsersToSendOtherAlert( alertMaxDate, timeBetweenAlerts, maxNumberAlerts, _plugin );
     }
@@ -154,7 +153,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
      * {@inheritDoc}
      */
     @Override
-    public String getExpirationtMailBody(  )
+    public String getExpirationtMailBody( )
     {
         return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DATABASE_EXPIRATION_MAIL );
     }
@@ -163,7 +162,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
      * {@inheritDoc}
      */
     @Override
-    public String getFirstAlertMailBody(  )
+    public String getFirstAlertMailBody( )
     {
         return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DATABASE_FIRST_ALERT_MAIL );
     }
@@ -172,7 +171,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
      * {@inheritDoc}
      */
     @Override
-    public String getOtherAlertMailBody(  )
+    public String getOtherAlertMailBody( )
     {
         return DatabaseTemplateService.getTemplateFromKey( PARAMETER_MYLUTECE_DATABASE_OTHER_ALERT_MAIL );
     }
@@ -181,7 +180,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
      * {@inheritDoc}
      */
     @Override
-    public String getPasswordExpiredMailBody(  )
+    public String getPasswordExpiredMailBody( )
     {
         return DatabaseTemplateService.getTemplateFromKey( PARAMETER_NOTIFY_PASSWORD_EXPIRED );
     }
@@ -193,30 +192,30 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
     public void addParametersToModel( Map<String, String> model, Integer nIdUser )
     {
         DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nIdUser, _plugin );
-        DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT, Locale.getDefault(  ) );
+        DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT, Locale.getDefault( ) );
 
-        String accountMaxValidDate = dateFormat.format( new Date( user.getAccountMaxValidDate(  ).getTime(  ) ) );
+        String accountMaxValidDate = dateFormat.format( new Date( user.getAccountMaxValidDate( ).getTime( ) ) );
 
-        StringBuilder sbUrl = new StringBuilder(  );
+        StringBuilder sbUrl = new StringBuilder( );
         // FIXME : get base URL in case the prod URL is null
         sbUrl.append( AppPathService.getProdUrl( "" ) );
         sbUrl.append( JSP_URL_REACTIVATE_ACCOUNT );
         sbUrl.append( CONSTANT_AND );
         sbUrl.append( MARK_USER_ID );
         sbUrl.append( CONSTANT_EQUAL );
-        sbUrl.append( nIdUser.toString(  ) );
+        sbUrl.append( nIdUser.toString( ) );
         sbUrl.append( CONSTANT_AND );
         sbUrl.append( MARK_REF );
         sbUrl.append( CONSTANT_EQUAL );
-        sbUrl.append( CryptoService.encrypt( Long.toString( user.getAccountMaxValidDate(  ).getTime(  ) ),
+        sbUrl.append( CryptoService.encrypt( Long.toString( user.getAccountMaxValidDate( ).getTime( ) ),
                 AppPropertiesService.getProperty( PROPERTY_ACCOUNT_REF_ENCRYPT_ALGO ) ) );
 
-        String activationURL = sbUrl.toString(  );
+        String activationURL = sbUrl.toString( );
 
         model.put( MARK_DATE_VALID, accountMaxValidDate );
         model.put( MARK_URL, activationURL );
-        model.put( MARK_LAST_NAME, user.getLastName(  ) );
-        model.put( MARK_FIRST_NAME, user.getFirstName(  ) );
+        model.put( MARK_LAST_NAME, user.getLastName( ) );
+        model.put( MARK_FIRST_NAME, user.getFirstName( ) );
     }
 
     /**
@@ -227,7 +226,7 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
     {
         DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nIdUser, _plugin );
 
-        return user.getEmail(  );
+        return user.getEmail( );
     }
 
     @Override

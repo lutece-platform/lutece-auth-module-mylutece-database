@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,6 @@ import javax.security.auth.login.LoginException;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * The Class provides an implementation of the inherited abstract class PortalAuthentication based on a database.
  *
@@ -122,24 +121,27 @@ public class BaseAuthentication extends PortalAuthentication
      * Constructor
      *
      */
-    public BaseAuthentication(  )
+    public BaseAuthentication( )
     {
-        super(  );
+        super( );
     }
 
     /**
      * Gets the Authentification service name
+     * 
      * @return The name of the authentication service
      */
     @Override
-    public String getAuthServiceName(  )
+    public String getAuthServiceName( )
     {
         return AUTH_SERVICE_NAME;
     }
 
     /**
      * Gets the Authentification type
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return The type of authentication
      */
     @Override
@@ -153,11 +155,15 @@ public class BaseAuthentication extends PortalAuthentication
      *
      * Unlike its parent, it does not throw LoginRedirectException.
      *
-     * @param strUserName The username
-     * @param strUserPassword The password
-     * @param request The HttpServletRequest
+     * @param strUserName
+     *            The username
+     * @param strUserPassword
+     *            The password
+     * @param request
+     *            The HttpServletRequest
      * @return A LuteceUser object corresponding to the login
-     * @throws LoginException The LoginException
+     * @throws LoginException
+     *             The LoginException
      */
     @Override
     public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException
@@ -175,25 +181,28 @@ public class BaseAuthentication extends PortalAuthentication
     /**
      * This methods checks the login info in the database
      *
-     * @param strUserName The username
-     * @param strUserPassword The password
-     * @param request The HttpServletRequest
+     * @param strUserName
+     *            The username
+     * @param strUserPassword
+     *            The password
+     * @param request
+     *            The HttpServletRequest
      * @return A LuteceUser object corresponding to the login
-     * @throws LoginException The LoginException
+     * @throws LoginException
+     *             The LoginException
      */
     @Override
-    public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request )
-        throws LoginException
+    public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException
     {
-        DatabaseService databaseService = DatabaseService.getService(  );
+        DatabaseService databaseService = DatabaseService.getService( );
 
         Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         // Creating a record of connections log
-        ConnectionLog connectionLog = new ConnectionLog(  );
+        ConnectionLog connectionLog = new ConnectionLog( );
         connectionLog.setIpAddress( SecurityUtil.getRealIp( request ) );
-        connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date(  ).getTime(  ) ) );
+        connectionLog.setDateLogin( new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
 
         // Test the number of errors during an interval of minutes
         int nMaxFailed = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_MAX_ACCESS_FAILED, plugin );
@@ -203,11 +212,10 @@ public class BaseAuthentication extends PortalAuthentication
 
         if ( PluginService.isPluginEnable( PLUGIN_JCAPTCHA ) )
         {
-            nMaxFailedCaptcha = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_ACCESS_FAILED_CAPTCHA,
-                    plugin );
+            nMaxFailedCaptcha = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_ACCESS_FAILED_CAPTCHA, plugin );
         }
 
-        Locale locale = request.getLocale(  );
+        Locale locale = request.getLocale( );
 
         if ( ( ( nMaxFailed > 0 ) || ( nMaxFailedCaptcha > 0 ) ) && ( nIntervalMinutes > 0 ) )
         {
@@ -224,13 +232,15 @@ public class BaseAuthentication extends PortalAuthentication
                 {
                     ReferenceItem item = DatabaseUserParameterHome.findByKey( PARAMETER_ENABLE_UNBLOCK_IP, plugin );
 
-                    if ( ( item != null ) && item.isChecked(  ) )
+                    if ( ( item != null ) && item.isChecked( ) )
                     {
                         sendUnlockLinkToUser( strUserName, nIntervalMinutes, request, plugin );
                     }
                 }
 
-                Object[] args = { Integer.toString( nIntervalMinutes ) };
+                Object [ ] args = {
+                        Integer.toString( nIntervalMinutes )
+                };
                 String strMessage = I18nService.getLocalizedString( PROPERTY_TOO_MANY_FAILURES, args, locale );
 
                 if ( bEnableCaptcha )
@@ -253,13 +263,11 @@ public class BaseAuthentication extends PortalAuthentication
 
             if ( bEnableCaptcha )
             {
-                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( 
-                        PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
+                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
             }
             else
             {
-                throw new FailedLoginException( I18nService.getLocalizedString( 
-                        PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+                throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
             }
         }
 
@@ -270,20 +278,18 @@ public class BaseAuthentication extends PortalAuthentication
 
             if ( bEnableCaptcha )
             {
-                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( 
-                        PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
+                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
             }
             else
             {
-                throw new FailedLoginException( I18nService.getLocalizedString( 
-                        PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
+                throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ) );
             }
         }
 
         // Get database roles
         List<String> arrayRoles = DatabaseHome.findUserRolesFromLogin( strUserName, plugin );
 
-        if ( !arrayRoles.isEmpty(  ) )
+        if ( !arrayRoles.isEmpty( ) )
         {
             user.addRoles( arrayRoles );
         }
@@ -291,7 +297,7 @@ public class BaseAuthentication extends PortalAuthentication
         // Get groups
         List<String> arrayGroups = DatabaseHome.findUserGroupsFromLogin( strUserName, plugin );
 
-        if ( !arrayGroups.isEmpty(  ) )
+        if ( !arrayGroups.isEmpty( ) )
         {
             user.setGroups( arrayGroups );
         }
@@ -299,21 +305,22 @@ public class BaseAuthentication extends PortalAuthentication
         // We update the status of the user if his password has become obsolete
         Timestamp passwordMaxValidDate = DatabaseHome.findPasswordMaxValideDateFromLogin( strUserName, plugin );
 
-        if ( ( passwordMaxValidDate != null ) &&
-                ( passwordMaxValidDate.getTime(  ) < new java.util.Date(  ).getTime(  ) ) )
+        if ( ( passwordMaxValidDate != null ) && ( passwordMaxValidDate.getTime( ) < new java.util.Date( ).getTime( ) ) )
         {
             DatabaseHome.updateResetPasswordFromLogin( strUserName, Boolean.TRUE, plugin );
         }
 
         int nUserId = DatabaseHome.findUserIdFromLogin( strUserName, plugin );
         databaseService.updateUserExpirationDate( nUserId, plugin );
-        
+
         return user;
     }
 
     /**
      * This methods logout the user
-     * @param user The user
+     * 
+     * @param user
+     *            The user
      */
     @Override
     public void logout( LuteceUser user )
@@ -323,8 +330,11 @@ public class BaseAuthentication extends PortalAuthentication
 
     /**
      * Find users by login
-     * @param request The request
-     * @param strLogin the login
+     * 
+     * @param request
+     *            The request
+     * @param strLogin
+     *            the login
      * @return DatabaseUser the user corresponding to the login
      */
     @Override
@@ -341,22 +351,26 @@ public class BaseAuthentication extends PortalAuthentication
      * @return An anonymous Lutece user
      */
     @Override
-    public LuteceUser getAnonymousUser(  )
+    public LuteceUser getAnonymousUser( )
     {
         return new BaseUser( LuteceUser.ANONYMOUS_USERNAME, this );
     }
 
     /**
      * Checks that the current user is associated to a given role
-     * @param user The user
-     * @param request The HTTP request
-     * @param strRole The role name
+     * 
+     * @param user
+     *            The user
+     * @param request
+     *            The HTTP request
+     * @param strRole
+     *            The role name
      * @return Returns true if the user is associated to the role, otherwise false
      */
     @Override
     public boolean isUserInRole( LuteceUser user, HttpServletRequest request, String strRole )
     {
-        String[] roles = getRolesByUser( user );
+        String [ ] roles = getRolesByUser( user );
 
         if ( ( roles != null ) && ( strRole != null ) )
         {
@@ -374,51 +388,56 @@ public class BaseAuthentication extends PortalAuthentication
 
     /**
      * Returns the View account page URL of the Authentication Service
+     * 
      * @return The URL
      */
     @Override
-    public String getViewAccountPageUrl(  )
+    public String getViewAccountPageUrl( )
     {
-        return MyLuteceDatabaseApp.getViewAccountUrl(  );
+        return MyLuteceDatabaseApp.getViewAccountUrl( );
     }
 
     /**
      * Returns the New account page URL of the Authentication Service
+     * 
      * @return The URL
      */
     @Override
-    public String getNewAccountPageUrl(  )
+    public String getNewAccountPageUrl( )
     {
-        return MyLuteceDatabaseApp.getNewAccountUrl(  );
+        return MyLuteceDatabaseApp.getNewAccountUrl( );
     }
 
     /**
      * Returns the Change password page URL of the Authentication Service
+     * 
      * @return The URL
      */
-    public String getChangePasswordPageUrl(  )
+    public String getChangePasswordPageUrl( )
     {
-        return MyLuteceDatabaseApp.getChangePasswordUrl(  );
+        return MyLuteceDatabaseApp.getChangePasswordUrl( );
     }
 
     /**
      * Returns the lost password URL of the Authentication Service
+     * 
      * @return The URL
      */
     @Override
-    public String getLostPasswordPageUrl(  )
+    public String getLostPasswordPageUrl( )
     {
-        return MyLuteceDatabaseApp.getLostPasswordUrl(  );
+        return MyLuteceDatabaseApp.getLostPasswordUrl( );
     }
 
     /**
      * {@inheritDoc}
-    * @return
+     * 
+     * @return
      */
     @Override
-    public String getLostLoginPageUrl(  )
+    public String getLostLoginPageUrl( )
     {
-        return MyLuteceDatabaseApp.getLostLoginUrl(  );
+        return MyLuteceDatabaseApp.getLostLoginUrl( );
     }
 
     /**
@@ -427,20 +446,21 @@ public class BaseAuthentication extends PortalAuthentication
     @Override
     public String getResetPasswordPageUrl( HttpServletRequest request )
     {
-        return AppPathService.getBaseUrl( request ) + MyLuteceDatabaseApp.getMessageResetPasswordUrl(  );
+        return AppPathService.getBaseUrl( request ) + MyLuteceDatabaseApp.getMessageResetPasswordUrl( );
     }
 
     /**
      * Returns all users managed by the authentication service if this feature is available.
+     * 
      * @return A collection of Lutece users or null if the service doesn't provide a users list
      */
     @Override
-    public Collection<LuteceUser> getUsers(  )
+    public Collection<LuteceUser> getUsers( )
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         Collection<BaseUser> baseUsers = DatabaseHome.findDatabaseUsersList( plugin, this );
-        Collection<LuteceUser> luteceUsers = new ArrayList<>(  );
+        Collection<LuteceUser> luteceUsers = new ArrayList<>( );
 
         for ( BaseUser user : baseUsers )
         {
@@ -452,7 +472,9 @@ public class BaseAuthentication extends PortalAuthentication
 
     /**
      * Returns the user managed by the authentication service if this feature is available.
-     * @param userLogin the user login
+     * 
+     * @param userLogin
+     *            the user login
      * @return A Lutece users or null if the service doesn't provide a user
      */
     @Override
@@ -466,16 +488,17 @@ public class BaseAuthentication extends PortalAuthentication
     /**
      * get all roles for this user : - user's roles - user's groups roles
      *
-     * @param user The user
+     * @param user
+     *            The user
      * @return Array of roles
      */
     @Override
-    public String[] getRolesByUser( LuteceUser user )
+    public String [ ] getRolesByUser( LuteceUser user )
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        Set<String> setRoles = new HashSet<>(  );
-        String[] strGroups = user.getGroups(  );
-        String[] strRoles = user.getRoles(  );
+        Set<String> setRoles = new HashSet<>( );
+        String [ ] strGroups = user.getGroups( );
+        String [ ] strRoles = user.getRoles( );
 
         if ( strRoles != null )
         {
@@ -495,7 +518,7 @@ public class BaseAuthentication extends PortalAuthentication
             }
         }
 
-        String[] strReturnRoles = new String[setRoles.size(  )];
+        String [ ] strReturnRoles = new String [ setRoles.size( )];
         setRoles.toArray( strReturnRoles );
 
         return strReturnRoles;
@@ -503,10 +526,10 @@ public class BaseAuthentication extends PortalAuthentication
 
     /**
      *
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
-    public String getIconUrl(  )
+    public String getIconUrl( )
     {
         return CONSTANT_PATH_ICON;
     }
@@ -514,32 +537,33 @@ public class BaseAuthentication extends PortalAuthentication
     /**
      *
      * Returns {@link DatabasePlugin#PLUGIN_NAME}.
+     * 
      * @return {@link DatabasePlugin#PLUGIN_NAME}
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return DatabasePlugin.PLUGIN_NAME;
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
-    public String getPluginName(  )
+    public String getPluginName( )
     {
         return DatabasePlugin.PLUGIN_NAME;
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void updateDateLastLogin( LuteceUser user, HttpServletRequest request )
     {
-        DatabaseService databaseService = DatabaseService.getService(  );
+        DatabaseService databaseService = DatabaseService.getService( );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        databaseService.updateUserLastLoginDate( user.getName(  ), plugin );
+        databaseService.updateUserLastLoginDate( user.getName( ), plugin );
     }
 
     private void sendUnlockLinkToUser( String strLogin, int nIntervalMinutes, HttpServletRequest request, Plugin plugin )
@@ -548,31 +572,29 @@ public class BaseAuthentication extends PortalAuthentication
 
         if ( nIdUser > 0 )
         {
-            ReferenceItem referenceItem = DatabaseUserParameterHome.findByKey( PARAMETER_UNBLOCK_USER_MAIL_SENDER,
-                    plugin );
-            String strSender = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
+            ReferenceItem referenceItem = DatabaseUserParameterHome.findByKey( PARAMETER_UNBLOCK_USER_MAIL_SENDER, plugin );
+            String strSender = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName( );
 
             referenceItem = DatabaseUserParameterHome.findByKey( PARAMETER_UNBLOCK_USER_MAIL_SUBJECT, plugin );
 
-            String strSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
+            String strSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName( );
 
             String strLink = SecurityUtils.buildResetConnectionLogUrl( nIntervalMinutes, request );
 
-            Map<String, Object> model = new HashMap<>(  );
+            Map<String, Object> model = new HashMap<>( );
             model.put( MARK_URL, strLink );
             model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
 
             String strTemplate = DatabaseTemplateHome.getTemplateFromKey( PROPERTY_UNBLOCK_USER );
-            HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strTemplate, request.getLocale(  ),
-                    model );
+            HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strTemplate, request.getLocale( ), model );
 
-            DatabaseAccountLifeTimeService accountLifeTimeService = new DatabaseAccountLifeTimeService(  );
+            DatabaseAccountLifeTimeService accountLifeTimeService = new DatabaseAccountLifeTimeService( );
 
             String strUserMail = accountLifeTimeService.getUserMainEmail( nIdUser );
 
             if ( ( strUserMail != null ) && StringUtils.isNotBlank( strUserMail ) )
             {
-                MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml(  ) );
+                MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml( ) );
             }
         }
     }

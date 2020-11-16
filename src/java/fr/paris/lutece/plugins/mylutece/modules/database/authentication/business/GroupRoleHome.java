@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.util.List;
 
-
 /**
  * This class provides instances management methods (create, find, ...) for Group right objects
  */
@@ -50,15 +49,17 @@ public final class GroupRoleHome
     /**
      * Creates a new GroupHome object.
      */
-    private GroupRoleHome(  )
+    private GroupRoleHome( )
     {
     }
 
     /**
      * Find group's roles
      *
-     * @param strGroupKey the login
-     * @param plugin Plugin
+     * @param strGroupKey
+     *            the login
+     * @param plugin
+     *            Plugin
      * @return ArrayList the role key list corresponding to the group
      */
     public static List<String> findGroupRoles( String strGroupKey, Plugin plugin )
@@ -69,8 +70,10 @@ public final class GroupRoleHome
     /**
      * Find group's roles
      *
-     * @param strRoleKey The Role key
-     * @param plugin Plugin
+     * @param strRoleKey
+     *            The Role key
+     * @param plugin
+     *            Plugin
      * @return ArrayList the groups key list corresponding to the role
      */
     public static List<String> findGroupRolesByRoleKey( String strRoleKey, Plugin plugin )
@@ -80,8 +83,11 @@ public final class GroupRoleHome
 
     /**
      * Delete groups for a group
-     * @param strGroupKey The key of the group
-     * @param plugin Plugin
+     * 
+     * @param strGroupKey
+     *            The key of the group
+     * @param plugin
+     *            Plugin
      */
     public static void removeRoles( String strGroupKey, Plugin plugin )
     {
@@ -90,9 +96,13 @@ public final class GroupRoleHome
 
     /**
      * Assign a role to group
-     * @param strGroupKey The key of the group
-     * @param strRoleKey The key of the role
-     * @param plugin Plugin
+     * 
+     * @param strGroupKey
+     *            The key of the group
+     * @param strRoleKey
+     *            The key of the role
+     * @param plugin
+     *            Plugin
      */
     public static void addRole( String strGroupKey, String strRoleKey, Plugin plugin )
     {

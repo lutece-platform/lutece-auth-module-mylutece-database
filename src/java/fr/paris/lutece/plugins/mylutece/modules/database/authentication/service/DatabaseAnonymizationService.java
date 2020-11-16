@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 /**
  * Service to handle user anonymization
  *
@@ -77,11 +76,12 @@ public class DatabaseAnonymizationService implements IAnonymizationService
 
     /**
      * Returns the instance of the singleton
+     * 
      * @return The instance of the singleton
      */
-    public static DatabaseAnonymizationService getService(  )
+    public static DatabaseAnonymizationService getService( )
     {
-        return SpringContextService.<DatabaseAnonymizationService>getBean( BEAN_DATABASE_ANONYMIZATION_SERVICE );
+        return SpringContextService.<DatabaseAnonymizationService> getBean( BEAN_DATABASE_ANONYMIZATION_SERVICE );
     }
 
     /**
@@ -92,29 +92,28 @@ public class DatabaseAnonymizationService implements IAnonymizationService
     {
         DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nUserId, _plugin );
 
-        String strEncryptionAlgorithme = AppPropertiesService.getProperty( PROPERTY_ANONYMIZATION_ENCRYPT_ALGO,
-                CONSTANT_DEFAULT_ENCRYPT_ALGO );
+        String strEncryptionAlgorithme = AppPropertiesService.getProperty( PROPERTY_ANONYMIZATION_ENCRYPT_ALGO, CONSTANT_DEFAULT_ENCRYPT_ALGO );
         Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         Map<String, Boolean> anonymizationStatus = AttributeHome.getAnonymizationStatusUserStaticField( pluginMyLutece );
 
         if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_LOGIN ) ) )
         {
-            user.setLogin( CryptoService.encrypt( user.getLogin(  ), strEncryptionAlgorithme ) );
+            user.setLogin( CryptoService.encrypt( user.getLogin( ), strEncryptionAlgorithme ) );
         }
 
         if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_EMAIL ) ) )
         {
-            user.setEmail( CryptoService.encrypt( user.getEmail(  ), strEncryptionAlgorithme ) );
+            user.setEmail( CryptoService.encrypt( user.getEmail( ), strEncryptionAlgorithme ) );
         }
 
         if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_NAME_FAMILY ) ) )
         {
-            user.setLastName( CryptoService.encrypt( user.getLastName(  ), strEncryptionAlgorithme ) );
+            user.setLastName( CryptoService.encrypt( user.getLastName( ), strEncryptionAlgorithme ) );
         }
 
         if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_NAME_GIVEN ) ) )
         {
-            user.setFirstName( CryptoService.encrypt( user.getFirstName(  ), strEncryptionAlgorithme ) );
+            user.setFirstName( CryptoService.encrypt( user.getFirstName( ), strEncryptionAlgorithme ) );
         }
 
         user.setStatus( DatabaseUser.STATUS_ANONYMIZED );
@@ -124,11 +123,11 @@ public class DatabaseAnonymizationService implements IAnonymizationService
         DatabaseUserHome.update( user, _plugin );
 
         List<IAttribute> listAllAttributes = AttributeHome.findAll( locale, pluginMyLutece );
-        List<IAttribute> listAttributesText = new ArrayList<>(  );
+        List<IAttribute> listAttributesText = new ArrayList<>( );
 
         for ( IAttribute attribut : listAllAttributes )
         {
-            if ( attribut.isAnonymizable(  ) )
+            if ( attribut.isAnonymizable( ) )
             {
                 listAttributesText.add( attribut );
             }
@@ -136,12 +135,12 @@ public class DatabaseAnonymizationService implements IAnonymizationService
 
         for ( IAttribute attribute : listAttributesText )
         {
-            List<MyLuteceUserField> listUserField = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( nUserId,
-                    attribute.getIdAttribute(  ), pluginMyLutece );
+            List<MyLuteceUserField> listUserField = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( nUserId, attribute.getIdAttribute( ),
+                    pluginMyLutece );
 
             for ( MyLuteceUserField userField : listUserField )
             {
-                userField.setValue( CryptoService.encrypt( userField.getValue(  ), strEncryptionAlgorithme ) );
+                userField.setValue( CryptoService.encrypt( userField.getValue( ), strEncryptionAlgorithme ) );
                 MyLuteceUserFieldHome.update( userField, pluginMyLutece );
             }
         }
@@ -151,7 +150,7 @@ public class DatabaseAnonymizationService implements IAnonymizationService
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> getExpiredUserIdList(  )
+    public List<Integer> getExpiredUserIdList( )
     {
         return DatabaseUserHome.findAllExpiredUserId( _plugin );
     }
