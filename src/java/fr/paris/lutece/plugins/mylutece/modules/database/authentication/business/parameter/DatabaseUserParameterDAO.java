@@ -56,20 +56,19 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
     public ReferenceItem load( String strParameterKey, Plugin plugin )
     {
         ReferenceItem userParam = null;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_PARAMETERS_VALUE, plugin );
-        daoUtil.setString( 1, strParameterKey );
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_PARAMETERS_VALUE, plugin ) )
         {
-            userParam = new ReferenceItem(  );
-            userParam.setCode( strParameterKey );
-            userParam.setName( daoUtil.getString( 1 ) );
-            userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+            daoUtil.setString( 1, strParameterKey );
+            daoUtil.executeQuery(  );
+    
+            if ( daoUtil.next(  ) )
+            {
+                userParam = new ReferenceItem(  );
+                userParam.setCode( strParameterKey );
+                userParam.setName( daoUtil.getString( 1 ) );
+                userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+            }
         }
-
-        daoUtil.free(  );
-
         return userParam;
     }
 
@@ -78,14 +77,14 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
      */
     public void store( ReferenceItem userParam, Plugin plugin )
     {
-        int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_USER_PARAMETERS, plugin );
-
-        daoUtil.setString( nIndex++, userParam.getName(  ) );
-        daoUtil.setString( nIndex++, userParam.getCode(  ) );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        int nIndex = 0;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_USER_PARAMETERS, plugin ) )
+        {
+            daoUtil.setString( ++nIndex, userParam.getName(  ) );
+            daoUtil.setString( ++nIndex, userParam.getCode(  ) );
+    
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -94,21 +93,20 @@ public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
     public ReferenceList selectAll( Plugin plugin )
     {
         ReferenceList listUserParams = new ReferenceList(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin ) )
         {
-            int nIndex = 1;
-            ReferenceItem userParam = new ReferenceItem(  );
-            userParam.setCode( daoUtil.getString( nIndex++ ) );
-            userParam.setName( daoUtil.getString( nIndex++ ) );
-            userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
-            listUserParams.add( userParam );
+            daoUtil.executeQuery(  );
+    
+            while ( daoUtil.next(  ) )
+            {
+                int nIndex = 0;
+                ReferenceItem userParam = new ReferenceItem(  );
+                userParam.setCode( daoUtil.getString( ++nIndex ) );
+                userParam.setName( daoUtil.getString( ++nIndex ) );
+                userParam.setChecked( Boolean.valueOf( userParam.getName(  ) ) );
+                listUserParams.add( userParam );
+            }
         }
-
-        daoUtil.free(  );
-
         return listUserParams;
     }
 }

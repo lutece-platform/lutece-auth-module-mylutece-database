@@ -43,6 +43,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
@@ -511,7 +512,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strValidationSuccess = request.getParameter( PARAMETER_ACTION_VALIDATION_SUCCESS );
 
     	
-    	Map<String, Object> model = new HashMap<String, Object>( );
+    	Map<String, Object> model = new HashMap<>( );
         LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
         
         if ( luteceUser == null )
@@ -582,7 +583,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getViewAccountPage( XPage page, HttpServletRequest request )throws UserNotSignedException
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( luteceUser == null )
@@ -620,7 +621,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getCreateAccountPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         DatabaseUser user = _userFactory.newDatabaseUser( );
 
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
@@ -711,7 +712,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strLastName = request.getParameter( PARAMETER_LAST_NAME );
         String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
-        String strLogin = StringUtils.EMPTY;
+        String strLogin;
 
         if ( _userFactory.isEmailUsedAsLogin( ) )
         {
@@ -810,7 +811,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                 String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_VALIDATION_OBJECT, _locale );
 
                 // Send validation email
-                Map<String, Object> model = new HashMap<String, Object>( );
+                Map<String, Object> model = new HashMap<>( );
                 model.put( MARK_VALIDATION_URL, _userKeyService.getValidationUrl( userKey.getKey( ), request ) );
                 model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
 
@@ -838,7 +839,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      * @param request The HTTP request
      * @return The URL to forward depending of the result of the change.
      */
-    public String doModifyAccount( HttpServletRequest request )throws UserNotSignedException
+    public String doModifyAccount( HttpServletRequest request )
     {
     	DatabaseUser user = getRemoteUser( request );
     	
@@ -985,7 +986,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         }
 
         // If the user is logged in, has no key and must change his password, we generate a new key
-        if ( ( key == null ) && ( luteceUser != null ) && _databaseService.mustUserChangePassword( luteceUser, _plugin ) )
+        if ( ( key == null ) && _databaseService.mustUserChangePassword( luteceUser, _plugin ) )
         {
             DatabaseUser user = getRemoteUser( request );
             key = _userKeyService.create( user.getUserId( ) );
@@ -996,7 +997,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             strKey = key.getKey( );
 
             String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<>( );
             model.put( MARK_ERROR_CODE, strErrorCode );
 
             if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
@@ -1132,7 +1133,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getLostPasswordPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strStateSending = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
@@ -1158,7 +1159,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getLostLoginPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strStateSending = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
@@ -1184,7 +1185,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     private XPage getChangePasswordPage( XPage page, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         String strErrorCode = request.getParameter( PARAMETER_ERROR_CODE );
         String strSuccess = request.getParameter( PARAMETER_ACTION_SUCCESSFUL );
 
@@ -1334,7 +1335,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         listUser = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail, _plugin );
 
-        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size( ) == 0 ) ) )
+        if ( StringUtils.isBlank( strError ) && CollectionUtils.isEmpty( listUser ) )
         {
             strError = ERROR_UNKNOWN_EMAIL;
         }
@@ -1374,7 +1375,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                     }
                     else
                     {
-                        HashMap<String, Object> model = new HashMap<String, Object>( );
+                        HashMap<String, Object> model = new HashMap<>( );
                         model.put( PARAMETER_NEW_PASSWORD, strPassword );
                         model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
 
@@ -1442,7 +1443,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         listUser = DatabaseUserHome.findDatabaseUsersListForEmail( strEmail, _plugin );
 
-        if ( StringUtils.isBlank( strError ) && ( ( listUser == null ) || ( listUser.size( ) == 0 ) ) )
+        if ( StringUtils.isBlank( strError ) && CollectionUtils.isEmpty( listUser ) ) 
         {
             strError = ERROR_UNKNOWN_EMAIL;
         }
@@ -1470,7 +1471,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                     }
                     else
                     {
-                        HashMap<String, Object> model = new HashMap<String, Object>( );
+                        HashMap<String, Object> model = new HashMap<>( );
                         model.put( MARK_LOGIN, user.getLogin( ) );
                         model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
                         model.put( MARK_LOGIN_URL, AppPathService.getBaseUrl( request ) + JSP_URL_MYLUTECE_LOGIN );
@@ -1533,9 +1534,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             return null;
         }
 
-        DatabaseUser user = listUsers.iterator( ).next( );
-
-        return user;
+        return listUsers.iterator( ).next( );
     }
 
     /**

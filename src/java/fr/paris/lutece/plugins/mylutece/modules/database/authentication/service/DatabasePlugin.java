@@ -49,6 +49,7 @@ public class DatabasePlugin extends PluginDefaultImplementation
     /**
      * Initialize the module Database
      */
+    @Override
     public void init(  )
     {
         // Initialize the Database service

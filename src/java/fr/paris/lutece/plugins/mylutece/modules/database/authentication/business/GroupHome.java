@@ -118,9 +118,7 @@ public final class GroupHome
      */
     public static ReferenceList getGroupsList( Plugin plugin )
     {
-        ReferenceList groupList = _dao.selectGroupsList( plugin );
-
-        return groupList;
+        return _dao.selectGroupsList( plugin );
     }
 
     /**
@@ -131,9 +129,7 @@ public final class GroupHome
      */
     public static Collection<Group> findAll( Plugin plugin )
     {
-        Collection<Group> groupList = _dao.selectAll( plugin );
-
-        return groupList;
+        return _dao.selectAll( plugin );
     }
 
     /**

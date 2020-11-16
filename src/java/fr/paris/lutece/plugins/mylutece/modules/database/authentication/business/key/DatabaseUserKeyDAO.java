@@ -57,14 +57,14 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
      */
     public void insert( DatabaseUserKey userKey, Plugin plugin )
     {
-        int nIndex = 1;
-
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
-        daoUtil.setString( nIndex++, userKey.getKey(  ) );
-        daoUtil.setInt( nIndex++, userKey.getUserId(  ) );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        int nIndex = 0;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        {
+            daoUtil.setString( ++nIndex, userKey.getKey(  ) );
+            daoUtil.setInt( ++nIndex, userKey.getUserId(  ) );
+    
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -74,20 +74,19 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
     {
         DatabaseUserKey userKey = null;
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
-        daoUtil.setString( 1, strKey );
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {
-            int nIndex = 1;
-            userKey = new DatabaseUserKey(  );
-            userKey.setKey( daoUtil.getString( nIndex++ ) );
-            userKey.setUserId( daoUtil.getInt( nIndex++ ) );
+            daoUtil.setString( 1, strKey );
+            daoUtil.executeQuery(  );
+    
+            if ( daoUtil.next(  ) )
+            {
+                int nIndex = 0;
+                userKey = new DatabaseUserKey(  );
+                userKey.setKey( daoUtil.getString( ++nIndex ) );
+                userKey.setUserId( daoUtil.getInt( ++nIndex ) );
+            }
         }
-
-        daoUtil.free(  );
-
         return userKey;
     }
 
@@ -96,11 +95,11 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
      */
     public void delete( String strKey, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE + SQL_WHERE + SQL_USER_KEY, plugin );
-        daoUtil.setString( 1, strKey );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE + SQL_WHERE + SQL_USER_KEY, plugin ) )
+        {
+            daoUtil.setString( 1, strKey );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -108,11 +107,11 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
      */
     public void deleteByIdUser( int nUserId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE + SQL_WHERE + SQL_USER_ID, plugin );
-        daoUtil.setInt( 1, nUserId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE + SQL_WHERE + SQL_USER_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nUserId );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -122,21 +121,19 @@ public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
     {
         DatabaseUserKey userKey = null;
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_LOGIN, plugin );
-        daoUtil.setString( 1, login );
-
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_LOGIN, plugin ) )
         {
-            int nIndex = 1;
-            userKey = new DatabaseUserKey(  );
-            userKey.setKey( daoUtil.getString( nIndex++ ) );
-            userKey.setUserId( daoUtil.getInt( nIndex++ ) );
+            daoUtil.setString( 1, login );
+            daoUtil.executeQuery(  );
+    
+            if ( daoUtil.next(  ) )
+            {
+                int nIndex = 0;
+                userKey = new DatabaseUserKey(  );
+                userKey.setKey( daoUtil.getString( ++nIndex ) );
+                userKey.setUserId( daoUtil.getInt( ++nIndex ) );
+            }
         }
-
-        daoUtil.free(  );
-
         return userKey;
     }
 }

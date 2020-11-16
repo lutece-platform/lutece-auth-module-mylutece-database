@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
@@ -219,11 +220,11 @@ public final class DatabaseService
      */
     public Map<String, Object> getManageAdvancedParameters( AdminUser user )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<>(  );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
+                    DatabaseResourceIdService.PERMISSION_MANAGE, (User) user ) )
         {
             model.put( MARK_IS_PLUGIN_JCAPTCHA_ENABLE, isPluginJcaptchaEnable(  ) );
 
@@ -269,7 +270,7 @@ public final class DatabaseService
 
             Role role = RoleHome.findByPrimaryKey( userRoleKey );
 
-            if ( AdminWorkgroupService.isAuthorized( role, adminUser ) )
+            if ( AdminWorkgroupService.isAuthorized( role, (User) adminUser ) )
             {
                 return true;
             }
@@ -287,7 +288,7 @@ public final class DatabaseService
 
                 Role role = RoleHome.findByPrimaryKey( groupRoleKey );
 
-                if ( AdminWorkgroupService.isAuthorized( role, adminUser ) )
+                if ( AdminWorkgroupService.isAuthorized( role, (User) adminUser ) )
                 {
                     return true;
                 }
@@ -306,7 +307,7 @@ public final class DatabaseService
     public List<DatabaseUser> getAuthorizedUsers( AdminUser adminUser, Plugin plugin )
     {
         Collection<DatabaseUser> userList = DatabaseUserHome.findDatabaseUsersList( plugin );
-        List<DatabaseUser> authorizedUserList = new ArrayList<DatabaseUser>(  );
+        List<DatabaseUser> authorizedUserList = new ArrayList<>(  );
 
         for ( DatabaseUser user : userList )
         {
@@ -352,14 +353,14 @@ public final class DatabaseService
         {
             duFilter.setUrlAttributes( url );
 
-            if ( duFilter.getUrlAttributes(  ) != StringUtils.EMPTY )
+            if ( !StringUtils.EMPTY.equals( duFilter.getUrlAttributes(  ) ) )
             {
                 strSortSearchAttribute = AMPERSAND + duFilter.getUrlAttributes(  );
             }
 
             mlFieldFilter.setUrlAttributes( url );
 
-            if ( mlFieldFilter.getUrlAttributes(  ) != StringUtils.EMPTY )
+            if ( !StringUtils.EMPTY.equals( mlFieldFilter.getUrlAttributes(  ) ) )
             {
                 strSortSearchAttribute += ( AMPERSAND + mlFieldFilter.getUrlAttributes(  ) );
             }
@@ -387,7 +388,7 @@ public final class DatabaseService
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         List<DatabaseUser> listFilteredUsers = DatabaseUserHome.findDatabaseUsersListByFilter( duFilter, plugin );
-        List<DatabaseUser> listAvailableUsers = new ArrayList<DatabaseUser>(  );
+        List<DatabaseUser> listAvailableUsers = new ArrayList<>(  );
 
         for ( DatabaseUser filteredUser : listFilteredUsers )
         {
@@ -401,7 +402,7 @@ public final class DatabaseService
         }
 
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-        List<DatabaseUser> filteredUsers = new ArrayList<DatabaseUser>(  );
+        List<DatabaseUser> filteredUsers = new ArrayList<>(  );
 
         MyLuteceUserFieldFilter mlFieldFilter = new MyLuteceUserFieldFilter(  );
         mlFieldFilter.setMyLuteceUserFieldFilter( request, request.getLocale(  ) );
@@ -563,7 +564,7 @@ public final class DatabaseService
 
                 String strEmailSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
 
-                Map<String, Object> model = new HashMap<String, Object>(  );
+                Map<String, Object> model = new HashMap<>(  );
                 model.put( MARK_NEW_PASSWORD, strPassword );
                 model.put( MARK_LOGIN_URL, strBaseURL + AdminAuthenticationService.getInstance(  ).getLoginPageUrl(  ) );
                 model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
@@ -629,7 +630,7 @@ public final class DatabaseService
 
             String strSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName(  );
 
-            Map<String, String> model = new HashMap<String, String>(  );
+            Map<String, String> model = new HashMap<>(  );
             accountLifeTimeService.addParametersToModel( model, nIdUser );
 
             HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strBody, Locale.getDefault(  ), model );

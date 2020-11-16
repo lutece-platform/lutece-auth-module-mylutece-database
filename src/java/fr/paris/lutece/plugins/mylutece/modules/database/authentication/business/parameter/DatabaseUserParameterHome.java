@@ -108,9 +108,7 @@ public final class DatabaseUserParameterHome
 
         try
         {
-            int nValue = Integer.parseInt( refItem.getName(  ) );
-
-            return nValue;
+            return Integer.parseInt( refItem.getName(  ) );
         }
         catch ( NumberFormatException e )
         {

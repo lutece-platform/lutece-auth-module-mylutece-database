@@ -96,6 +96,6 @@ public class Group implements RBACResource
      */
     public String getResourceId(  )
     {
-        return _strGroupKey;
+        return getGroupKey( );
     }
 }

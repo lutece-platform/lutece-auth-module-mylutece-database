@@ -87,38 +87,34 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public BaseUser selectLuteceUserByLogin( String strLogin, Plugin plugin, LuteceAuthentication authenticationService )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_USER_BY_LOGIN, plugin );
-        daoUtil.setString( 1, strLogin );
-        daoUtil.executeQuery(  );
-
-        if ( !daoUtil.next(  ) )
+        BaseUser user = null;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_USER_BY_LOGIN, plugin ) )
         {
-            daoUtil.free(  );
+            daoUtil.setString( 1, strLogin );
+            daoUtil.executeQuery( );
 
-            return null;
+            if ( daoUtil.next( ) )
+            {
+                String strLastName = daoUtil.getString( 3 );
+                String strFirstName = daoUtil.getString( 4 );
+                String strEmail = daoUtil.getString( 5 );
+                Timestamp dateLastLogin = daoUtil.getTimestamp( 6 );
+
+                user = new BaseUser( strLogin, authenticationService );
+
+                user.setEmail( strEmail );
+                user.setLuteceAuthenticationService( authenticationService );
+                user.setUserInfo( LuteceUser.NAME_FAMILY, strLastName );
+                user.setUserInfo( LuteceUser.NAME_GIVEN, strFirstName );
+                user.setUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, strEmail );
+
+                if ( ( dateLastLogin != null ) && !dateLastLogin.equals( DatabaseUser.DEFAULT_DATE_LAST_LOGIN ) )
+                {
+                    DateFormat dateFormat = new SimpleDateFormat( );
+                    user.setUserInfo( LuteceUser.DATE_LAST_LOGIN, dateFormat.format( dateLastLogin ) );
+                }
+            }
         }
-
-        String strLastName = daoUtil.getString( 3 );
-        String strFirstName = daoUtil.getString( 4 );
-        String strEmail = daoUtil.getString( 5 );
-        Timestamp dateLastLogin = daoUtil.getTimestamp( 6 );
-
-        BaseUser user = new BaseUser( strLogin, authenticationService );
-
-        user.setEmail( strEmail );
-        user.setLuteceAuthenticationService( authenticationService );
-        user.setUserInfo( LuteceUser.NAME_FAMILY, strLastName );
-        user.setUserInfo( LuteceUser.NAME_GIVEN, strFirstName );
-        user.setUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, strEmail );
-
-        if ( ( dateLastLogin != null ) && !dateLastLogin.equals( DatabaseUser.DEFAULT_DATE_LAST_LOGIN ) )
-        {
-            DateFormat dateFormat = new SimpleDateFormat(  );
-            user.setUserInfo( LuteceUser.DATE_LAST_LOGIN, dateFormat.format( dateLastLogin ) );
-        }
-
-        daoUtil.free(  );
-
         return user;
     }
 
@@ -132,20 +128,18 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public boolean selectResetPasswordFromLogin( String strLogin, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_RESET_PASSWORD, plugin );
-        daoUtil.setString( 1, strLogin );
-        daoUtil.executeQuery(  );
-
-        if ( !daoUtil.next(  ) )
+        boolean bResult = false;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_RESET_PASSWORD, plugin ) )
         {
-            daoUtil.free(  );
+            daoUtil.setString( 1, strLogin );
+            daoUtil.executeQuery( );
 
-            return false;
+            if ( daoUtil.next( ) )
+            {
+                bResult = daoUtil.getBoolean( 1 );
+            }
+
         }
-
-        boolean bResult = daoUtil.getBoolean( 1 );
-        daoUtil.free(  );
-
         return bResult;
     }
 
@@ -158,18 +152,17 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public Timestamp selectPasswordMaxValideDateFromLogin( String strLogin, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_PASSWORD_MAX_VALID_DATE, plugin );
-        daoUtil.setString( 1, strLogin );
-        daoUtil.executeQuery(  );
-
         Timestamp passwordMaxValideDate = null;
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_PASSWORD_MAX_VALID_DATE, plugin ) )
         {
-            passwordMaxValideDate = daoUtil.getTimestamp( 1 );
-        }
+            daoUtil.setString( 1, strLogin );
+            daoUtil.executeQuery( );
 
-        daoUtil.free(  );
+            if ( daoUtil.next( ) )
+            {
+                passwordMaxValideDate = daoUtil.getTimestamp( 1 );
+            }
+        }
 
         return passwordMaxValideDate;
     }
@@ -183,24 +176,24 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public Collection<BaseUser> selectLuteceUserList( Plugin plugin, LuteceAuthentication authenticationService )
     {
-        Collection<BaseUser> listBaseUsers = new ArrayList<BaseUser>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        Collection<BaseUser> listBaseUsers = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            BaseUser user = new BaseUser( daoUtil.getString( 2 ), authenticationService );
-            user.setUserInfo( LuteceUser.NAME_FAMILY, daoUtil.getString( 3 ) );
-            user.setUserInfo( LuteceUser.NAME_GIVEN, daoUtil.getString( 4 ) );
+            daoUtil.executeQuery( );
 
-            String strEmail = daoUtil.getString( 5 );
-            user.setUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, strEmail );
-            user.setEmail( strEmail );
-            listBaseUsers.add( user );
+            while ( daoUtil.next( ) )
+            {
+                BaseUser user = new BaseUser( daoUtil.getString( 2 ), authenticationService );
+                user.setUserInfo( LuteceUser.NAME_FAMILY, daoUtil.getString( 3 ) );
+                user.setUserInfo( LuteceUser.NAME_GIVEN, daoUtil.getString( 4 ) );
+
+                String strEmail = daoUtil.getString( 5 );
+                user.setUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, strEmail );
+                user.setEmail( strEmail );
+                listBaseUsers.add( user );
+            }
+
         }
-
-        daoUtil.free(  );
-
         return listBaseUsers;
     }
 
@@ -214,18 +207,17 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public List<String> selectUserRolesFromLogin( String strLogin, Plugin plugin )
     {
-        List<String> arrayRoles = new ArrayList<String>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_ROLES_FROM_LOGIN, plugin );
-        daoUtil.setString( 1, strLogin );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        List<String> arrayRoles = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_ROLES_FROM_LOGIN, plugin ) )
         {
-            arrayRoles.add( daoUtil.getString( 1 ) );
+            daoUtil.setString( 1, strLogin );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                arrayRoles.add( daoUtil.getString( 1 ) );
+            }
         }
-
-        daoUtil.free(  );
-
         return arrayRoles;
     }
 
@@ -237,11 +229,12 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public void deleteRolesForUser( int nIdUser, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ROLES_FOR_USER, plugin );
-        daoUtil.setInt( 1, nIdUser );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ROLES_FOR_USER, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdUser );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -253,12 +246,13 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public void createRoleForUser( int nIdUser, String strRoleKey, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ROLE_FOR_USER, plugin );
-        daoUtil.setInt( 1, nIdUser );
-        daoUtil.setString( 2, strRoleKey );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_ROLE_FOR_USER, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdUser );
+            daoUtil.setString( 2, strRoleKey );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -271,18 +265,18 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public List<String> selectUserGroupsFromLogin( String strLogin, Plugin plugin )
     {
-        ArrayList<String> arrayGroups = new ArrayList<String>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_GROUPS_FROM_LOGIN, plugin );
-        daoUtil.setString( 1, strLogin );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        List<String> arrayGroups = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_GROUPS_FROM_LOGIN, plugin ) )
         {
-            arrayGroups.add( daoUtil.getString( 1 ) );
+            daoUtil.setString( 1, strLogin );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                arrayGroups.add( daoUtil.getString( 1 ) );
+            }
+
         }
-
-        daoUtil.free(  );
-
         return arrayGroups;
     }
 
@@ -295,17 +289,18 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public Collection<String> selectLoginListForRoleKey( String strRoleKey, Plugin plugin )
     {
-        Collection<String> listLogins = new ArrayList<String>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_LOGINS_FROM_ROLE, plugin );
-        daoUtil.setString( 1, strRoleKey );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        Collection<String> listLogins = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_LOGINS_FROM_ROLE, plugin ) )
         {
-            listLogins.add( daoUtil.getString( 1 ) );
-        }
+            daoUtil.setString( 1, strRoleKey );
+            daoUtil.executeQuery( );
 
-        daoUtil.free(  );
+            while ( daoUtil.next( ) )
+            {
+                listLogins.add( daoUtil.getString( 1 ) );
+            }
+
+        }
 
         return listLogins;
     }
@@ -318,11 +313,12 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public void deleteGroupsForUser( int nIdUser, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_GROUPS_FOR_USER, plugin );
-        daoUtil.setInt( 1, nIdUser );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_GROUPS_FOR_USER, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdUser );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -334,12 +330,13 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public void createGroupForUser( int nIdUser, String strGroupKey, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_GROUP_FOR_USER, plugin );
-        daoUtil.setInt( 1, nIdUser );
-        daoUtil.setString( 2, strGroupKey );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_GROUP_FOR_USER, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdUser );
+            daoUtil.setString( 2, strGroupKey );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -351,23 +348,24 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public List<DatabaseUser> selectGroupUsersFromGroupKey( String strGroupKey, Plugin plugin )
     {
-        List<DatabaseUser> listUsers = new ArrayList<DatabaseUser>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_USERS_FROM_GROUP_KEY, plugin );
-        daoUtil.setString( 1, strGroupKey );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        List<DatabaseUser> listUsers = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_USERS_FROM_GROUP_KEY, plugin ) )
         {
-            DatabaseUser user = DatabaseUserFactory.getFactory(  ).newDatabaseUser(  );
-            user.setUserId( daoUtil.getInt( 1 ) );
-            user.setLogin( daoUtil.getString( 2 ) );
-            user.setLastName( daoUtil.getString( 3 ) );
-            user.setFirstName( daoUtil.getString( 4 ) );
-            user.setEmail( daoUtil.getString( 5 ) );
-            listUsers.add( user );
-        }
+            daoUtil.setString( 1, strGroupKey );
+            daoUtil.executeQuery( );
 
-        daoUtil.free(  );
+            while ( daoUtil.next( ) )
+            {
+                DatabaseUser user = DatabaseUserFactory.getFactory( ).newDatabaseUser( );
+                user.setUserId( daoUtil.getInt( 1 ) );
+                user.setLogin( daoUtil.getString( 2 ) );
+                user.setLastName( daoUtil.getString( 3 ) );
+                user.setFirstName( daoUtil.getString( 4 ) );
+                user.setEmail( daoUtil.getString( 5 ) );
+                listUsers.add( user );
+            }
+
+        }
 
         return listUsers;
     }
@@ -381,13 +379,14 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public void updateResetPasswordFromLogin( String strUserName, boolean bNewValue, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN, plugin ) )
+        {
 
-        daoUtil.setBoolean( 1, bNewValue );
-        daoUtil.setString( 2, strUserName );
-        daoUtil.executeUpdate(  );
+            daoUtil.setBoolean( 1, bNewValue );
+            daoUtil.setString( 2, strUserName );
+            daoUtil.executeUpdate( );
 
-        daoUtil.free(  );
+        }
     }
 
     /**
@@ -396,19 +395,17 @@ public class DatabaseDAO implements IDatabaseDAO
     @Override
     public int findUserIdFromLogin( String strLogin, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_ID_FROM_LOGIN, plugin );
-        daoUtil.setString( 1, strLogin );
-        daoUtil.executeQuery(  );
-
         int nRes = -1;
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_USER_ID_FROM_LOGIN, plugin ) )
         {
-            nRes = daoUtil.getInt( 1 );
+            daoUtil.setString( 1, strLogin );
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nRes = daoUtil.getInt( 1 );
+            }
         }
-
-        daoUtil.free(  );
-
         return nRes;
     }
 }

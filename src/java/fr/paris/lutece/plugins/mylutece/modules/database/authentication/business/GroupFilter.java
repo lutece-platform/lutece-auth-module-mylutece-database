@@ -64,13 +64,6 @@ public class GroupFilter
     private String _strDescription;
 
     /**
-     * Constructor
-     */
-    public GroupFilter(  )
-    {
-    }
-
-    /**
      * Initialize each component of the object
      */
     public void init(  )

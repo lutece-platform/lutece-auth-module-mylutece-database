@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseResourceIdService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.portal.business.rbac.RBAC;
@@ -67,7 +68,7 @@ public class DatabaseAdminDashboardComponent extends AdminDashboardComponent
     public String getDashboardData( AdminUser user, HttpServletRequest request )
     {
         if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    DatabaseResourceIdService.PERMISSION_MANAGE, user ) )
+                    DatabaseResourceIdService.PERMISSION_MANAGE, (User) user ) )
         {
             Map<String, Object> model = DatabaseService.getService(  ).getManageAdvancedParameters( user );
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ADMIN_DASHBOARD, user.getLocale(  ), model );

@@ -68,13 +68,6 @@ public class DatabaseUserFilter
     private String _strEmail;
 
     /**
-    * Constructor
-    */
-    public DatabaseUserFilter(  )
-    {
-    }
-
-    /**
      * Initialize each component of the object
      */
     public void init(  )

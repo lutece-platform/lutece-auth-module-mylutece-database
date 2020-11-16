@@ -41,6 +41,8 @@ import fr.paris.lutece.portal.service.util.RemovalListener;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.commons.collections.CollectionUtils;
+
 
 /**
  * DatabaseUser Removal Listener
@@ -64,12 +66,7 @@ public class DatabaseUserRoleRemovalListener implements RemovalListener
         Collection<String> listLogins = DatabaseHome.findDatabaseUsersListForRoleKey( strId,
                 PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME ) );
 
-        if ( ( listLogins != null ) && ( listLogins.size(  ) > 0 ) )
-        {
-            return false;
-        }
-
-        return true;
+        return CollectionUtils.isEmpty( listLogins );
     }
 
     /**

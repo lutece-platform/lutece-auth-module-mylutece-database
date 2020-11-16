@@ -63,12 +63,12 @@ import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.http.SecurityUtil;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Timestamp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -318,6 +318,7 @@ public class BaseAuthentication extends PortalAuthentication
     @Override
     public void logout( LuteceUser user )
     {
+        // Nothing
     }
 
     /**
@@ -352,6 +353,7 @@ public class BaseAuthentication extends PortalAuthentication
      * @param strRole The role name
      * @return Returns true if the user is associated to the role, otherwise false
      */
+    @Override
     public boolean isUserInRole( LuteceUser user, HttpServletRequest request, String strRole )
     {
         String[] roles = getRolesByUser( user );
@@ -438,7 +440,7 @@ public class BaseAuthentication extends PortalAuthentication
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
         Collection<BaseUser> baseUsers = DatabaseHome.findDatabaseUsersList( plugin, this );
-        Collection<LuteceUser> luteceUsers = new ArrayList<LuteceUser>(  );
+        Collection<LuteceUser> luteceUsers = new ArrayList<>(  );
 
         for ( BaseUser user : baseUsers )
         {
@@ -458,9 +460,7 @@ public class BaseAuthentication extends PortalAuthentication
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
 
-        BaseUser user = DatabaseHome.findLuteceUserByLogin( userLogin, plugin, this );
-
-        return user;
+        return DatabaseHome.findLuteceUserByLogin( userLogin, plugin, this );
     }
 
     /**
@@ -473,16 +473,13 @@ public class BaseAuthentication extends PortalAuthentication
     public String[] getRolesByUser( LuteceUser user )
     {
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        Set<String> setRoles = new HashSet<String>(  );
+        Set<String> setRoles = new HashSet<>(  );
         String[] strGroups = user.getGroups(  );
         String[] strRoles = user.getRoles(  );
 
         if ( strRoles != null )
         {
-            for ( String strRole : strRoles )
-            {
-                setRoles.add( strRole );
-            }
+            setRoles.addAll( Arrays.asList( strRoles ) );
         }
 
         if ( strGroups != null )
@@ -540,9 +537,9 @@ public class BaseAuthentication extends PortalAuthentication
     @Override
     public void updateDateLastLogin( LuteceUser user, HttpServletRequest request )
     {
-        DatabaseService _databaseService = DatabaseService.getService(  );
+        DatabaseService databaseService = DatabaseService.getService(  );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        _databaseService.updateUserLastLoginDate( user.getName(  ), plugin );
+        databaseService.updateUserLastLoginDate( user.getName(  ), plugin );
     }
 
     private void sendUnlockLinkToUser( String strLogin, int nIntervalMinutes, HttpServletRequest request, Plugin plugin )
@@ -561,7 +558,7 @@ public class BaseAuthentication extends PortalAuthentication
 
             String strLink = SecurityUtils.buildResetConnectionLogUrl( nIntervalMinutes, request );
 
-            Map<String, Object> model = new HashMap<String, Object>(  );
+            Map<String, Object> model = new HashMap<>(  );
             model.put( MARK_URL, strLink );
             model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
 

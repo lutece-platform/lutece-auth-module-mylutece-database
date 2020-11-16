@@ -65,7 +65,7 @@ public final class DatabaseUserFactory
      */
     public static DatabaseUserFactory getFactory(  )
     {
-        return (DatabaseUserFactory) SpringContextService.getBean( BEAN_DATABASE_USER_FACTORY );
+        return SpringContextService.getBean( BEAN_DATABASE_USER_FACTORY );
     }
 
     /**
@@ -105,7 +105,7 @@ public final class DatabaseUserFactory
 
         try
         {
-            databaseUser = (DatabaseUser) SpringContextService.getBean( _strBeanDatabaseUser );
+            databaseUser = SpringContextService.getBean( _strBeanDatabaseUser );
         }
         catch ( BeanDefinitionStoreException e )
         {

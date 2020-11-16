@@ -97,22 +97,22 @@ public class DatabaseAnonymizationService implements IAnonymizationService
         Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         Map<String, Boolean> anonymizationStatus = AttributeHome.getAnonymizationStatusUserStaticField( pluginMyLutece );
 
-        if ( anonymizationStatus.get( PARAMETER_LOGIN ) )
+        if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_LOGIN ) ) )
         {
             user.setLogin( CryptoService.encrypt( user.getLogin(  ), strEncryptionAlgorithme ) );
         }
 
-        if ( anonymizationStatus.get( PARAMETER_EMAIL ) )
+        if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_EMAIL ) ) )
         {
             user.setEmail( CryptoService.encrypt( user.getEmail(  ), strEncryptionAlgorithme ) );
         }
 
-        if ( anonymizationStatus.get( PARAMETER_NAME_FAMILY ) )
+        if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_NAME_FAMILY ) ) )
         {
             user.setLastName( CryptoService.encrypt( user.getLastName(  ), strEncryptionAlgorithme ) );
         }
 
-        if ( anonymizationStatus.get( PARAMETER_NAME_GIVEN ) )
+        if ( Boolean.TRUE.equals( anonymizationStatus.get( PARAMETER_NAME_GIVEN ) ) )
         {
             user.setFirstName( CryptoService.encrypt( user.getFirstName(  ), strEncryptionAlgorithme ) );
         }
@@ -124,7 +124,7 @@ public class DatabaseAnonymizationService implements IAnonymizationService
         DatabaseUserHome.update( user, _plugin );
 
         List<IAttribute> listAllAttributes = AttributeHome.findAll( locale, pluginMyLutece );
-        List<IAttribute> listAttributesText = new ArrayList<IAttribute>(  );
+        List<IAttribute> listAttributesText = new ArrayList<>(  );
 
         for ( IAttribute attribut : listAllAttributes )
         {

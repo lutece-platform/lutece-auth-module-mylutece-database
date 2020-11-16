@@ -69,13 +69,14 @@ public final class GroupDAO implements IGroupDAO
     public synchronized void insert( Group group, Plugin plugin )
     {
         int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        {
 
-        daoUtil.setString( ++nParam, group.getGroupKey(  ) );
-        daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.setString( ++nParam, group.getGroupKey(  ) );
+            daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
+    
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -87,23 +88,21 @@ public final class GroupDAO implements IGroupDAO
     @Override
     public Group load( String strGroupKey, Plugin plugin )
     {
-        int nParam;
         Group group = null;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_KEY, plugin );
-        daoUtil.setString( 1, strGroupKey );
-
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_KEY, plugin ) )
         {
-            nParam = 0;
-            group = new Group(  );
-            group.setGroupKey( daoUtil.getString( ++nParam ) );
-            group.setGroupDescription( daoUtil.getString( ++nParam ) );
+            daoUtil.setString( 1, strGroupKey );
+    
+            daoUtil.executeQuery(  );
+    
+            if ( daoUtil.next(  ) )
+            {
+                int nParam = 0;
+                group = new Group(  );
+                group.setGroupKey( daoUtil.getString( ++nParam ) );
+                group.setGroupDescription( daoUtil.getString( ++nParam ) );
+            }
         }
-
-        daoUtil.free(  );
-
         return group;
     }
 
@@ -116,10 +115,11 @@ public final class GroupDAO implements IGroupDAO
     public void delete( String strGroupKey, Plugin plugin )
     {
         int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setString( ++nParam, strGroupKey );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        {
+            daoUtil.setString( ++nParam, strGroupKey );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -131,14 +131,15 @@ public final class GroupDAO implements IGroupDAO
     public void store( Group group, Plugin plugin )
     {
         int nParam = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        {
 
-        daoUtil.setString( ++nParam, group.getGroupKey(  ) );
-        daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
-        daoUtil.setString( ++nParam, group.getGroupKey(  ) );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.setString( ++nParam, group.getGroupKey(  ) );
+            daoUtil.setString( ++nParam, group.getGroupDescription(  ) );
+            daoUtil.setString( ++nParam, group.getGroupKey(  ) );
+    
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -149,23 +150,21 @@ public final class GroupDAO implements IGroupDAO
     @Override
     public ReferenceList selectGroupsList( Plugin plugin )
     {
-        int nParam;
         ReferenceList groupList = new ReferenceList(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            nParam = 0;
+            daoUtil.executeQuery(  );
+    
+            while ( daoUtil.next(  ) )
+            {
+                int nParam = 0;
+                Group group = new Group(  );
+                group.setGroupKey( daoUtil.getString( ++nParam ) );
+                group.setGroupDescription( daoUtil.getString( ++nParam ) );
+                groupList.addItem( group.getGroupKey(  ), group.getGroupDescription(  ) );
+            }
 
-            Group group = new Group(  );
-            group.setGroupKey( daoUtil.getString( ++nParam ) );
-            group.setGroupDescription( daoUtil.getString( ++nParam ) );
-            groupList.addItem( group.getGroupKey(  ), group.getGroupDescription(  ) );
         }
-
-        daoUtil.free(  );
-
         return groupList;
     }
 
@@ -178,23 +177,23 @@ public final class GroupDAO implements IGroupDAO
     public Collection<Group> selectAll( Plugin plugin )
     {
         int nParam;
-        Collection<Group> listGroups = new ArrayList<Group>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        Collection<Group> listGroups = new ArrayList<>(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            nParam = 0;
+            daoUtil.executeQuery(  );
+    
+            while ( daoUtil.next(  ) )
+            {
+                nParam = 0;
+    
+                Group group = new Group(  );
+                group.setGroupKey( daoUtil.getString( ++nParam ) );
+                group.setGroupDescription( daoUtil.getString( ++nParam ) );
+    
+                listGroups.add( group );
+            }
 
-            Group group = new Group(  );
-            group.setGroupKey( daoUtil.getString( ++nParam ) );
-            group.setGroupDescription( daoUtil.getString( ++nParam ) );
-
-            listGroups.add( group );
         }
-
-        daoUtil.free(  );
-
         return listGroups;
     }
 
@@ -208,25 +207,25 @@ public final class GroupDAO implements IGroupDAO
     @Override
     public List<Group> selectByFilter( GroupFilter gFilter, Plugin plugin )
     {
-        List<Group> listFilteredGroups = new ArrayList<Group>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_GROUP_FROM_SEARCH, plugin );
-
-        daoUtil.setString( 1, PERCENT + gFilter.getKey(  ) + PERCENT );
-        daoUtil.setString( 2, PERCENT + gFilter.getDescription(  ) + PERCENT );
-
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        List<Group> listFilteredGroups = new ArrayList<>(  );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_GROUP_FROM_SEARCH, plugin ) )
         {
-            Group group = new Group(  );
-            group.setGroupKey( daoUtil.getString( 1 ) );
-            group.setGroupDescription( daoUtil.getString( 2 ) );
 
-            listFilteredGroups.add( group );
+            daoUtil.setString( 1, PERCENT + gFilter.getKey(  ) + PERCENT );
+            daoUtil.setString( 2, PERCENT + gFilter.getDescription(  ) + PERCENT );
+    
+            daoUtil.executeQuery(  );
+    
+            while ( daoUtil.next(  ) )
+            {
+                Group group = new Group(  );
+                group.setGroupKey( daoUtil.getString( 1 ) );
+                group.setGroupDescription( daoUtil.getString( 2 ) );
+    
+                listFilteredGroups.add( group );
+            }
+
         }
-
-        daoUtil.free(  );
-
         return listFilteredGroups;
     }
 }
