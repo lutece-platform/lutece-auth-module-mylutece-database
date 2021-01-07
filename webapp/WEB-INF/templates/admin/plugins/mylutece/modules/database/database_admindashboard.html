@@ -1,6 +1,5 @@
-<div class="row-fluid">
-	<div class="span12">
-	<legend>#i18n{module.mylutece.database.adminDashboard.pageTitle}</legend>
+<#include "../../../../dashboard/admin/admindashboard_utils.html">
+
+<@adminDashboardPanel title='#i18n{module.mylutece.database.adminDashboard.pageTitle}' icon='users-cog' parentId='technical_settings' childId='mylutecedatabase-adminDashboard'>
 	<#include "advanced_parameters.html" />
-	</div>
-</div>
+</@adminDashboardPanel>

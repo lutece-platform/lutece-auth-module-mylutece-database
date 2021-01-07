@@ -7,8 +7,7 @@
 					<@tabLink active=true href='jsp/admin/plugins/mylutece/modules/database/ImportUsersFromFile.jsp' title='#i18n{module.mylutece.database.import_users_from_file.labelImportUsers}' />
 				</@tabList>
 				<@tabContent>
-					<fieldset>
-						<legend>#i18n{module.mylutece.database.import_users_from_file.pageTitle}</legend> 
+					<@fieldSet legend='#i18n{module.mylutece.database.import_users_from_file.pageTitle}'> 
 						<@formGroup labelFor='import_file' labelKey='#i18n{module.mylutece.database.import_users_from_file.labelImportFile}' helpKey='#i18n{module.mylutece.database.import_users_from_file.labelFileEncoding}' mandatory=true>
 							<@input type='file' id='import_file' name='import_file' />
 							<@formHelp>
@@ -37,7 +36,7 @@
 							<@button type='submit' title='#i18n{portal.util.labelValidate}' buttonIcon='check' />
 							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='times' color='default' />
 						</@formGroup>
-					</fieldset>
+					</@fieldSet>
 				</@tabContent>
 			</@tabs>
 		</@tform>

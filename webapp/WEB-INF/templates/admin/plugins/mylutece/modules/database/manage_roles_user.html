@@ -26,17 +26,17 @@
 						</#if>
 						</legend>
 						<@table>
-							<tr>
-								<th>#i18n{module.mylutece.database.manage_roles_user.colName}</th>
-								<th>#i18n{module.mylutece.database.manage_roles_user.colLabel}</th>
-								<th></th>
-							</tr>
+							<@tr>
+								<@th>#i18n{module.mylutece.database.manage_roles_user.colName}</@th>
+								<@th>#i18n{module.mylutece.database.manage_roles_user.colLabel}</@th>
+								<@th></@th>
+							</@tr>
 							<#list role_list as role >
 								<#if role.role != "none">
-								<tr>
-									<td>${role.role}</td>
-									<td>${role.roleDescription}</td>
-									<td>
+								<@tr>
+									<@td>${role.role}</@td>
+									<@td>${role.roleDescription}</@td>
+									<@td>
 										<#assign checked = false />
 										<#list user_role_list as user_role >
 											<#if user_role.role = role.role >
@@ -45,8 +45,8 @@
 											</#if>
 										</#list>
 										<@checkBox name='mylutece_database_role_id' id=role.role?replace('\\s+','','r') value='${role.role}' checked=checked />
-									</td>
-								</tr>
+									</@td>
+								</@tr>
 								</#if>
 							</#list>
 						</@table>

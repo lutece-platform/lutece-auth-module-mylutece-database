@@ -40,17 +40,16 @@
 						</@formGroup>
 					</fieldset>
 					<#if attributes_list?has_content>
-					<fieldset>
-						<legend>#i18n{module.mylutece.database.modify_user.labelComplementaryAttributes}</legend>
-						<#list attributes_list as attribute>
-							<#assign idAttribute = "" + attribute.idAttribute>
-								${attribute.getHtmlFormAttribute( locale, map_list_attribute_default_values[idAttribute] )}
-						</#list>
-					</fieldset>
+						<@fieldSet legend='#i18n{module.mylutece.database.modify_user.labelComplementaryAttributes}'>
+							<#list attributes_list as attribute>
+								<#assign idAttribute = "" + attribute.idAttribute>
+									${attribute.getHtmlFormAttribute( locale, map_list_attribute_default_values[idAttribute] )}
+							</#list>
+						</@fieldSet>
 					</#if>
 					<@formGroup>
 						<@button type='submit' title='#i18n{module.mylutece.database.modify_user.btnModify}' buttonIcon='check' />
-						<@button type='button' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
+						<@button type='submit' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
 					</@formGroup>
 				</@tform>
 				</#if>

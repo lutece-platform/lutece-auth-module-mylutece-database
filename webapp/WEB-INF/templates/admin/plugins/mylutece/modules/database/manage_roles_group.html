@@ -10,21 +10,19 @@
 				<@item_navigation item_navigator=item_navigator align='right' />
 				<@tform action='jsp/admin/plugins/mylutece/modules/database/DoAssignRoleGroup.jsp'>
 					<@input type='hidden' name='group_key' value='${group.groupKey}' />
-					<fieldset>
-						<legend>#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey} - #i18n{module.mylutece.database.manage_roles_group.boxTitle}</legend>
-						
+					<@fieldSet legend='#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey} - #i18n{module.mylutece.database.manage_roles_group.boxTitle}'>
 						<@table>
-							<tr>
-								<th>#i18n{module.mylutece.database.manage_roles_group.colName}</th>
-								<th>#i18n{module.mylutece.database.manage_roles_group.colLabel}</th>
-								<th></th>
-							</tr>
+							<@tr>
+								<@th>#i18n{module.mylutece.database.manage_roles_group.colName}</@th>
+								<@th>#i18n{module.mylutece.database.manage_roles_group.colLabel}</@th>
+								<@th></@th>
+							</@tr>
 							<#list role_list as role >
 							<#if role.role != "none">
-							<tr>
-								<td>${role.role}</td>
-								<td>${role.roleDescription}</td>
-								<td>
+							<@tr>
+								<@td>${role.role}</@td>
+								<@td>${role.roleDescription}</@td>
+								<@td>
 									<#assign checked = false />
 									<#list group_role_list as group_role >
 										<#if group_role.role = role.role >
@@ -33,8 +31,8 @@
 										</#if>
 									</#list>
 									<@checkBox name='role_key' id=role.role?replace('\\s+','','r') value='${role.role}' checked=checked />
-								</td>
-							</tr>
+								</@td>
+							</@tr>
 							</#if>
 							</#list>
 						</@table>
@@ -42,7 +40,7 @@
 							<@button type='submit' name='save' title='#i18n{module.mylutece.database.manage_roles_group.btnAssign}' buttonIcon='check' />
 							<@button type='button' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
 						</@formGroup>
-					</fieldset>
+					</@fieldSet>
 				</@tform>
 			</@tabContent>
 		</@tabs>

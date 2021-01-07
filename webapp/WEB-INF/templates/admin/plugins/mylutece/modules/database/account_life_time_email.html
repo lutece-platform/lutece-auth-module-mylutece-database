@@ -1,49 +1,46 @@
 <#include "../../../../../util/editor/editor.html" />
-<div class="row-fluid">
-	<div class="span12">
-		<form class="form-horizontal" method="post" action="jsp/admin/plugins/mylutece/modules/database/DoModifyAccountLifeTimeEmails.jsp">
-			<fieldset>
-				<legend>#i18n{${emailLabel}}</legend>
-				<input type="hidden" name="email_type" value="${email_type}" />
-				<div class="control-group">
-				<label class="control-label" for="email_sender"> #i18n{mylutece.accountLifeTime.labelSenderEmail} : </label>
-					<div class="controls">
-						<input type="text" name="email_sender" value="${email_sender!}" class="input-xxlarge" />
-					</div>
-				</div>
-				<div class="control-group">
-				<label class="control-label" for="email_subject"> #i18n{mylutece.accountLifeTime.labelSubjectEmail} : </label>
-					<div class="controls">
-							<input type="text" name="email_subject" value="${email_subject!}" class="input-xxlarge" />
-					</div>
-				</div>
-				<div class="control-group">
-				<label class="control-label" for="email_body"> #i18n{mylutece.accountLifeTime.labelBodyEmail} : </label>
-					<div class="controls">
-						<textarea class="richtext" rows="30" class="span11" id="email_body" name="email_body" >${email_body!}</textarea>
-					</div>	
-				</div>
-				<p>#i18n{mylutece.accountLifeTime.labelParameters}</p> 
-				<ul>
-					<#if email_type = "lost_password" || email_type = "password_encryption_changed">
-						<li>${r"${new_password}"} : #i18n{mylutece.accountLifeTime.labelNewPassword}</li>
-						<li>${r"${reinit_url}"} : #i18n{mylutece.accountLifeTime.labelReinitUrl}</li>
-					<#else>
-						<#if email_type != "reactivated" && email_type != "expired" && email_type != "password_expired">
-						<li>${r"${url}"} : #i18n{portal.users.accountLifeTime.labelUrl}</li>
-						</#if>
-						<#if email_type != "ip_blocked">
-							<li>${r"${first_name}"} : #i18n{mylutece.accountLifeTime.labelFirstName}</li>
-							<li>${r"${last_name}"} : #i18n{mylutece.accountLifeTime.labelLastName}</li>
-							<#if email_type != "password_expired" >
-								<li>${r"${date_valid}"} : #i18n{mylutece.accountLifeTime.labelDateValid}</li>
+<@row>
+	<@columns>
+		<@box>
+			<@boxHeader title='#i18n{${emailLabel}}' />
+			<@boxBody>
+				<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/DoModifyAccountLifeTimeEmails.jsp'>
+					<@fieldSet legend='#i18n{${emailLabel}}' hideLegend=['all']>
+						<@input type='hidden' name='email_type' value='${email_type}' />
+						<@formGroup labelFor='email_sender' labelKey='#i18n{mylutece.accountLifeTime.labelSenderEmail}'>
+							<@input type='text' name='email_sender' value='${email_sender!}' />
+						</@formGroup>
+						<@formGroup labelFor='email_subject' labelKey='#i18n{mylutece.accountLifeTime.labelSubjectEmail}'>
+							<@input type='text' name='email_subject' value='${email_subject!}' />
+						</@formGroup>
+						<@formGroup labelFor='email_body' labelKey='#i18n{mylutece.accountLifeTime.labelBodyEmail}'>
+							<@input type='textarea' richtext=true rows=30 id='email_body' name='email_body'>${email_body!}</@input>
+						</@formGroup>
+						<p>#i18n{mylutece.accountLifeTime.labelParameters}</p> 
+						<ul>
+							<#if email_type = "lost_password" || email_type = "password_encryption_changed">
+								<li>${r"${new_password}"} : #i18n{mylutece.accountLifeTime.labelNewPassword}</li>
+								<li>${r"${reinit_url}"} : #i18n{mylutece.accountLifeTime.labelReinitUrl}</li>
+							<#else>
+								<#if email_type != "reactivated" && email_type != "expired" && email_type != "password_expired">
+								<li>${r"${url}"} : #i18n{portal.users.accountLifeTime.labelUrl}</li>
+								</#if>
+								<#if email_type != "ip_blocked">
+									<li>${r"${first_name}"} : #i18n{mylutece.accountLifeTime.labelFirstName}</li>
+									<li>${r"${last_name}"} : #i18n{mylutece.accountLifeTime.labelLastName}</li>
+									<#if email_type != "password_expired" >
+										<li>${r"${date_valid}"} : #i18n{mylutece.accountLifeTime.labelDateValid}</li>
+									</#if>
+								</#if>
 							</#if>
-						</#if>
-					</#if>
-				</ul>
-				<button class="btn btn-primary btn-small" type="submit" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{portal.util.labelModify}</button>
-			</fieldset>
-		</form>
-	</div>
-</div>
+						</ul>
+						<@formGroup>
+							<@button type='submit' title='#i18n{portal.util.labelModify}' buttonIcon='save' />
+						</@formGroup>
+					</@fieldSet>
+				</@tform>
+			</@boxBody>
+		</@box>
+	</@columns>
+</@row>
 <@initEditor />

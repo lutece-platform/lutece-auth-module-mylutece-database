@@ -25,16 +25,16 @@
 						</#if>
 						</legend>
 						<@table>
-							<tr>
-								<th>#i18n{module.mylutece.database.manage_groups_user.colName}</th>
-								<th>#i18n{module.mylutece.database.manage_groups_user.colLabel}</th>
-								<th></th>
-							</tr>
+							<@tr>
+								<@th>#i18n{module.mylutece.database.manage_groups_user.colName}</@th>
+								<@th>#i18n{module.mylutece.database.manage_groups_user.colLabel}</@th>
+								<@th></@th>
+							</@tr>
 							<#list group_list as group >
-							<tr>
-								<td>${group.groupKey}</td>
-								<td>${group.groupDescription}</td>
-								<td>
+							<@tr>
+								<@td>${group.groupKey}</@td>
+								<@td>${group.groupDescription}</@td>
+								<@td>
 									<#assign checked = false /> 
 									<#list user_group_list as user_group >
 										<#if user_group.groupKey = group.groupKey >
@@ -43,8 +43,8 @@
 										</#if>
 									</#list>
 									<@checkBox name='mylutece_database_group_key' id=group.groupKey?replace('\\s+','','r') value='${group.groupKey}' checked=checked />
-								</td>
-							</tr>
+								</@td>
+							</@tr>
 							</#list>
 						</@table>
 						<@formGroup>
