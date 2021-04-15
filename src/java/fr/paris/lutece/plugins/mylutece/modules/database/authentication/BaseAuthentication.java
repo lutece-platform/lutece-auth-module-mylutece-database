@@ -36,6 +36,12 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLog;
 import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLogHome;
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
+import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
+import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
+import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
@@ -54,6 +60,8 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.FailedLoginCaptchaException;
 import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.UserAttributesService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -115,7 +123,10 @@ public class BaseAuthentication extends PortalAuthentication
 
     // Messages properties
     private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
+
+    // constants
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/database/mylutece-database.png";
+    private static final String BEAN_USER_ATTRIBUTES_SERVICE = "mylutece.myLuteceUserAttributesService";
 
     /**
      * Constructor
@@ -301,6 +312,9 @@ public class BaseAuthentication extends PortalAuthentication
         {
             user.setGroups( arrayGroups );
         }
+
+        // set local database user attributes
+        setLocalDatabaseUserAttributes( locale, user); 
 
         // We update the status of the user if his password has become obsolete
         Timestamp passwordMaxValidDate = DatabaseHome.findPasswordMaxValideDateFromLogin( strUserName, plugin );
@@ -595,6 +609,49 @@ public class BaseAuthentication extends PortalAuthentication
             if ( ( strUserMail != null ) && StringUtils.isNotBlank( strUserMail ) )
             {
                 MailService.sendMailHtml( strUserMail, strSender, strSender, strSubject, template.getHtml( ) );
+            }
+        }
+    }
+
+    /**
+     * set user attributes stored in local database
+     * 
+     * @param locale
+     * @param user
+     * @return the user attributes 
+     */
+    private void setLocalDatabaseUserAttributes( Locale locale, BaseUser user )
+    {
+        
+        // Specific attributes
+        Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+        int idUser = DatabaseHome.findUserIdFromLogin( user.getAccessCode( ) , myLutecePlugin);
+
+        List<IAttribute> listAttributes = AttributeHome.findAll( locale , myLutecePlugin );
+
+        for ( IAttribute attribute : listAttributes )
+        {
+            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
+                    myLutecePlugin );
+            attribute.setListAttributeFields( listAttributeFields );
+
+            List<MyLuteceUserField> listUserFields = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( idUser  ,
+                    attribute.getIdAttribute(  ), myLutecePlugin );
+
+            if ( listUserFields.size(  ) == 1 )
+            {
+                user.setUserInfo( attribute.getTitle( ), listUserFields.get(0).getValue( ) );
+            }
+            else if ( listUserFields.size(  ) > 0 )
+            {
+                for (MyLuteceUserField userField : listUserFields )
+                {
+                    user.setUserInfo(  attribute.getTitle( )+"_"+userField.getAttributeField().getTitle() , userField.getValue( ) );
+                }
+            }
+            else
+            {
+                user.setUserInfo( String.valueOf( attribute.getTitle( ) ), StringUtils.EMPTY );
             }
         }
     }
