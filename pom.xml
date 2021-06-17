@@ -10,7 +10,7 @@
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-mylutece-database</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>6.0.1</version>
+    <version>6.0.1-SNAPSHOT</version>
     <name>Lutece mylutece database module</name>
 
     <repositories>
@@ -46,6 +46,6 @@
         <connection>scm:git:https://github.com/lutece-platform/lutece-auth-module-mylutece-database.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-auth-module-mylutece-database.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-auth-module-mylutece-database.git</url>
-      <tag>module-mylutece-database-6.0.1</tag>
+      <tag>HEAD</tag>
   </scm>
 </project>
