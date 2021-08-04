@@ -442,6 +442,11 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
      */
     public String doCreateUser( HttpServletRequest request )
     {
+    	if ( request.getParameter( PARAMETER_CANCEL ) != null )
+        {
+    		return MANAGE_USERS + "?" + PARAMETER_PLUGIN_NAME + "=" + _plugin.getName( );
+        }
+    	
         initPluginFromRequest( request );
 
         String strError = StringUtils.EMPTY;
@@ -451,6 +456,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         String strLastName = request.getParameter( PARAMETER_LAST_NAME );
         String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
+        
 
         if ( _userFactory.isEmailUsedAsLogin( ) )
         {
