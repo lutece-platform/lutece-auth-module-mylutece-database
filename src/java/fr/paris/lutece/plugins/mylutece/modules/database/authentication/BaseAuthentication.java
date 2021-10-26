@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -314,7 +314,7 @@ public class BaseAuthentication extends PortalAuthentication
         }
 
         // set local database user attributes
-        setLocalDatabaseUserAttributes( locale, user); 
+        setLocalDatabaseUserAttributes( locale, user );
 
         // We update the status of the user if his password has become obsolete
         Timestamp passwordMaxValidDate = DatabaseHome.findPasswordMaxValideDateFromLogin( strUserName, plugin );
@@ -618,41 +618,41 @@ public class BaseAuthentication extends PortalAuthentication
      * 
      * @param locale
      * @param user
-     * @return the user attributes 
+     * @return the user attributes
      */
     private void setLocalDatabaseUserAttributes( Locale locale, BaseUser user )
     {
-        
+
         // Specific attributes
         Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
-        int idUser = DatabaseHome.findUserIdFromLogin( user.getAccessCode( ) , myLutecePlugin);
+        int idUser = DatabaseHome.findUserIdFromLogin( user.getAccessCode( ), myLutecePlugin );
 
-        List<IAttribute> listAttributes = AttributeHome.findAll( locale , myLutecePlugin );
+        List<IAttribute> listAttributes = AttributeHome.findAll( locale, myLutecePlugin );
 
         for ( IAttribute attribute : listAttributes )
         {
-            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute(  ),
-                    myLutecePlugin );
+            List<AttributeField> listAttributeFields = AttributeFieldHome.selectAttributeFieldsByIdAttribute( attribute.getIdAttribute( ), myLutecePlugin );
             attribute.setListAttributeFields( listAttributeFields );
 
-            List<MyLuteceUserField> listUserFields = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( idUser  ,
-                    attribute.getIdAttribute(  ), myLutecePlugin );
+            List<MyLuteceUserField> listUserFields = MyLuteceUserFieldHome.selectUserFieldsByIdUserIdAttribute( idUser, attribute.getIdAttribute( ),
+                    myLutecePlugin );
 
-            if ( listUserFields.size(  ) == 1 )
+            if ( listUserFields.size( ) == 1 )
             {
-                user.setUserInfo( attribute.getTitle( ), listUserFields.get(0).getValue( ) );
-            }
-            else if ( listUserFields.size(  ) > 0 )
-            {
-                for (MyLuteceUserField userField : listUserFields )
-                {
-                    user.setUserInfo(  attribute.getTitle( )+"_"+userField.getAttributeField().getTitle() , userField.getValue( ) );
-                }
+                user.setUserInfo( attribute.getTitle( ), listUserFields.get( 0 ).getValue( ) );
             }
             else
-            {
-                user.setUserInfo( String.valueOf( attribute.getTitle( ) ), StringUtils.EMPTY );
-            }
+                if ( listUserFields.size( ) > 0 )
+                {
+                    for ( MyLuteceUserField userField : listUserFields )
+                    {
+                        user.setUserInfo( attribute.getTitle( ) + "_" + userField.getAttributeField( ).getTitle( ), userField.getValue( ) );
+                    }
+                }
+                else
+                {
+                    user.setUserInfo( String.valueOf( attribute.getTitle( ) ), StringUtils.EMPTY );
+                }
         }
     }
 }
