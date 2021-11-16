@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><plug-in>
    <name>mylutece-database</name>
    <class>fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin</class>
-   <version>6.0.3-SNAPSHOT</version>
+   <version>6.0.3</version>
    <description>module.mylutece.database.module.description</description>
    <documentation/>
    <installation/>
