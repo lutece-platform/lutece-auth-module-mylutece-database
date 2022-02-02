@@ -33,9 +33,29 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLog;
 import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLogHome;
+import fr.paris.lutece.plugins.mylutece.business.LuteceUserAttributeDescription;
+import fr.paris.lutece.plugins.mylutece.business.LuteceUserRoleDescription;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeFieldHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
@@ -52,6 +72,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
+import fr.paris.lutece.portal.business.role.RoleHome;
 import fr.paris.lutece.portal.business.template.DatabaseTemplateHome;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
@@ -60,8 +81,6 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.FailedLoginCaptchaException;
 import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
-import fr.paris.lutece.portal.service.security.UserAttributesService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -70,25 +89,6 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.http.SecurityUtil;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.sql.Timestamp;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.LoginException;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * The Class provides an implementation of the inherited abstract class PortalAuthentication based on a database.
@@ -579,6 +579,38 @@ public class BaseAuthentication extends PortalAuthentication
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         databaseService.updateUserLastLoginDate( user.getName( ), plugin );
     }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<LuteceUserRoleDescription> getLuteceUserRolesProvided(Locale locale)
+    {
+    	return RoleHome.findAll().stream().map(x->new  LuteceUserRoleDescription(x, LuteceUserRoleDescription.TYPE_MANUAL_ASSIGNMENT, null)).collect(Collectors.toList());
+    	
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+   public List<LuteceUserAttributeDescription> getLuteceUserAttributesProvided(Locale locale)
+    {
+    	
+    	List<LuteceUserAttributeDescription> listUserDescription=  new ArrayList<LuteceUserAttributeDescription>();
+    	listUserDescription.add(new LuteceUserAttributeDescription( LuteceUser.NAME_FAMILY, "databaseUser.getLastName()", ""));
+     	listUserDescription.add(new LuteceUserAttributeDescription( LuteceUser.NAME_GIVEN, "databaseUser.getFirstName()", ""));
+     	listUserDescription.add(new LuteceUserAttributeDescription( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL, "databaseUser.getEmail()", ""));
+     	listUserDescription.add(new LuteceUserAttributeDescription( LuteceUser.DATE_LAST_LOGIN, "databaseUser.getLastLogin()", ""));
+
+     	Plugin myLutecePlugin = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
+     	//Add User Attributes
+        listUserDescription.addAll(AttributeHome.findAll( locale, myLutecePlugin ).stream().map(x->new  LuteceUserAttributeDescription(x.getTitle(),x.getTitle(), x.getHelpMessage())).collect(Collectors.toList()));
+    	
+        return listUserDescription;
+    }
+    
 
     private void sendUnlockLinkToUser( String strLogin, int nIntervalMinutes, HttpServletRequest request, Plugin plugin )
     {
