@@ -1,51 +1,49 @@
-<div class="row-fluid">
-    <div class="container">
+<div class="row">
+    <div class="col-12 col-md-4 offset-md-3">
         <#if action_successful?has_content>
-        <form class="form-horizontal" id="lostLogin" name="lostLogin" action="${action_successful}" method="post">
-            <fieldset>
-                <legend>#i18n{module.mylutece.database.xpage.lost_login.pageTitle}</legend>
-                <p class="lead">#i18n{module.mylutece.database.message.lost_login.success} : ${email}</p>
-                <div class="form-actions">
-                    <input class="btn btn-primary btn-small" id="button-return" type="submit" name="btnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}" />
-                </div>
-            </fieldset>
-        </form>
+            <h2>#i18n{module.mylutece.database.xpage.lost_login.pageTitle}</h2>
+            <form id="lostLogin" name="lostLogin" action="${action_successful}" method="post">
+            <h3>#i18n{module.mylutece.database.message.lost_login.success} : ${email}</h3>
+            <div class="form-row">
+                <button class="btn btn-primary" id="button-return" type="submit" name="btnBack">
+                    #i18n{module.mylutece.database.xpage.account.btnBack}
+                </button>
+            </div>
+            </form>
         <#else>
-        <form class="form-horizontal" id="lostLogin" name="lostLogin" action="jsp/site/plugins/mylutece/modules/database/DoSendLogin.jsp" method="post">
-            <fieldset>
-                <legend>#i18n{module.mylutece.database.xpage.lost_login.pageTitle}</legend>
-                <p class="lead">#i18n{module.mylutece.database.xpage.lost_login.text}</p>
-
-                <#if error_code?has_content >
-                    <#assign typeClass = "class=\"error\"" />
-                    <#if error_code = "error_mandatory_fields">
-                        <div class="alert alert-error">#i18n{module.mylutece.database.message.account.errorMandatoryFields}</div>
-                    <#assign classEmail = typeClass />
-                    </#if>
-                    <#if error_code = "error_syntax_email">
-                        <div class="alert alert-error">#i18n{module.mylutece.database.message.account.errorBadEmail}</div>
-                    <#assign classEmail = typeClass />
-                    </#if>
-                    <#if error_code = "error_unknown_email">
-                        <div class="alert alert-error">#i18n{module.mylutece.database.message.lost_login.errorUnkownEmail}</div>
-                    </#if>
-                    <#if error_code = "error_sending_email">
-                        <div class="alert alert-error">#i18n{module.mylutece.database.message.lost_login.errorSendingEmail}</div>
-                    </#if>
+            <form class="form-horizontal" id="lostLogin" name="lostLogin" action="jsp/site/plugins/mylutece/modules/database/DoSendLogin.jsp" method="post">
+            <h2>#i18n{module.mylutece.database.xpage.lost_login.pageTitle}</h2>
+            <p class="lead">#i18n{module.mylutece.database.xpage.lost_login.text}</p>
+            <#if error_code?has_content >
+                <#assign typeClass = " is-invalid" />
+                <#if error_code = "error_mandatory_fields">
+                    <div class="alert alert-warning">#i18n{module.mylutece.database.message.account.errorMandatoryFields}</div>
+                <#assign classEmail = typeClass />
                 </#if>
-
-                <div class="control-group">
-                    <label class="control-label" for="email">#i18n{module.mylutece.database.xpage.lost_login.email} * : </label>
-                    <div class="controls">
-                        <input class="-lutece-input -lutece-border-radius-mini" type="text" ${classEmail?if_exists} name="email" id="email" maxlength="100" size="35" tabindex="1" value="" />
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <input type="hidden" name="plugin_name" value="${plugin_name}" />
-                    <input class="btn btn-primary btn-small" id="button-send" type="submit" name="btnSend" value="#i18n{module.mylutece.database.xpage.lost_login.btnSend}" />	
-                    <input class="btn btn-small" id="button-return" type="button" name="back" value="#i18n{module.mylutece.database.xpage.account.btnBack}" onclick='javascript:history.go(-1)'/>
-                </div>
-            </fieldset>
+                <#if error_code = "error_syntax_email">
+                    <div class="alert alert-warning">#i18n{module.mylutece.database.message.account.errorBadEmail}</div>
+                <#assign classEmail = typeClass />
+                </#if>
+                <#if error_code = "error_unknown_email">
+                    <div class="alert alert-warning">#i18n{module.mylutece.database.message.lost_login.errorUnkownEmail}</div>
+                </#if>
+                <#if error_code = "error_sending_email">
+                    <div class="alert alert-warning">#i18n{module.mylutece.database.message.lost_login.errorSendingEmail}</div>
+                </#if>
+            </#if>
+            <input type="hidden" name="plugin_name" value="${plugin_name}" />
+            <div class="form-floating">
+                <input class="form-control${classEmail?if_exists}" type="email" name="email" id="email" maxlength="100" value="">
+                <label for="email">#i18n{module.mylutece.database.xpage.lost_login.email} * : </label>
+            </div>
+            <div class="form-row mt-2">
+                <button class="btn btn-primary btn-small" id="button-send" type="submit" name="btnSend">
+                    <span class="ti ti-check"></span> #i18n{module.mylutece.database.xpage.lost_login.btnSend}
+                </button> 
+                <button class="btn btn-secondary" id="button-return" type="button" name="back" onclick="javascript:history.go(-1)">
+                    <span class="ti ti-circle-x"></span> #i18n{module.mylutece.database.xpage.account.btnBack}
+                </button>
+            </div>
         </form>
         </#if>
     </div>
