@@ -41,7 +41,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,13 +53,14 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.IDatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKey;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
@@ -248,11 +250,11 @@ public class MyLuteceDatabaseApp implements XPageApplication
     // private fields
     private Plugin _plugin;
     private Locale _locale;
-    private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService( );
-    private DatabaseUserKeyService _userKeyService = DatabaseUserKeyService.getService( );
+    private IDatabaseUserParameterService _userParamService = CDI.current( ).select( IDatabaseUserParameterService.class ).get( );
+    private DatabaseUserKeyService _userKeyService = CDI.current( ).select( DatabaseUserKeyService.class ).get( );
     private CaptchaSecurityService _captchaService = new CaptchaSecurityService( );
-    private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory( );
-    private DatabaseService _databaseService = DatabaseService.getService( );
+    private IDatabaseUserFactory _userFactory = CDI.current( ).select( IDatabaseUserFactory.class ).get( );
+    private DatabaseService _databaseService = CDI.current( ).select( DatabaseService.class ).get( );
 
     /**
      * 

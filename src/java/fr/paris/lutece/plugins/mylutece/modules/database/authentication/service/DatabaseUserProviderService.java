@@ -38,10 +38,14 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.ILuteceUserProviderService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  * ILuteceUserProviderService implementation of module mylutece database
  */
+@ApplicationScoped
+@Named( "mylutece-database.databaseUserProviderService" )
 public class DatabaseUserProviderService implements ILuteceUserProviderService
 {
     /**

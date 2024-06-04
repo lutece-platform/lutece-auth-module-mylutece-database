@@ -36,7 +36,7 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.inject.spi.CDI;
 
 /**
  *
@@ -45,9 +45,8 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
  */
 public final class DatabaseUserKeyHome
 {
-    private static final String BEAN_DATABASE_USER_KEY_DAO = "mylutece-database.databaseUserKeyDAO";
     private static Plugin _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-    private static IDatabaseUserKeyDAO _dao = SpringContextService.getBean( BEAN_DATABASE_USER_KEY_DAO );
+    private static IDatabaseUserKeyDAO _dao = CDI.current( ).select( IDatabaseUserKeyDAO.class ).get( );
 
     /**
      * Private constructor - this class need not be instantiated

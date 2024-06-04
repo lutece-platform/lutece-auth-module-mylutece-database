@@ -35,9 +35,9 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceUserService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.password.IPassword;
 import fr.paris.lutece.util.password.IPasswordFactory;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.sql.Timestamp;
 
@@ -51,8 +51,8 @@ import java.util.List;
 public final class DatabaseUserHome
 {
     // Static variable pointed at the DAO instance
-    private static IDatabaseUserDAO _dao = SpringContextService.getBean( "mylutece-database.databaseUserDAO" );
-    private static IPasswordFactory _passwordFactory = SpringContextService.getBean( IPasswordFactory.BEAN_NAME );
+    private static IDatabaseUserDAO _dao = CDI.current( ).select( IDatabaseUserDAO.class ).get( );
+    private static IPasswordFactory _passwordFactory = CDI.current( ).select( IPasswordFactory.class ).get( );
 
     /**
      * Private constructor - this class need not be instantiated

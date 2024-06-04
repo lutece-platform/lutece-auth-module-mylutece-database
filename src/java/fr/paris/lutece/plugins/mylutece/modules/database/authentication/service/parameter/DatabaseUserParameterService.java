@@ -33,26 +33,29 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter;
 
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.List;
+
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
-
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.List;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Named;
 
 /**
  *
  * DatabaseUserParameterService
  *
  */
-public final class DatabaseUserParameterService implements IDatabaseUserParameterService
+@ApplicationScoped
+@Named( "mylutece-database.databaseUserParameterService" )
+public class DatabaseUserParameterService implements IDatabaseUserParameterService
 {
-    private static final String BEAN_DATABASE_USER_PARAMETER_SERVICE = "mylutece-database.databaseUserParameterService";
 
     // PARAMETERS
     private static final String PARAMETER_ACCOUNT_CREATION_VALIDATION_EMAIL = "account_creation_validation_email";
@@ -71,9 +74,10 @@ public final class DatabaseUserParameterService implements IDatabaseUserParamete
      * 
      * @return the instance of the service
      */
-    public static DatabaseUserParameterService getService( )
+    @Deprecated
+    public static IDatabaseUserParameterService getService( )
     {
-        return SpringContextService.getBean( BEAN_DATABASE_USER_PARAMETER_SERVICE );
+        return CDI.current( ).select( IDatabaseUserParameterService.class ).get( );
     }
 
     /**

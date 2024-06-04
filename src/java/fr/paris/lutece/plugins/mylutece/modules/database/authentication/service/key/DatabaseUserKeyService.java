@@ -37,20 +37,22 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKeyHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.util.DatabaseUtils;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.url.UrlItem;
-
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *
  * DatabaseUserKeyService
  *
  */
-public final class DatabaseUserKeyService
+@ApplicationScoped
+@Named( "mylutece-database.databaseUserKeyService" )
+public class DatabaseUserKeyService
 {
-    private static final String BEAN_DATABASE_USER_KEY_SERVICE = "mylutece-database.databaseUserKeyService";
 
     // CONSTANTS
     private static final String SLASH = "/";
@@ -62,20 +64,15 @@ public final class DatabaseUserKeyService
     private static final String JSP_VALIDATE_ACCOUNT = "jsp/site/plugins/mylutece/modules/database/DoValidateAccount.jsp";
 
     /**
-     * Private constructor
-     */
-    private DatabaseUserKeyService( )
-    {
-    }
-
-    /**
      * Get the instance of the service
      * 
      * @return the instance of the service
+     * @deprecated use CDI injection instead
      */
+    @Deprecated
     public static DatabaseUserKeyService getService( )
     {
-        return SpringContextService.getBean( BEAN_DATABASE_USER_KEY_SERVICE );
+        return CDI.current( ).select( DatabaseUserKeyService.class ).get( );
     }
 
     // CRUD

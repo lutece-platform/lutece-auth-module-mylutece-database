@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.AbstractAccountLifeTimeDaemon;
 import fr.paris.lutece.plugins.mylutece.service.IAccountLifeTimeService;
 import fr.paris.lutece.plugins.mylutece.service.IUserParameterService;
@@ -44,7 +45,7 @@ import fr.paris.lutece.plugins.mylutece.service.IUserParameterService;
 public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
 {
     private static final String DAEMON_NAME = "DatabaseAccountLifeTimeDaemon";
-    private DatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService( );
+    private IDatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService( );
 
     /**
      * Default constructor

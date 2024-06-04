@@ -33,24 +33,26 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.util.password.IPassword;
-import fr.paris.lutece.util.password.IPasswordFactory;
-import fr.paris.lutece.util.sql.DAOUtil;
-
 import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.apache.commons.collections.CollectionUtils;
+
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.password.IPassword;
+import fr.paris.lutece.util.password.IPasswordFactory;
+import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * This class provides Data Access methods for databaseUser objects
  */
+@ApplicationScoped
+@Named( "mylutece-database.databaseUserDAO" )
 public class DatabaseUserDAO implements IDatabaseUserDAO
 {
     // Constants
@@ -89,8 +91,11 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String CONSTANT_COMMA = ", ";
 
     @Inject
-    IPasswordFactory _passwordFactory;
+    private IPasswordFactory _passwordFactory;
 
+    @Inject
+    private IDatabaseUserFactory _databaseUserFactory;
+    
     /**
      * {@inheritDoc}
      */
@@ -149,6 +154,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
     @Override
     public DatabaseUser load( int nUserId, Plugin plugin )
     {
+        System.err.println( ">>>>>> " + _databaseUserFactory );
         DatabaseUser databaseUser = null;
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {
@@ -157,7 +163,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 
             if ( daoUtil.next( ) )
             {
-                databaseUser = DatabaseUserFactory.getFactory( ).newDatabaseUser( );
+                databaseUser = _databaseUserFactory.newDatabaseUser( );
                 databaseUser.setUserId( daoUtil.getInt( 1 ) );
                 databaseUser.setLogin( daoUtil.getString( 2 ) );
                 databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -253,7 +259,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 
             while ( daoUtil.next( ) )
             {
-                DatabaseUser databaseUser = DatabaseUserFactory.getFactory( ).newDatabaseUser( );
+                DatabaseUser databaseUser = _databaseUserFactory.newDatabaseUser( );
                 databaseUser.setUserId( daoUtil.getInt( 1 ) );
                 databaseUser.setLogin( daoUtil.getString( 2 ) );
                 databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -289,7 +295,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 
             while ( daoUtil.next( ) )
             {
-                DatabaseUser databaseUser = DatabaseUserFactory.getFactory( ).newDatabaseUser( );
+                DatabaseUser databaseUser = _databaseUserFactory.newDatabaseUser( );
                 databaseUser.setUserId( daoUtil.getInt( 1 ) );
                 databaseUser.setLogin( daoUtil.getString( 2 ) );
                 databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -317,7 +323,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 
             while ( daoUtil.next( ) )
             {
-                DatabaseUser databaseUser = DatabaseUserFactory.getFactory( ).newDatabaseUser( );
+                DatabaseUser databaseUser = _databaseUserFactory.newDatabaseUser( );
                 databaseUser.setUserId( daoUtil.getInt( 1 ) );
                 databaseUser.setLogin( daoUtil.getString( 2 ) );
                 databaseUser.setLastName( daoUtil.getString( 3 ) );
@@ -368,7 +374,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
 
             while ( daoUtil.next( ) )
             {
-                DatabaseUser filteredUser = DatabaseUserFactory.getFactory( ).newDatabaseUser( );
+                DatabaseUser filteredUser = _databaseUserFactory.newDatabaseUser( );
                 filteredUser.setUserId( daoUtil.getInt( 1 ) );
                 filteredUser.setLogin( daoUtil.getString( 2 ) );
                 filteredUser.setLastName( daoUtil.getString( 3 ) );

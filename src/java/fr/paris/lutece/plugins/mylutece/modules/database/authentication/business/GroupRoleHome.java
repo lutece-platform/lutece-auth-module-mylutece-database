@@ -33,10 +33,10 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
-
 import java.util.List;
+
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import jakarta.enterprise.inject.spi.CDI;
 
 /**
  * This class provides instances management methods (create, find, ...) for Group right objects
@@ -44,7 +44,7 @@ import java.util.List;
 public final class GroupRoleHome
 {
     // Static variable pointed at the DAO instance
-    private static IGroupRoleDAO _dao = SpringContextService.getBean( "mylutece-database.databaseGroupRoleDAO" );
+    private static IGroupRoleDAO _dao = CDI.current( ).select( IGroupRoleDAO.class ).get( );
 
     /**
      * Creates a new GroupHome object.

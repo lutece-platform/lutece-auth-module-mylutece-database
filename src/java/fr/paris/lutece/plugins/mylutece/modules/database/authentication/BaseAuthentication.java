@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -89,6 +88,9 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.http.SecurityUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * The Class provides an implementation of the inherited abstract class PortalAuthentication based on a database.
@@ -98,6 +100,8 @@ import fr.paris.lutece.util.http.SecurityUtil;
  *
  * @since Lutece v2.0.0
  */
+@ApplicationScoped
+@Named( "mylutece-database.authentication" )
 public class BaseAuthentication extends PortalAuthentication
 {
     // //////////////////////////////////////////////////////////////////////////////////////////////

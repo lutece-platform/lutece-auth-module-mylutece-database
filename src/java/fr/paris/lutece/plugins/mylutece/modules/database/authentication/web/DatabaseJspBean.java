@@ -42,19 +42,20 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFilter;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.Group;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.IDatabaseUserFactory;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseAnonymizationService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseResourceIdService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.ImportDatabaseUserService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.service.IAnonymizationService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.service.RoleResourceIdService;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
@@ -99,7 +100,7 @@ import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.xml.XmlUtil;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -112,8 +113,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class provides the user interface to manage roles features ( manage, create, modify, remove )
@@ -314,10 +316,10 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private DatabaseUserFilter _duFilter;
     private String _strSortedAttributeName;
     private boolean _bIsAscSort = true;
-    private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService( );
-    private DatabaseService _databaseService = DatabaseService.getService( );
-    private DatabaseUserFactory _userFactory = DatabaseUserFactory.getFactory( );
-    private DatabaseAnonymizationService _anonymizationService = DatabaseAnonymizationService.getService( );
+    private IDatabaseUserParameterService _userParamService = CDI.current().select( IDatabaseUserParameterService.class ).get( );
+    private DatabaseService _databaseService = CDI.current( ).select( DatabaseService.class ).get( );
+    private IDatabaseUserFactory _userFactory = CDI.current( ).select( IDatabaseUserFactory.class ).get( );
+    private IAnonymizationService _anonymizationService = CDI.current( ).select( DatabaseAnonymizationService.class ).get( );
     private ImportDatabaseUserService _importDatabaseUserService = new ImportDatabaseUserService( );
 
     /**

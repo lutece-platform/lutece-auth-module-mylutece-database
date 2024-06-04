@@ -36,7 +36,7 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseUser;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.sql.Timestamp;
 
@@ -49,7 +49,7 @@ import java.util.List;
 public final class DatabaseHome
 {
     // Static variable pointed at the DAO instance
-    private static IDatabaseDAO _dao = SpringContextService.getBean( "mylutece-database.databaseDAO" );
+    private static IDatabaseDAO _dao = CDI.current( ).select( IDatabaseDAO.class ).get( );
 
     /**
      * Private constructor - this class need not be instantiated

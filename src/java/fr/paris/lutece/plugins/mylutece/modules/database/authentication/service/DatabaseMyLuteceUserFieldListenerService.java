@@ -34,7 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldListenerService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.CdiHelper;
 
 /**
  *
@@ -59,6 +59,6 @@ public final class DatabaseMyLuteceUserFieldListenerService
      */
     public static MyLuteceUserFieldListenerService getService( )
     {
-        return SpringContextService.getBean( BEAN_DATABASE_MYLUTECE_USER_FIELD_SERVICE );
+        return CdiHelper.getReference( MyLuteceUserFieldListenerService.class, BEAN_DATABASE_MYLUTECE_USER_FIELD_SERVICE );
     }
 }

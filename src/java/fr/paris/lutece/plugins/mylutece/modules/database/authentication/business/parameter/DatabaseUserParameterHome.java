@@ -34,9 +34,9 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
+import jakarta.enterprise.inject.spi.CDI;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,10 +47,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class DatabaseUserParameterHome
 {
-    private static final String BEAN_DATABASE_USER_PARAMETER_DAO = "mylutece-database.databaseUserParameterDAO";
-
     // Static variable pointed at the DAO instance
-    private static IDatabaseUserParameterDAO _dao = SpringContextService.getBean( BEAN_DATABASE_USER_PARAMETER_DAO );
+    private static IDatabaseUserParameterDAO _dao = CDI.current( ).select( IDatabaseUserParameterDAO.class ).get( );
 
     /**
      * Private constructor

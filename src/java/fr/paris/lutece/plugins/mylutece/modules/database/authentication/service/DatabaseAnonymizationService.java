@@ -33,6 +33,11 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
@@ -44,23 +49,20 @@ import fr.paris.lutece.plugins.mylutece.service.IAnonymizationService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Named;
 
 /**
  * Service to handle user anonymization
  *
  */
+@ApplicationScoped
+@Named( "mylutece-database.databaseAnonymizationService" )
 public class DatabaseAnonymizationService implements IAnonymizationService
 {
-    public static final String BEAN_DATABASE_ANONYMIZATION_SERVICE = "mylutece-database.databaseAnonymizationService";
-
     // PARAMETERS
     private static final String PARAMETER_LOGIN = "login";
     private static final String PARAMETER_EMAIL = "email";
@@ -79,9 +81,9 @@ public class DatabaseAnonymizationService implements IAnonymizationService
      * 
      * @return The instance of the singleton
      */
-    public static DatabaseAnonymizationService getService( )
+    public static IAnonymizationService getService( )
     {
-        return SpringContextService.<DatabaseAnonymizationService> getBean( BEAN_DATABASE_ANONYMIZATION_SERVICE );
+        return CDI.current( ).select( DatabaseAnonymizationService.class ).get( );
     }
 
     /**

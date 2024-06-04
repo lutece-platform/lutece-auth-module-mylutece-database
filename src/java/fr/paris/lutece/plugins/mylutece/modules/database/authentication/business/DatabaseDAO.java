@@ -33,25 +33,28 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseUser;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.util.sql.DAOUtil;
-
-import java.sql.Timestamp;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * This class provides Data Access methods for authentication (role retrieval).
  *
  */
+@ApplicationScoped
+@Named( "mylutece-database.databaseDAO" )
 public class DatabaseDAO implements IDatabaseDAO
 {
     private static final String SQL_QUERY_FIND_USER_BY_LOGIN = "SELECT mylutece_database_user_id, login, name_family, name_given, email, last_login"
@@ -74,6 +77,9 @@ public class DatabaseDAO implements IDatabaseDAO
     private static final String SQL_QUERY_UPDATE_RESET_PASSWORD_FROM_LOGIN = "UPDATE mylutece_database_user SET reset_password = ? WHERE login like ? ";
     private static final String SQL_QUERY_SELECT_USER_ID_FROM_LOGIN = "SELECT mylutece_database_user_id FROM mylutece_database_user WHERE login like ? ";
 
+    @Inject
+    private IDatabaseUserFactory _databaseUserFactory;
+    
     /**
      * Find DatabaseUser by login
      *
@@ -389,7 +395,7 @@ public class DatabaseDAO implements IDatabaseDAO
 
             while ( daoUtil.next( ) )
             {
-                DatabaseUser user = DatabaseUserFactory.getFactory( ).newDatabaseUser( );
+                DatabaseUser user = _databaseUserFactory.newDatabaseUser( );
                 user.setUserId( daoUtil.getInt( 1 ) );
                 user.setLogin( daoUtil.getString( 2 ) );
                 user.setLastName( daoUtil.getString( 3 ) );

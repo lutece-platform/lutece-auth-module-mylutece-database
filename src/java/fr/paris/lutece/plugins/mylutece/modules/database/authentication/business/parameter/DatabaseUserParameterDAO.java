@@ -37,12 +37,16 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  *
  * DefaultUserParameterDAO
  *
  */
+@ApplicationScoped
+@Named( "mylutece-database.databaseUserParameterDAO" )
 public class DatabaseUserParameterDAO implements IDatabaseUserParameterDAO
 {
     private static final String SQL_QUERY_SELECT_USER_PARAMETERS_VALUE = " SELECT parameter_value FROM mylutece_database_user_parameter WHERE parameter_key = ? ";

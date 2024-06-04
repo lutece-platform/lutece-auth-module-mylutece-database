@@ -34,8 +34,8 @@
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +46,7 @@ import java.util.List;
 public final class GroupHome
 {
     // Static variable pointed at the DAO instance
-    private static IGroupDAO _dao = SpringContextService.getBean( "mylutece-database.databaseGroupDAO" );
+    private static IGroupDAO _dao = CDI.current( ).select( IGroupDAO.class ).get( );
 
     /**
      * Creates a new GroupHome object.

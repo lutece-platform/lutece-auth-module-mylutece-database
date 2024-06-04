@@ -35,12 +35,16 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  *
  * DatabaseUserKeyDAO
  *
  */
+@ApplicationScoped
+@Named( "mylutece-database.databaseUserKeyDAO" )
 public class DatabaseUserKeyDAO implements IDatabaseUserKeyDAO
 {
     private static final String SQL_QUERY_SELECT = " SELECT mylutece_database_user_key, mylutece_database_user_id FROM mylutece_database_key WHERE mylutece_database_user_key = ? ";

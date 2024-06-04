@@ -44,7 +44,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,7 +71,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserRoleRemovalListener;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.business.rbac.RBAC;
@@ -81,7 +86,6 @@ import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -97,10 +101,10 @@ import fr.paris.lutece.util.xml.XmlUtil;
  * DatabaseService
  *
  */
-public final class DatabaseService
+@ApplicationScoped
+@Named( "mylutece-database.databaseService" )
+public class DatabaseService
 {
-    private static final String BEAN_DATABASE_SERVICE = "mylutece-database.databaseService";
-    private static final String AUTHENTICATION_BEAN_NAME = "mylutece-database.authentication";
 
     // CONSTANTS
     private static final String AMPERSAND = "&";
@@ -146,51 +150,22 @@ public final class DatabaseService
     private static final String PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED_SUBJECT = "mail_password_encryption_changed_subject";
     private static final String PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL = "auto_login_after_validation_email";
 
-    // VARIABLES
-    private static DatabaseService _singleton;
-    private DatabaseUserParameterService _userParamService;
+    @Inject
+    private IDatabaseUserParameterService _userParamService;
+    @Inject
     private BaseAuthentication _baseAuthentication;
+    @Inject
     private IPasswordFactory _passwordFactory;
-
-    /**
-     * Private constructor
-     */
-    private DatabaseService( )
-    {
-    }
-
-    /**
-     * Set the database user parameter service
-     * 
-     * @param userParamService
-     *            the user parameter service
-     */
-    public void setDatabaseUserParameterService( DatabaseUserParameterService userParamService )
-    {
-        _userParamService = userParamService;
-    }
-
-    /**
-     * Set the password factory
-     * 
-     * @param passwordFactory
-     *            the password factory
-     */
-    public void setPasswordFactory( IPasswordFactory passwordFactory )
-    {
-        _passwordFactory = passwordFactory;
-    }
 
     /**
      * Initialize the Database service
      *
      */
+    @PostConstruct
     public void init( )
     {
         RoleRemovalListenerService.getService( ).registerListener( new DatabaseUserRoleRemovalListener( ) );
         DatabaseMyLuteceUserFieldListenerService.getService( ).registerListener( new DatabaseUserFieldListener( ) );
-
-        _baseAuthentication = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
 
         if ( _baseAuthentication != null )
         {
@@ -207,14 +182,10 @@ public final class DatabaseService
      * 
      * @return The instance of the singleton
      */
+    @Deprecated
     public static synchronized DatabaseService getService( )
     {
-        if ( _singleton == null )
-        {
-            _singleton = SpringContextService.getBean( BEAN_DATABASE_SERVICE );
-        }
-
-        return _singleton;
+        return CDI.current( ).select( DatabaseService.class ).get( );
     }
 
     /**

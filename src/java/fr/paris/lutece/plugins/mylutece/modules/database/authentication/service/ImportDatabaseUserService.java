@@ -50,7 +50,7 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldListenerService;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
@@ -62,12 +62,12 @@ import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import jakarta.enterprise.inject.spi.CDI;
 
 /**
  * Import database users from a CSV file
@@ -95,7 +95,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     private static final int CONSTANT_MINIMUM_COLUMNS_PER_LINE = 7;
     private Character _strAttributesSeparator;
     private boolean _bUpdateExistingUsers;
-    private DatabaseUserParameterService _userParamService = DatabaseUserParameterService.getService( );
+    private IDatabaseUserParameterService _userParamService = CDI.current( ).select( IDatabaseUserParameterService.class ).get( );
 
     /**
      * {@inheritDoc}
@@ -291,8 +291,8 @@ public class ImportDatabaseUserService extends CSVReaderService
 
                         if ( !bMyLuteceAttribute )
                         {
-                            for ( MyLuteceUserFieldListenerService myLuteceUserFieldListenerService : SpringContextService
-                                    .getBeansOfType( MyLuteceUserFieldListenerService.class ) )
+                            for ( MyLuteceUserFieldListenerService myLuteceUserFieldListenerService : CDI.current( )
+                                    .select( MyLuteceUserFieldListenerService.class ).stream( ).toList( ) )
                             {
                                 myLuteceUserFieldListenerService.doCreateUserFields( user.getUserId( ), listUserFields, locale );
                             }

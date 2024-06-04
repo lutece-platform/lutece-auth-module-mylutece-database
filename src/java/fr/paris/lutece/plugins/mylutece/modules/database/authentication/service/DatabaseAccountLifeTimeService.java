@@ -38,11 +38,13 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.service.IAccountLifeTimeService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Named;
 
 import java.sql.Timestamp;
 
@@ -57,9 +59,10 @@ import java.util.Map;
  * Service to handle account life time
  *
  */
+@ApplicationScoped
+@Named( "mylutece-database.databaseAccountLifeTimeService" )
 public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
 {
-    public static final String BEAN_DATABASE_ACCOUNT_LIFE_TIME_SERVICE = "mylutece-database.databaseAccountLifeTimeService";
     private static final String PARAMETER_MYLUTECE_DATABASE_EXPIRATION_MAIL = "mylutece_database_expiration_mail";
     private static final String PARAMETER_MYLUTECE_DATABASE_FIRST_ALERT_MAIL = "mylutece_database_first_alert_mail";
     private static final String PARAMETER_MYLUTECE_DATABASE_OTHER_ALERT_MAIL = "mylutece_database_other_alert_mail";
@@ -80,10 +83,13 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
      * Get an instance of the service
      * 
      * @return An instance of the service
+     * 
+     * @deprecated Use CDI inject
      */
+    @Deprecated
     public static DatabaseAccountLifeTimeService getService( )
     {
-        return SpringContextService.getBean( BEAN_DATABASE_ACCOUNT_LIFE_TIME_SERVICE );
+        return CDI.current( ).select( DatabaseAccountLifeTimeService.class ).get( );
     }
 
     /**

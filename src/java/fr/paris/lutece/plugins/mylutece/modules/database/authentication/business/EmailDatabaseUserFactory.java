@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.business;
 
+import fr.paris.lutece.plugins.priority.annotation.LutecePriority;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Named;
 
 /**
@@ -42,8 +44,29 @@ import jakarta.inject.Named;
  *
  */
 @ApplicationScoped
+@Alternative
+@LutecePriority("mylutece-database.priority.EmailDatabaseUserFactory")
 @Named( "mylutece-database.databaseUserFactory" )
-public class DatabaseUserFactory implements IDatabaseUserFactory
+public class EmailDatabaseUserFactory implements IDatabaseUserFactory
 {
 
+    /**
+     * Check if the email is used as login
+     * 
+     * @return true if the email is used as login, false otherwise
+     */
+    public boolean isEmailUsedAsLogin( )
+    {
+        return true;
+    }
+
+    /**
+     * Instantiate a new EmailDatabaseUser
+     * 
+     * @return a new instance of EmailDatabaseUser
+     */
+    public DatabaseUser newDatabaseUser( )
+    {
+        return new EmailDatabaseUser();
+    }
 }
