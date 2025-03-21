@@ -1,5 +1,6 @@
-<@row>
-	<@columns>
+<@pageContainer>
+    <@pageColumn>
+		<@pageHeader title='#i18n{module.mylutece.database.import_users_from_file.pageTitle}' />
 		<@tform params='enctype="multipart/form-data"' method='post' name='import_users_from_file' action='jsp/admin/plugins/mylutece/modules/database/DoImportUsersFromFile.jsp'>
 			<@tabs>
 				<@tabList>
@@ -17,11 +18,11 @@
 								#i18n{module.mylutece.database.import_users_from_file.labelRightsRolesWorkgroup}
 							</@formHelp>
 						</@formGroup>
-						<@formGroup labelKey='#i18n{module.mylutece.database.import_users_from_file.labelIgnoreFirstLine}' helpKey='#i18n{module.mylutece.database.import_users_from_file.labelHelpIgnoreFirstLine}'>
-							<@checkBox labelFor='ignore_first_line' id='ignore_first_line' name='ignore_first_line' />
+						<@formGroup helpKey='#i18n{module.mylutece.database.import_users_from_file.labelHelpIgnoreFirstLine}'>
+							<@checkBox labelKey='#i18n{module.mylutece.database.import_users_from_file.labelIgnoreFirstLine}' id='ignore_first_line' name='ignore_first_line' />
 						</@formGroup>
-						<@formGroup labelFor='update_existing_users' labelKey='#i18n{module.mylutece.database.import_users_from_file.labelUpdateExistingUsers}' helpKey='#i18n{module.mylutece.database.import_users_from_file.labelHelpUpdateExistingUsers}'>
-							<@checkBox labelFor='update_existing_users' id='update_existing_users' name='update_existing_users' />
+						<@formGroup helpKey='#i18n{module.mylutece.database.import_users_from_file.labelHelpUpdateExistingUsers}'>
+							<@checkBox labelKey='#i18n{module.mylutece.database.import_users_from_file.labelUpdateExistingUsers}' id='update_existing_users' name='update_existing_users' />
 						</@formGroup>
 						<#if messages?? && messages?has_content>
 							<#list messages as message>
@@ -40,5 +41,6 @@
 				</@tabContent>
 			</@tabs>
 		</@tform>
-	</@columns>
-</@row>
+	</@pageColumn>
+</@pageContainer>
+		

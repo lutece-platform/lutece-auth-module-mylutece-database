@@ -1,5 +1,6 @@
-<@row>
-	<@columns>
+<@pageContainer>
+    <@pageColumn>
+		<@pageHeader title='#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey} - #i18n{module.mylutece.database.manage_roles_group.boxTitle}' />
 	    <@tabs>
 			<@tabList>
 				<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}'title='#i18n{module.mylutece.database.modify_group.boxTitle}' />
@@ -36,7 +37,7 @@
 							</#if>
 							</#list>
 						</@table>
-						<@formGroup>
+						<@formGroup class='my-4'>
 							<@button type='submit' name='save' title='#i18n{module.mylutece.database.manage_roles_group.btnAssign}' buttonIcon='check' />
 							<@button type='button' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
 						</@formGroup>
@@ -44,5 +45,5 @@
 				</@tform>
 			</@tabContent>
 		</@tabs>
-	</@columns>
-</@row>
+	</@pageColumn>
+</@pageContainer>
