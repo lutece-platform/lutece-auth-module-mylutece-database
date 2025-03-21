@@ -1,5 +1,6 @@
-<@row>
-	<@columns>
+<@pageContainer>
+    <@pageColumn>
+		<@pageHeader title='#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey}' />
 	    <@tabs>
 			<@tabList>
 				<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}' title='#i18n{module.mylutece.database.modify_group.boxTitle}' />
@@ -110,5 +111,5 @@
 				</#if>
 			</@tabContent>
 		</@tabs>
-	</@columns>
-</@row>
+	</@pageColumn>
+</@pageContainer>

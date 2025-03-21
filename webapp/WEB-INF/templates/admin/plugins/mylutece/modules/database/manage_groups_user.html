@@ -1,6 +1,14 @@
-<@row>
-	<@columns>
-	    <@tabs>
+<@pageContainer>
+    <@pageColumn>
+		<#assign pageHeaderTitle>
+		<#if user.status = 10>
+			#i18n{module.mylutece.database.manage_roles_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}
+		<#else>
+			#i18n{module.mylutece.database.manage_roles_user.titleUser} ${user.lastName} ${user.firstName}
+		</#if>
+		</#assign>
+		<@pageHeader title=pageHeaderTitle />
+		<@tabs>
 			<@tabList>
 				<#if user.status != 10>
 					<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ModifyUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}' title='#i18n{module.mylutece.database.modify_user.labelIdentity}' />
@@ -47,13 +55,13 @@
 							</@tr>
 							</#list>
 						</@table>
-						<@formGroup>
+						<@formGroup class='my-4'>
 							<@button type='submit' title='#i18n{module.mylutece.database.manage_groups_user.btnAssign}' buttonIcon='check' />
-							<@button type='button' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
+							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
 						</@formGroup>
 					</fieldset>
 				</@tform>
 			</@tabContent>
 		</@tabs>
-	</@columns>
-</@row>
+	</@pageColumn>
+</@pageContainer>
