@@ -154,7 +154,6 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
     @Override
     public DatabaseUser load( int nUserId, Plugin plugin )
     {
-        System.err.println( ">>>>>> " + _databaseUserFactory );
         DatabaseUser databaseUser = null;
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {

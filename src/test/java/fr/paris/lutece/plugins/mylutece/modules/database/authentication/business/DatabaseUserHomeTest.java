@@ -36,21 +36,29 @@ package fr.paris.lutece.plugins.mylutece.modules.database.authentication.busines
 import java.math.BigInteger;
 import java.util.Random;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.util.password.IPassword;
 import fr.paris.lutece.util.password.IPasswordFactory;
+import jakarta.inject.Inject;
 
 public class DatabaseUserHomeTest extends LuteceTestCase
 {
 
     private Plugin plugin;
     private String strLogin;
+    @Inject
+    private IPasswordFactory passwordFactory;
+    @Inject
+    private IDatabaseUserDAO databaseUserDAO;
 
-    @Override
+    @BeforeEach
     protected void setUp( ) throws Exception
     {
         super.setUp( );
@@ -58,7 +66,7 @@ public class DatabaseUserHomeTest extends LuteceTestCase
         strLogin = getRandomName( );
     }
 
-    @Override
+    @AfterEach
     protected void tearDown( ) throws Exception
     {
         int nKey = DatabaseUserHome.findDatabaseUserIdFromLogin( strLogin, plugin );
@@ -70,6 +78,7 @@ public class DatabaseUserHomeTest extends LuteceTestCase
         super.tearDown( );
     }
 
+    @Test
     public void testCheckPassword_upgradeStorage( )
     {
         final String password = "junit";
@@ -100,26 +109,25 @@ public class DatabaseUserHomeTest extends LuteceTestCase
         databaseUser.setLastName( strLogin );
         DatabaseUserHome.create( databaseUser, legacyPassword, plugin );
 
-        IDatabaseUserDAO dao = SpringContextService.getBean( "mylutece-database.databaseUserDAO" );
-        IPassword storedPassword = dao.loadPassword( strLogin, plugin );
+        IPassword storedPassword = databaseUserDAO.loadPassword( strLogin, plugin );
         assertTrue( storedPassword.isLegacy( ) );
 
         assertTrue( DatabaseUserHome.checkPassword( strLogin, password, plugin ) );
 
-        storedPassword = dao.loadPassword( strLogin, plugin );
+        storedPassword = databaseUserDAO.loadPassword( strLogin, plugin );
         assertFalse( storedPassword.isLegacy( ) );
 
         // check that the password is the same
         assertTrue( DatabaseUserHome.checkPassword( strLogin, password, plugin ) );
     }
 
+    @Test
     public void testRemoveRemovesPasswordHistory( )
     {
         DatabaseUser databaseUser = new DatabaseUser( );
         databaseUser.setLogin( strLogin );
         databaseUser.setFirstName( strLogin );
         databaseUser.setLastName( strLogin );
-        IPasswordFactory passwordFactory = SpringContextService.getBean( IPasswordFactory.BEAN_NAME );
         DatabaseUserHome.create( databaseUser, passwordFactory.getPasswordFromCleartext( strLogin ), plugin );
 
         DatabaseUserHome.insertNewPasswordInHistory( passwordFactory.getPasswordFromCleartext( strLogin + "_2" ), databaseUser.getUserId( ), plugin );
