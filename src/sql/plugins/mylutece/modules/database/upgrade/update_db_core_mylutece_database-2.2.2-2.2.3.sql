@@ -1,3 +1,6 @@
+--liquibase formatted sql
+--changeset mylutece-database:update_db_core_mylutece_database-2.2.2-2.2.3.sql
+--preconditions onFail:MARK_RAN onError:WARN
 --
 -- Init  table core_admin_dashboard
 --
