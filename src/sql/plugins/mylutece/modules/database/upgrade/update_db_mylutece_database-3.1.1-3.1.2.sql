@@ -1,3 +1,6 @@
+--liquibase formatted sql
+--changeset mylutece-database:update_db_mylutece_database-3.1.1-3.1.2.sql
+--preconditions onFail:MARK_RAN onError:WARN
 UPDATE mylutece_database_user_parameter SET parameter_value='LUTECE' WHERE parameter_key = 'expired_alert_mail_sender' ;
 UPDATE mylutece_database_user_parameter SET parameter_value='LUTECE' WHERE parameter_key = 'first_alert_mail_sender' ;
 UPDATE mylutece_database_user_parameter SET parameter_value='LUTECE' WHERE parameter_key = 'other_alert_mail_sender' ;
