@@ -1,3 +1,6 @@
+--liquibase formatted sql
+--changeset mylutece-database:update_db_core_mylutece_database-2.3.4-2.3.5.sql
+--preconditions onFail:MARK_RAN onError:WARN
 INSERT INTO core_template VALUES ('mylutece_database_unblock_user', 'Bonjour ${first_name} ! Votre IP a été bloquée. Pour la débloquer, vous pouvez suivre le lien suivant : <a href="${url}">debloquer</a>.');
 
 INSERT INTO core_template VALUES ('mylutece_database_unblock_user', '${site_link!}<br />Bonjour ! Votre IP a été bloquée. Pour la débloquer, vous pouvez suivre le lien suivant : <a href="${url}">debloquer</a>.');

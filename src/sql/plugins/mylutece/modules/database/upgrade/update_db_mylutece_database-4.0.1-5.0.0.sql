@@ -1,3 +1,6 @@
+--liquibase formatted sql
+--changeset mylutece-database:update_db_mylutece_database-4.0.1-5.0.0.sql
+--preconditions onFail:MARK_RAN onError:WARN
 ALTER TABLE mylutece_database_user MODIFY COLUMN password LONG VARCHAR NOT NULL;
 ALTER TABLE mylutece_database_user_password_history MODIFY COLUMN password LONG VARCHAR NOT NULL;
 
