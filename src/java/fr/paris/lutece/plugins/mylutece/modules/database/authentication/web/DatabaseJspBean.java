@@ -100,7 +100,6 @@ import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.xml.XmlUtil;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -1519,7 +1518,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         if ( request instanceof MultipartHttpServletRequest )
         {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-            FileItem fileItem = multipartRequest.getFile( PARAMETER_IMPORT_USERS_FILE );
+            var fileItem = multipartRequest.getFile( PARAMETER_IMPORT_USERS_FILE );
             String strMimeType = FileSystemUtil.getMIMEType( FileUploadService.getFileNameOnly( fileItem ) );
 
             if ( !( ( fileItem != null ) && !StringUtils.EMPTY.equals( fileItem.getName( ) ) ) )

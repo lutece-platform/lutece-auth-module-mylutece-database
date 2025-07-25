@@ -40,6 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.portal.business.rbac.RBAC;
@@ -52,22 +56,24 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.util.password.IPassword;
+import jakarta.inject.Inject;
 
 public class DatabaseServiceTest extends LuteceTestCase
 {
 
     private Plugin plugin;
+    @Inject
     private DatabaseService service;
     String strLogin;
     String strPassword;
     DatabaseUser user;
 
-    @Override
+    @BeforeEach
     protected void setUp( ) throws Exception
     {
         super.setUp( );
         plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        service = DatabaseService.getService( );
+//        service = DatabaseService.getService( );
         strLogin = getRandomName( );
         user = new DatabaseUser( );
         user.setLogin( strLogin );
@@ -77,7 +83,7 @@ public class DatabaseServiceTest extends LuteceTestCase
         service.doCreateUser( user, strPassword, plugin );
     }
 
-    @Override
+    @AfterEach
     protected void tearDown( ) throws Exception
     {
         try
@@ -93,6 +99,7 @@ public class DatabaseServiceTest extends LuteceTestCase
         }
     }
 
+    @Test
     public void testDoCreateUser( )
     {
         DatabaseUser storedUser = DatabaseUserHome.findByPrimaryKey( user.getUserId( ), plugin );
@@ -110,6 +117,7 @@ public class DatabaseServiceTest extends LuteceTestCase
         return "junit" + bigInt.toString( 36 );
     }
 
+    @Test
     public void testDoModifyPassword( )
     {
         assertTrue( DatabaseUserHome.checkPassword( strLogin, strPassword, plugin ) );
@@ -130,6 +138,7 @@ public class DatabaseServiceTest extends LuteceTestCase
         assertFalse( DatabaseUserHome.checkPassword( strLogin, strPassword.toUpperCase( ), plugin ) );
     }
 
+    @Test
     public void testGetManageAdvancedParameters( )
     {
         AdminUser adminUser = AdminUserHome.findUserByLogin( "admin" );
@@ -183,6 +192,7 @@ public class DatabaseServiceTest extends LuteceTestCase
         return roleKey;
     }
 
+    @Test
     public void testDoInsertNewPasswordInHistory( )
     {
         String strNewPassword = getRandomName( );
