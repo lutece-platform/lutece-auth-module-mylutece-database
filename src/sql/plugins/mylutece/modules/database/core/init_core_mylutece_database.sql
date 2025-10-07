@@ -1,6 +1,6 @@
---liquibase formatted sql
---changeset mylutece-database:init_core_mylutece_database.sql
---preconditions onFail:MARK_RAN onError:WARN
+-- liquibase formatted sql
+-- changeset mylutece-database:init_core_mylutece_database.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 --
 -- Dumping data for table core_admin_right
 --
