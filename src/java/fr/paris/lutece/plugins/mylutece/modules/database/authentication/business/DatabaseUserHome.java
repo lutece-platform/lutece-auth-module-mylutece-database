@@ -459,7 +459,7 @@ public final class DatabaseUserHome
 
     /**
      * Update a user last login date
-     * 
+     *
      * @param strLogin
      *            Login of the user to update
      * @param dateLastLogin
@@ -470,5 +470,19 @@ public final class DatabaseUserHome
     public static void updateUserLastLoginDate( String strLogin, Date dateLastLogin, Plugin plugin )
     {
         _dao.updateUserLastLoginDate( strLogin, new java.sql.Timestamp( dateLastLogin.getTime( ) ), plugin );
+    }
+
+    /**
+     * Load multiple users by their IDs
+     *
+     * @param userIds
+     *            The list of user IDs
+     * @param plugin
+     *            The plugin
+     * @return The list of DatabaseUsers found
+     */
+    public static List<DatabaseUser> findByIds( List<Integer> userIds, Plugin plugin )
+    {
+        return _dao.loadUsersByIds( userIds, plugin );
     }
 }
