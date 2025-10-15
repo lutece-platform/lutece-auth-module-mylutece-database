@@ -347,7 +347,7 @@ public interface IDatabaseUserDAO
 
     /**
      * Update a user last login date
-     * 
+     *
      * @param strLogin
      *            Login of the user to update
      * @param dateLastLogin
@@ -356,4 +356,16 @@ public interface IDatabaseUserDAO
      *            The plugin
      */
     void updateUserLastLoginDate( String strLogin, Timestamp dateLastLogin, Plugin plugin );
+
+    /**
+     * Load multiple users by their IDs
+     *
+     * @param userIds
+     *            The list of user IDs
+     * @param plugin
+     *            The plugin
+     * @return The list of DatabaseUsers found
+     */
+    List<DatabaseUser> loadUsersByIds( List<Integer> userIds, Plugin plugin );
 }
+
