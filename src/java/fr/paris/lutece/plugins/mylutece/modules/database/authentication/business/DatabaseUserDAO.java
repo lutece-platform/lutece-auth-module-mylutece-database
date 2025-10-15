@@ -87,6 +87,7 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
     private static final String SQL_QUERY_UPDATE_LAST_LOGGIN_DATE = " UPDATE mylutece_database_user SET last_login = ? WHERE login LIKE ? ";
     private static final String SQL_QUERY_UPDATE_REACTIVATE_ACCOUNT = " UPDATE mylutece_database_user SET nb_alerts_sent = 0, account_max_valid_date = ? WHERE mylutece_database_user_id = ? ";
     private static final String SQL_QUERY_SELECT_NB_ALERT_SENT = " SELECT nb_alerts_sent FROM mylutece_database_user WHERE mylutece_database_user_id = ? ";
+    private static final String SQL_QUERY_SELECT_BY_IDS = " SELECT mylutece_database_user_id, login, name_family, name_given, email, is_active, account_max_valid_date FROM mylutece_database_user WHERE mylutece_database_user_id IN ( ";
     private static final String CONSTANT_CLOSE_PARENTHESIS = " ) ";
     private static final String CONSTANT_COMMA = ", ";
 
@@ -730,5 +731,61 @@ public class DatabaseUserDAO implements IDatabaseUserDAO
             daoUtil.setString( 2, strLogin );
             daoUtil.executeUpdate( );
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DatabaseUser> loadUsersByIds( List<Integer> userIds, Plugin plugin )
+    {
+        List<DatabaseUser> listUsers = new ArrayList<>( );
+
+        if ( CollectionUtils.isEmpty( userIds ) )
+        {
+            return listUsers;
+        }
+
+        StringBuilder sbSQL = new StringBuilder( );
+        sbSQL.append( SQL_QUERY_SELECT_BY_IDS );
+
+        for ( int i = 0; i < userIds.size( ); i++ )
+        {
+            if ( i > 0 )
+            {
+                sbSQL.append( CONSTANT_COMMA );
+            }
+
+            sbSQL.append( userIds.get( i ) );
+        }
+
+        sbSQL.append( CONSTANT_CLOSE_PARENTHESIS );
+
+        try ( DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin ) )
+        {
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                DatabaseUser databaseUser = _databaseUserFactory.newDatabaseUser( );
+                databaseUser.setUserId( daoUtil.getInt( 1 ) );
+                databaseUser.setLogin( daoUtil.getString( 2 ) );
+                databaseUser.setLastName( daoUtil.getString( 3 ) );
+                databaseUser.setFirstName( daoUtil.getString( 4 ) );
+                databaseUser.setEmail( daoUtil.getString( 5 ) );
+                databaseUser.setStatus( daoUtil.getInt( 6 ) );
+
+                long accountTime = daoUtil.getLong( 7 );
+
+                if ( accountTime > 0 )
+                {
+                    databaseUser.setAccountMaxValidDate( new Timestamp( accountTime ) );
+                }
+
+                listUsers.add( databaseUser );
+            }
+        }
+
+        return listUsers;
     }
 }
