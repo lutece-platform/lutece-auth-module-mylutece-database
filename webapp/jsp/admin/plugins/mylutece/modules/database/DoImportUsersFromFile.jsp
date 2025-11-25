@@ -1,18 +1,14 @@
-<%@page import="fr.paris.lutece.portal.web.pluginaction.DefaultPluginActionResult"%>
 <%@ page errorPage="../../../../ErrorPage.jsp" %>
 
-<jsp:useBean id="databaseJspBean" scope="session" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.DatabaseJspBean" />
+<%@page import="fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.DatabaseJspBean"%>
 
-<%
-	databaseJspBean.init( request, databaseJspBean.RIGHT_MANAGE_DATABASE_USERS ) ;
-	DefaultPluginActionResult result = databaseJspBean.doImportUsersFromFile( request );  
-	if( result.getHtmlContent( ) == null || "".equals( result.getHtmlContent( ) ) )
-	{
-	    response.sendRedirect( result.getRedirect( ) );
-	}
-%>
+${ mylutecedatabase_databaseJspBean.init( pageContext.request, DatabaseJspBean.RIGHT_MANAGE_DATABASE_USERS ) }
+
+${ pageContext.setAttribute( 'pluginActionResult', mylutecedatabase_databaseJspBean.doImportUsersFromFile( pageContext.request ) ) }
+${ not empty pageContext.getAttribute( 'pluginActionResult' ).redirect ? pageContext.response.sendRedirect( pageContext.getAttribute( 'pluginActionResult' ).redirect ) : '' }
+
 <jsp:include page="../../../../AdminHeader.jsp"  flush="true" />
 
-<%= result.getHtmlContent( ) %>
+${ pageContext.getAttribute( 'pluginActionResult' ).htmlContent }
 
 <%@ include file="../../../../AdminFooter.jsp" %>

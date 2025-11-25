@@ -40,8 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
-import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -59,12 +63,11 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.key.DatabaseUserKeyService;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldService;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
-import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
+import fr.paris.lutece.portal.service.captcha.ICaptchaService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.message.SiteMessage;
@@ -80,6 +83,7 @@ import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.util.BeanUtils;
 import fr.paris.lutece.portal.service.util.CryptoService;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
@@ -95,6 +99,8 @@ import fr.paris.lutece.util.url.UrlItem;
 /**
  * This class provides the XPageApp that manage personalization features for Mylutece Database module : login, account management, ...
  */
+@RequestScoped
+@Named( "mylutece-database.xpage.mylutecedatabase" )
 public class MyLuteceDatabaseApp implements XPageApplication
 {
     /** serial id */
@@ -250,12 +256,18 @@ public class MyLuteceDatabaseApp implements XPageApplication
     // private fields
     private Plugin _plugin;
     private Locale _locale;
-    private IDatabaseUserParameterService _userParamService = CDI.current( ).select( IDatabaseUserParameterService.class ).get( );
-    private DatabaseUserKeyService _userKeyService = CDI.current( ).select( DatabaseUserKeyService.class ).get( );
-    private CaptchaSecurityService _captchaService = new CaptchaSecurityService( );
-    private IDatabaseUserFactory _userFactory = CDI.current( ).select( IDatabaseUserFactory.class ).get( );
-    private DatabaseService _databaseService = CDI.current( ).select( DatabaseService.class ).get( );
-
+    @Inject
+    private IDatabaseUserParameterService _userParamService;
+    @Inject
+    private DatabaseUserKeyService _userKeyService;
+    @Inject
+    @Named( BeanUtils.BEAN_CAPTCHA_SERVICE )
+    private Instance<ICaptchaService> _captchaService;
+    @Inject
+    private IDatabaseUserFactory _userFactory;
+    @Inject
+    private DatabaseService _databaseService;
+    
     /**
      * 
      * @param request
@@ -579,7 +591,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         model.put( MARK_SHOW_INPUT_EMAIL, !_userFactory.isEmailUsedAsLogin( ) );
         model.put( MARK_PASSWORD_FORMAT_MESSAGE, SecurityUtils.getMessageFrontPasswordFormat( _locale, _userParamService, _plugin ) );
 
-        if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
+        if ( Objects.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
         {
             Object [ ] param = {
                     _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( )
@@ -589,7 +601,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         if ( _userParamService.isJcaptchaEnable( _plugin ) )
         {
-            model.put( MARK_JCAPTCHA, _captchaService.getHtmlCode( ) );
+            model.put( MARK_JCAPTCHA, _captchaService.get( ).getHtmlCode( ) );
         }
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_MODIFY_ACCOUNT_PAGE, _locale, model );
@@ -704,7 +716,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         model.put( MARK_SHOW_INPUT_LOGIN, !_userFactory.isEmailUsedAsLogin( ) );
         model.put( MARK_PASSWORD_FORMAT_MESSAGE, SecurityUtils.getMessageFrontPasswordFormat( _locale, _userParamService, _plugin ) );
 
-        if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
+        if ( Objects.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
         {
             Object [ ] param = {
                     _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( )
@@ -714,7 +726,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         if ( _userParamService.isJcaptchaEnable( _plugin ) )
         {
-            model.put( MARK_JCAPTCHA, _captchaService.getHtmlCode( ) );
+            model.put( MARK_JCAPTCHA, _captchaService.get( ).getHtmlCode( ) );
         }
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_CREATE_ACCOUNT_PAGE, _locale, model );
@@ -790,7 +802,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             strError = ERROR_SENDING_EMAIL;
         }
 
-        if ( StringUtils.isBlank( strError ) && _userParamService.isJcaptchaEnable( _plugin ) && !_captchaService.validate( request ) )
+        if ( StringUtils.isBlank( strError ) && _userParamService.isJcaptchaEnable( _plugin ) && !_captchaService.get( ).validate( request ) )
         {
             strError = ERROR_CAPTCHA;
         }
@@ -881,7 +893,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         String strFirstName = request.getParameter( PARAMETER_FIRST_NAME );
         String strEmail = request.getParameter( PARAMETER_EMAIL );
 
-        if ( _userParamService.isJcaptchaEnable( _plugin ) && !_captchaService.validate( request ) )
+        if ( _userParamService.isJcaptchaEnable( _plugin ) && !_captchaService.get( ).validate( request ) )
         {
             strError = ERROR_CAPTCHA;
         }
@@ -963,7 +975,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
                     if ( _userParamService.isAutoLoginAfterValidationEmail( plugin ) )
                     {
-                        DatabaseService.getService( ).doAutoLoginDatabaseUser( request, databaseUser, plugin );
+                        _databaseService.doAutoLoginDatabaseUser( request, databaseUser, plugin );
                     }
                 }
             }
@@ -1023,7 +1035,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             Map<String, Object> model = new HashMap<>( );
             model.put( MARK_ERROR_CODE, strErrorCode );
 
-            if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
+            if ( Objects.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
             {
                 Object [ ] param = {
                         _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( )
@@ -1230,7 +1242,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         model.put( MARK_ERROR_CODE, strErrorCode );
         model.put( MARK_ACTION_SUCCESSFUL, strSuccess );
 
-        if ( StringUtils.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
+        if ( Objects.equals( strErrorCode, ERROR_PASSWORD_MINIMUM_LENGTH ) )
         {
             Object [ ] param = {
                     _userParamService.findByKey( MARK_PASSWORD_MINIMUM_LENGTH, _plugin ).getName( )
@@ -1665,7 +1677,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
             DatabaseUser user = DatabaseUserHome.findByPrimaryKey( nUserId, _plugin );
 
             if ( ( user == null ) || ( user.getAccountMaxValidDate( ) == null )
-                    || !StringUtils.equals( CryptoService.encrypt( Long.toString( user.getAccountMaxValidDate( ).getTime( ) ),
+                    || !Objects.equals( CryptoService.encrypt( Long.toString( user.getAccountMaxValidDate( ).getTime( ) ),
                             AppPropertiesService.getProperty( PROPERTY_ACCOUNT_REF_ENCRYPT_ALGO ) ), strRef ) )
             {
                 SiteMessageService.setMessage( request, PROPERTY_NO_USER_SELECTED, null, PROPERTY_MESSAGE_LABEL_ERROR,
@@ -1725,7 +1737,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         DatabaseHome.removeGroupsForUser( user.getUserId( ), _plugin );
         DatabaseHome.removeRolesForUser( user.getUserId( ), _plugin );
         MyLuteceUserFieldService.doRemoveUserFields( user.getUserId( ), request, request.getLocale( ) );
-        DatabaseUserKeyService.getService( ).removeByIdUser( user.getUserId( ) );
+        _userKeyService.removeByIdUser( user.getUserId( ) );
         SecurityService.getInstance( ).logoutUser( request );
     }
 }

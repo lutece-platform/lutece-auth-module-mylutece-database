@@ -1,8 +1,6 @@
 <%@ page errorPage="../../../../ErrorPage.jsp" %>
 
-<jsp:useBean id="group" scope="session" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.GroupJspBean" />
+<%@page import="fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.GroupJspBean"%>
 
-<% 
-	group.init( request, group.RIGHT_GROUPS_MANAGEMENT );
-	response.sendRedirect( group.getRemoveGroup( request ) );
-%>
+${ mylutecedatabase_groupJspBean.init( pageContext.request, GroupJspBean.RIGHT_GROUPS_MANAGEMENT ) }
+${ pageContext.response.sendRedirect( mylutecedatabase_groupJspBean.getRemoveGroup( pageContext.request )) }
