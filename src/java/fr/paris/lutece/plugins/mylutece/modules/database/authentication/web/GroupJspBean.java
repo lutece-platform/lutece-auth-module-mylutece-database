@@ -73,11 +73,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This class provides the user interface to manage Lutece group features ( manage, create, modify, remove )
  */
+@SessionScoped
+@Named( "mylutecedatabase_groupJspBean" )
 public class GroupJspBean extends PluginAdminPageJspBean
 {
     private static final long serialVersionUID = -3940937010700725590L;
@@ -159,7 +164,9 @@ public class GroupJspBean extends PluginAdminPageJspBean
     private GroupFilter _gFilter;
     private String _strSortedAttributeName;
     private boolean _bIsAscSort;
-    private DatabaseService _databaseService = DatabaseService.getService( );
+
+    @Inject
+    private DatabaseService _databaseService;
 
     /**
      * Returns Group management form

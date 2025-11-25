@@ -1,5 +1,7 @@
-<jsp:useBean id="myluteceDatabaseApp" scope="request" class="fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp" />
+<%@page import="jakarta.inject.Inject"%>
+<%@page import="fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp"%>
 
+<%! @Inject private MyLuteceDatabaseApp myLuteceDatabaseApp; %>
 <%
-	response.sendRedirect( myluteceDatabaseApp.doSendLogin( request ) );
+	response.sendRedirect( myLuteceDatabaseApp.doSendLogin( request ) );
 %>

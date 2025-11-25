@@ -23,7 +23,6 @@
    <applications>
        <application>
            <application-id>mylutecedatabase</application-id>
-           <application-class>fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLuteceDatabaseApp</application-class>
        </application>
    </applications>
     

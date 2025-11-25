@@ -37,6 +37,7 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.url.UrlItem;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
 import java.net.URLEncoder;
@@ -46,7 +47,7 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * This class provides a filter for users search function
  */
-public class DatabaseUserFilter
+public class DatabaseUserFilter implements Serializable
 {
     // Constants
     private static final String EQUAL = "=";
