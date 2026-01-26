@@ -42,16 +42,41 @@
 		</@tform>
 	</@pageColumn>
 </@pageContainer>
-<script src="js/admin/jquery/plugins/jquery.complexify.js"></script>
 <script>
-$(document).ready(function(){	
-	$("#first_password").complexify({}, function (valid, complexity) {
-		if (!valid) {
-			$('#progressbar').css({'width':complexity + '%'}).removeClass('bg-success').addClass('bg-danger');
-		} else {
-			$('#progressbar').css({'width':complexity + '%'}).removeClass('bg-danger').addClass('bg-success');
+document.addEventListener('DOMContentLoaded', function() {
+	const passwordInput = document.getElementById('first_password');
+	const progressBar = document.getElementById('progressbar');
+	const complexityText = document.getElementById('complexity');
+	
+	if (passwordInput && progressBar) {
+		passwordInput.addEventListener('input', function() {
+			const password = this.value;
+			const complexity = calculateComplexity(password);
+			const valid = complexity >= 50;
+			
+			progressBar.style.width = complexity + '%';
+			progressBar.classList.remove('bg-success', 'bg-danger');
+			progressBar.classList.add(valid ? 'bg-success' : 'bg-danger');
+			
+			if (complexityText) {
+				complexityText.textContent = Math.round(complexity) + '%';
 			}
-		$('#complexity').html(Math.round(complexity) + '%');
-	});
+		});
+	}
+	
+	function calculateComplexity(password) {
+		if (!password) return 0;
+		let complexity = 0;
+		const length = password.length;
+		
+		complexity += Math.min(length * 4, 40);
+		if (/[a-z]/.test(password)) complexity += 10;
+		if (/[A-Z]/.test(password)) complexity += 10;
+		if (/[0-9]/.test(password)) complexity += 10;
+		if (/[^a-zA-Z0-9]/.test(password)) complexity += 15;
+		if (length >= 8) complexity += 15;
+		
+		return Math.min(complexity, 100);
+	}
 });
 </script>
