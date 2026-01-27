@@ -14,24 +14,24 @@
 				<@formGroup labelFor='email_body' labelKey='#i18n{mylutece.accountLifeTime.labelBodyEmail}'>
 					<@input type='textarea' richtext=true rows=30 id='email_body' name='email_body'>${email_body!}</@input>
 				</@formGroup>
-				<p>#i18n{mylutece.accountLifeTime.labelParameters}</p> 
-				<ul>
+				<@p>#i18n{mylutece.accountLifeTime.labelParameters}</@p> 
+				<@ul>
 					<#if email_type = "lost_password" || email_type = "password_encryption_changed">
-						<li>${r"${new_password}"} : #i18n{mylutece.accountLifeTime.labelNewPassword}</li>
-						<li>${r"${reinit_url}"} : #i18n{mylutece.accountLifeTime.labelReinitUrl}</li>
+						<@li>${r"${new_password}"} : #i18n{mylutece.accountLifeTime.labelNewPassword}</@li>
+						<@li>${r"${reinit_url}"} : #i18n{mylutece.accountLifeTime.labelReinitUrl}</@li>
 					<#else>
 						<#if email_type != "reactivated" && email_type != "expired" && email_type != "password_expired">
-						<li>${r"${url}"} : #i18n{portal.users.accountLifeTime.labelUrl}</li>
+						<@li>${r"${url}"} : #i18n{portal.users.accountLifeTime.labelUrl}</@li>
 						</#if>
 						<#if email_type != "ip_blocked">
-							<li>${r"${first_name}"} : #i18n{mylutece.accountLifeTime.labelFirstName}</li>
-							<li>${r"${last_name}"} : #i18n{mylutece.accountLifeTime.labelLastName}</li>
+							<@li>${r"${first_name}"} : #i18n{mylutece.accountLifeTime.labelFirstName}</@li>
+							<@li>${r"${last_name}"} : #i18n{mylutece.accountLifeTime.labelLastName}</@li>
 							<#if email_type != "password_expired" >
-								<li>${r"${date_valid}"} : #i18n{mylutece.accountLifeTime.labelDateValid}</li>
+								<@li>${r"${date_valid}"} : #i18n{mylutece.accountLifeTime.labelDateValid}</@li>
 							</#if>
 						</#if>
 					</#if>
-				</ul>
+				</@ul>
 				<@formGroup>
 					<@button type='submit' title='#i18n{portal.util.labelModify}' buttonIcon='save' />
 				</@formGroup>

@@ -12,31 +12,20 @@
 				<@tform action='jsp/admin/plugins/mylutece/modules/database/DoAssignRoleGroup.jsp'>
 					<@input type='hidden' name='group_key' value='${group.groupKey}' />
 					<@fieldSet legend='#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey} - #i18n{module.mylutece.database.manage_roles_group.boxTitle}'>
-						<@table>
-							<@tr>
-								<@th>#i18n{module.mylutece.database.manage_roles_group.colName}</@th>
-								<@th>#i18n{module.mylutece.database.manage_roles_group.colLabel}</@th>
-								<@th></@th>
-							</@tr>
+						<@manageFeature>
 							<#list role_list as role >
 							<#if role.role != "none">
-							<@tr>
-								<@td>${role.role}</@td>
-								<@td>${role.roleDescription}</@td>
-								<@td>
+							<@manageFeatureItem>
+								<@manageFeatureItemColumn auto=true>${role.role} - ${role.roleDescription}</@manageFeatureItemColumn>
+								<@manageFeatureItemColumn align='end'>
 									<#assign checked = false />
-									<#list group_role_list as group_role >
-										<#if group_role.role = role.role >
-											<#assign checked = true />
-										<#break>
-										</#if>
-									</#list>
-									<@checkBox name='role_key' id=role.role?replace('\\s+','','r') value='${role.role}' checked=checked />
-								</@td>
-							</@tr>
+									<#list group_role_list as group_role ><#if group_role.role = role.role ><#assign checked = true /><#break></#if></#list>
+									<@checkBox orientation='switch' name='role_key' id=role.role?replace('\\s+','','r') value='${role.role}' checked=checked />
+								</@manageFeatureItemColumn>
+							</@manageFeatureItem>
 							</#if>
 							</#list>
-						</@table>
+						</@manageFeature>
 						<@formGroup class='my-4'>
 							<@button type='submit' name='save' title='#i18n{module.mylutece.database.manage_roles_group.btnAssign}' buttonIcon='check' />
 							<@button type='button' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />

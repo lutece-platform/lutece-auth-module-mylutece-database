@@ -12,18 +12,18 @@
 						<@formGroup labelFor='xsl_export_id' labelKey='#i18n{module.mylutece.database.export_users.labelXslt}'>
 							<@select id='xsl_export_id' name='xsl_export_id'>
 								<#list refListXsl as xsl>
-									<option value="${xsl.code}" >${xsl.name}</option>
+									<@option value=xsl.code label=xsl.name />
 								</#list>
 							</@select>
 						</@formGroup>
 						<@formGroup helpKey='#i18n{module.mylutece.database.export_users.labelHelpExportAttributes}'>
-							<@checkBox labelFor='export_attributes' labelKey='#i18n{module.mylutece.database.export_users.labelExportAttributes}' id='export_attributes' name='export_attributes' checked=true />
+							<@checkBox orientation='switch' labelFor='export_attributes' labelKey='#i18n{module.mylutece.database.export_users.labelExportAttributes}' id='export_attributes' name='export_attributes' checked=true />
 						</@formGroup>
 						<@formGroup helpKey='#i18n{module.mylutece.database.export_users.labelHelpExportRoles}'>
-							<@checkBox labelFor='export_roles' labelKey='#i18n{module.mylutece.database.export_users.labelExportRoles}' id='export_roles' name='export_roles' checked=true />
+							<@checkBox orientation='switch' labelFor='export_roles' labelKey='#i18n{module.mylutece.database.export_users.labelExportRoles}' id='export_roles' name='export_roles' checked=true />
 						</@formGroup>
 						<@formGroup helpKey='#i18n{module.mylutece.database.export_users.labelHelpExportWorkgroups}'>
-							<@checkBox labelFor='export_workgroups' labelKey='#i18n{module.mylutece.database.export_users.labelExportWorkgroups}' id='export_workgroups' name='export_workgroups' checked=true />
+							<@checkBox orientation='switch'	labelFor='export_workgroups' labelKey='#i18n{module.mylutece.database.export_users.labelExportWorkgroups}' id='export_workgroups' name='export_workgroups' checked=true />
 						</@formGroup>
 						<@formGroup>
 							<@button type='submit' title='#i18n{portal.util.labelValidate}' buttonIcon='check' />

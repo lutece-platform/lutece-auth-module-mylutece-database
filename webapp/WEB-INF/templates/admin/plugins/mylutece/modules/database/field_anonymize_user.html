@@ -4,23 +4,23 @@
 		<@tform method='post' name='anonymize_user' action='jsp/admin/plugins/mylutece/modules/database/DoChangeFieldAnonymizeUsers.jsp' boxed=true>
 			<@fieldSet legend='#i18n{portal.users.create_user.labelIdentity}'>
 				<@formGroup>
-					<@checkBox labelFor='login' labelKey='#i18n{module.mylutece.database.create_user.login}' id='login' name='login' value='true' checked=(login?? && login) />
+					<@checkBox orientation='switch' labelFor='login' labelKey='#i18n{module.mylutece.database.create_user.login}' id='login' name='login' value='true' checked=(login?? && login) />
 				</@formGroup>
 				<@formGroup>
-					<@checkBox labelFor='email' labelKey='#i18n{module.mylutece.database.create_user.eMail}' id='email' name='email' value='true' checked=(email?? && email) />
+					<@checkBox orientation='switch' labelFor='email' labelKey='#i18n{module.mylutece.database.create_user.eMail}' id='email' name='email' value='true' checked=(email?? && email) />
 				</@formGroup>
 				<@formGroup>
-					<@checkBox labelFor='last_name' labelKey='#i18n{module.mylutece.database.create_user.lastName}' id='name_given' name='name_given' value='true' checked=(name_given?? && name_given) />
+					<@checkBox orientation='switch' labelFor='last_name' labelKey='#i18n{module.mylutece.database.create_user.lastName}' id='name_given' name='name_given' value='true' checked=(name_given?? && name_given) />
 				</@formGroup>
 				<@formGroup>
-					<@checkBox labelFor='first_name' labelKey='#i18n{module.mylutece.database.create_user.firstName}' id='name_family' name='name_family' value='true' checked=(name_family?? && name_family) />
+					<@checkBox orientation='switch' labelFor='first_name' labelKey='#i18n{module.mylutece.database.create_user.firstName}' id='name_family' name='name_family' value='true' checked=(name_family?? && name_family) />
 				</@formGroup>
 			</@fieldSet>
 			<#if attributes_list?has_content>
 				<@fieldSet legend='#i18n{module.mylutece.database.create_user.labelComplementaryAttributes}'>
 					<#list attributes_list as attribute>
 					<@formGroup>
-						<@checkBox labelFor='attribute_${attribute.idAttribute}' labelKey='${attribute.title}' value='true' name='attribute_${attribute.idAttribute}' id='attribute_${attribute.idAttribute}' checked=(attribute.anonymize) />
+						<@checkBox orientation='switch' labelFor='attribute_${attribute.idAttribute}' labelKey='${attribute.title}' value='true' name='attribute_${attribute.idAttribute}' id='attribute_${attribute.idAttribute}' checked=(attribute.anonymize) />
 					</@formGroup>
 					</#list>
 				</@fieldSet>

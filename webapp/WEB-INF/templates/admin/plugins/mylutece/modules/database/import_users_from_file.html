@@ -19,10 +19,10 @@
 							</@formHelp>
 						</@formGroup>
 						<@formGroup helpKey='#i18n{module.mylutece.database.import_users_from_file.labelHelpIgnoreFirstLine}'>
-							<@checkBox labelKey='#i18n{module.mylutece.database.import_users_from_file.labelIgnoreFirstLine}' id='ignore_first_line' name='ignore_first_line' />
+							<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.import_users_from_file.labelIgnoreFirstLine}' id='ignore_first_line' name='ignore_first_line' />
 						</@formGroup>
 						<@formGroup helpKey='#i18n{module.mylutece.database.import_users_from_file.labelHelpUpdateExistingUsers}'>
-							<@checkBox labelKey='#i18n{module.mylutece.database.import_users_from_file.labelUpdateExistingUsers}' id='update_existing_users' name='update_existing_users' />
+							<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.import_users_from_file.labelUpdateExistingUsers}' id='update_existing_users' name='update_existing_users' />
 						</@formGroup>
 						<#if messages?? && messages?has_content>
 							<#list messages as message>
@@ -32,7 +32,6 @@
 								</@alert>
 							</#list>
 						</#if>
-						
 						<@formGroup>
 							<@button type='submit' title='#i18n{portal.util.labelValidate}' buttonIcon='check' />
 							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='times' color='default' />
