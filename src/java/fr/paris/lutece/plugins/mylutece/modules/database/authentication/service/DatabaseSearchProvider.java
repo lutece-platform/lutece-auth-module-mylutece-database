@@ -45,10 +45,14 @@ import fr.paris.lutece.plugins.mylutece.service.search.IUserSearchProvider;
 import fr.paris.lutece.plugins.mylutece.service.search.MyLuteceSearchUser;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.util.ReferenceList;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  * IUserSearchProvider implementation for database authentication
  */
+@ApplicationScoped
+@Named( "mylutece.myLuteceUserSearchProvider" )
 public class DatabaseSearchProvider implements IUserSearchProvider
 {
     private static final String ATTRIBUTE_LOGIN = "login";
