@@ -1,17 +1,266 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
-	<properties>
-		<title>Module mylutece database</title>
-	</properties>
-	<body>
-		<section name="Module mylutece database">
-			<subsection name="Introduction">
-				<p>
-					This module module-mylutece-database provides a front office
-					user authentication implementation for mylutece based on local
-					users stored in a table in the database.
-				</p>
-			</subsection>
-		</section>
-	</body>
+    <properties>
+        <title>Module mylutece database</title>
+    </properties>
+    <head>
+        <meta name="keywords" content="authentication,users,database,security,account management,front office,mylutece,groups,roles"/>
+    </head>
+    <body>
+        <section name="Module-mylutece-database">
+            <subsection name="Introduction">
+                <p>
+                    The module-mylutece-database
+
+ provides a front office user authentication implementation 
+                    for MyLutece based on local users stored in a database table.
+                </p>
+                <p>
+                    This module enables comprehensive user account lifecycle management, including:
+                </p>
+                <ul>
+                    <li>User account creation and modification</li>
+                    <li>Secure authentication with password management (encryption, history, expiration)</li>
+                    <li>User groups and roles management</li>
+                    <li>Account lifetime management (expiration, reactivation, anonymization)</li>
+                    <li>Lost password recovery</li>
+                    <li>User import/export (XML, CSV)</li>
+                    <li>Protection against malicious login attempts (IP blocking, CAPTCHA)</li>
+                </ul>
+                <p>
+                    The module integrates into Lutece's security architecture and uses the MyLutece system for 
+                    front office authentication, while providing a complete administration interface for 
+                    user management.
+                </p>
+            </subsection>
+            
+            <subsection name="Configuration">
+                
+<p><strong>Configuration Properties</strong></p>
+
+
+                <p>
+                    The following properties are available in the <code>mylutece-database.properties</code> file:
+                </p>
+                
+                
+<p><strong>Authentication Service</strong></p>
+
+
+                <ul>
+                    <li><code>mylutece-database.service.name</code>: Authentication service name (default: "Lutece Database Authentication Service")</li>
+                </ul>
+                
+                
+<p><strong>Pagination Configuration</strong></p>
+
+
+                <ul>
+                    <li><code>paginator.users.itemsPerPage</code>: Number of users per page (default: 50)</li>
+                </ul>
+                
+                
+<p><strong>Daemon Configuration</strong></p>
+
+
+                <ul>
+                    <li><code>daemon.databaseAnonymizationDaemon.interval</code>: Anonymization daemon execution interval in seconds (default: 86400 = 24h)</li>
+                    <li><code>daemon.databaseAnonymizationDaemon.onstartup</code>: Execute on startup (0 or 1)</li>
+                    <li><code>daemon.databaseAccountLifeTimeDaemon.interval</code>: Account lifetime daemon execution interval (default: 86400 = 24h)</li>
+                    <li><code>daemon.databaseAccountLifeTimeDaemon.onstartup</code>: Execute on startup (0 or 1)</li>
+                </ul>
+                
+                
+<p><strong>Optional URLs</strong></p>
+
+
+                <ul>
+                    <li><code>mylutece-database.url.login.page</code>: Login page</li>
+                    <li><code>mylutece-database.url.doLogin</code>: Login action</li>
+                    <li><code>mylutece-database.url.doLogout</code>: Logout action</li>
+                    <li><code>mylutece-database.url.changePassword.page</code>: Change password page</li>
+                    <li><code>mylutece-database.url.viewAccount.page</code>: View account page</li>
+                    <li><code>mylutece-database.url.createAccount.page</code>: Create account page</li>
+                    <li><code>mylutece-database.url.lostPassword.page</code>: Lost password page</li>
+                    <li><code>mylutece-database.url.lostLogin.page</code>: Lost login page</li>
+                    <li><code>mylutece-database.url.accessDenied.page</code>: Access denied page</li>
+                    <li><code>mylutece-database.url.default.redirect</code>: Default redirect page</li>
+                    <li><code>mylutece-database.url.reinitPassword.page</code>: Reinitialize password page</li>
+                    <li><code>mylutece-database.url.resetPassword.page</code>: Reset password page</li>
+                    <li><code>mylutece-database.url.delete.page</code>: Delete confirmation page</li>
+                    <li><code>mylutece-database.url.modifyAccount.page</code>: Modify account page</li>
+                </ul>
+                
+                
+                
+<p><strong>Security</strong></p>
+
+
+                <ul>
+                    <li><code>mylutece-database.account_life_time.refEncryptionAlgorythm</code>: Reference encryption algorithm (default: SHA-256)</li>
+                </ul>
+                    
+                
+<p><strong>Daemons to Activate</strong></p>
+
+
+                <p>Two daemons are provided by the module:</p>
+                <ul>
+                    <li>DatabaseAnonymizationDaemon: Daemon that anonymizes expired account data</li>
+                    <li>DatabaseAccountLifeTimeDaemon: Daemon that manages account lifecycle (expiration notifications, deactivation of expired accounts)</li>
+                </ul>
+                
+            </subsection>
+            
+            <subsection name="Usage">
+                
+<p><strong>Administration Rights</strong></p>
+
+
+                <p>The module defines the following administration rights :</p>
+                <ul>
+                    <li>DATABASE_MANAGEMENT_USERS : Database user management
+                        
+                    </li>
+                    <li>DATABASE_GROUPS_MANAGEMENT : User groups management
+                      
+                    </li>
+                </ul>
+                
+                
+<p><strong>RBAC Resources</strong></p>
+
+
+                <p>The module defines the following RBAC resources:</p>
+                <ul>
+                    <li>DatabaseResourceIdService (resource type: DATABASE)
+                        <ul>
+                            <li>Permission MANAGE: Advanced parameters management</li>
+                            <li>Permission IMPORT_EXPORT_DATABASE_USERS: User import/export</li>
+                        </ul>
+                    </li>
+                    <li>GroupResourceIdService  (resource type: GROUP_TYPE)
+                        <ul>
+                            <li>Permission ASSIGN_GROUP: Assign groups to users</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                
+<p><strong>Roles</strong></p>
+
+
+                <p>The following roles are defined (<code>core_admin_role</code> and <code>core_admin_role_resource</code> tables):</p>
+                <ul>
+                    <li>mylutece_database_manager : MyLutece database manager
+                      
+                    </li>
+                    <li>assign_groups : Group assignment
+                        
+                    </li>
+                </ul>
+                
+                
+                
+<p><strong>Exposed Java Services</strong></p>
+
+
+                
+                
+<p><strong>DatabaseService</strong></p>
+
+
+                <p>Main service for database user management. Primary methods:</p>
+                <ul>
+                    <li><code>getService()</code>: Retrieves the singleton service instance</li>
+                    <li><code>doCreateUser(DatabaseUser user, String strPassword, Plugin plugin)</code>: Creates a new user</li>
+                    <li><code>doModifyPassword(DatabaseUser user, String strPassword, Plugin plugin)</code>: Modifies a user's password</li>
+                    <li><code>doUpdateUser(DatabaseUser user, Plugin plugin)</code>: Updates user information</li>
+                    <li><code>checkPassword(String strUserGuid, String strPassword, Plugin plugin)</code>: Verifies password validity</li>
+                    <li><code>isUserActive(String strUserName, Plugin plugin)</code>: Checks if a user is active</li>
+                    <li><code>getFilteredUsersInterface(DatabaseUserFilter duFilter, boolean bIsSearch, List&lt;DatabaseUser&gt; listUsers, HttpServletRequest request)</code>: Filters users based on criteria</li>
+                    <li><code>updateUserExpirationDate(int nIdUser, Plugin plugin)</code>: Updates user expiration date</li>
+                    <li><code>updateUserLastLoginDate(String strLogin, Plugin plugin)</code>: Updates last login date</li>
+                    <li><code>getXmlFromUser(DatabaseUser user, boolean bExportRoles, boolean bExportGroups, boolean bExportAttributes, List&lt;IAttribute&gt; listAttributes, Locale locale, Plugin plugin)</code>: Generates XML from a user</li>
+                    <li><code>doAutoLoginDatabaseUser(HttpServletRequest request, DatabaseUser databaseUser, Plugin plugin)</code>: Performs automatic login</li>
+                </ul>
+                
+                
+<p><strong>BaseAuthentication</strong></p>
+
+
+                <p>Database-based authentication implementation. Inherits from PortalAuthentication.</p>
+                <ul>
+                    <li>Manages front office user authentication</li>
+                    <li>Supports password recovery</li>
+                    <li>Manages login attempts and IP blocking</li>
+                    <li>CAPTCHA integration for security</li>
+                </ul>
+                
+                
+<p><strong>GroupService</strong></p>
+
+
+                <p>User group management service.</p>
+                
+                
+<p><strong>DatabaseAccountLifeTimeService</strong></p>
+
+
+                <p>Account lifecycle management service (expiration, notifications, reactivation).</p>
+                
+                
+<p><strong>DatabaseAnonymizationService</strong></p>
+
+
+                <p>Service for anonymizing expired account data.</p>
+                
+                
+<p><strong>DatabaseUserKeyService</strong></p>
+
+
+                <p>Service for managing user activation and reset keys.</p>
+                
+                
+<p><strong>ImportDatabaseUserService</strong></p>
+
+
+                <p>Service for importing users from XML or CSV files.</p>
+                
+                
+<p><strong>DatabaseUserParameterService</strong></p>
+
+
+                <p>Service for managing user parameters (account lifetime, password expiration, etc.).</p>
+                
+
+                
+                
+<p><strong>Notification Templates</strong></p>
+
+
+                <p>The module uses the following templates for email notifications:</p>
+                <ul>
+                    <li><code>mylutece_database_first_alert_mail</code>: First account expiration warning</li>
+                    <li><code>mylutece_database_other_alert_mail</code>: Subsequent expiration warnings</li>
+                    <li><code>mylutece_database_expiration_mail</code>: Account expiration notification</li>
+                    <li><code>mylutece_database_account_reactivated_mail</code>: Account reactivation confirmation</li>
+                    <li><code>mylutece_database_unblock_user</code>: IP unblocking</li>
+                    <li><code>mylutece_database_password_expired</code>: Password expiration notification</li>
+                    <li><code>mylutece_database_mailLostPassword</code>: Lost password recovery email</li>
+                    <li><code>mylutece_database_mailPasswordEncryptionChanged</code>: Password encryption change notification</li>
+                </ul>
+                
+                
+<p><strong>XSL Export</strong></p>
+
+
+                <p>The module provides two predefined XSL exports:</p>
+                <ul>
+                    <li>CSV User Export : Exports users to CSV format with their attributes, roles and groups</li>
+                    <li>XML User Export : Exports users to XML format with all their data</li>
+                </ul>
+            </subsection>
+        </section>
+    </body>
 </document>
