@@ -1,38 +1,34 @@
- <@cTpl>
-<div class="row">
-    <div class="col-12 col-md-6 offset-md-3">
-        <h2>#i18n{module.mylutece.database.xpage.view_account.pageTitle}</h2>
-        <form id="modifyAccount" name="modifyAccount" action="jsp/site/Portal.jsp?page=mylutecedatabase&amp;action=changePassword" method="post">
-        <#if show_input_login>
-        <div class="form-floating">
-            <input type="text" readonly="readonly" name="login" maxlength="100"class="form-control" value="${user.login}" />
-            <label class="text-label" for="login">#i18n{module.mylutece.database.xpage.view_account.login}</label>
-        </div>
-         </#if>
-         <div class="form-floating">
-             <input type="text" readonly="readonly" name="email" maxlength="100"class="form-control" value="${user.email}" />
-             <label class="text-label" for="email">#i18n{module.mylutece.database.xpage.view_account.eMail}</label>
-        </div>
-        <div class="form-floating">
-            <input type="text" readonly="readonly" name="last_name" maxlength="100"class="form-control"  value="${user.lastName}" />
-            <label class="text-label" for="last_name">#i18n{module.mylutece.database.xpage.view_account.lastName}</label>
-        </div>    
-        <div class="form-floating"> 
-            <input type="text" readonly="readonly" name="first_name" maxlength="100"class="form-control" value="${user.firstName}" />
-            <label class="text-label" for="first_name">#i18n{module.mylutece.database.xpage.view_account.firstName}</label>
-        </div>
-        <div class="form-row d-flex mt-3">
-            <button class="btn btn-primary" id="button-subscribe" type="submit" name="changePasswordBtn">
-                <span class="ti ti-edit"></span> #i18n{module.mylutece.database.xpage.view_account.btnChangePassword}
-            </button>
-            <button class="btn btn-secondary ms-2" id="button-return" type="button" name="back" onclick='javascript:history.go(-1)'>
-                <span class="ti ti-circle-x"></span> #i18n{module.mylutece.database.xpage.account.btnBack}
-            </button>  
-            <a class="btn btn-danger ms-auto" id="button-delete" type="button" name="delete" href="jsp/site/Portal.jsp?page=mylutecedatabase&action=delete">
-                <span class="ti ti-trash"></span> #i18n{module.mylutece.database.xpage.view_account.btnDeleteAccount}
-            </a>
-        </div>
-        </form>     
-    </div>
-</div>
+<@cTpl>
+<@cRow>
+    <@cCol cols='12 col-md-6 offset-md-3'>
+        <@cTitle level=1 class='h3'>#i18n{module.mylutece.database.xpage.view_account.pageTitle}</@cTitle>
+        <@cForm id='modifyAccount' action='jsp/site/Portal.jsp?page=mylutecedatabase&amp;action=changePassword' method='post' params='name="modifyAccount"'>
+            <#if show_input_login>
+            <@cField label='#i18n{module.mylutece.database.xpage.view_account.login}' for='login'>
+                <@cInput type='text' name='login' id='login' value='${user.login}' params='readonly="readonly" maxlength="100"' />
+            </@cField>
+            </#if>
+            <@cField label='#i18n{module.mylutece.database.xpage.view_account.eMail}' for='email'>
+                <@cInput type='text' name='email' id='email' value='${user.email}' params='readonly="readonly" maxlength="100"' />
+            </@cField>
+            <@cField label='#i18n{module.mylutece.database.xpage.view_account.lastName}' for='last_name'>
+                <@cInput type='text' name='last_name' id='last_name' value='${user.lastName}' params='readonly="readonly" maxlength="100"' />
+            </@cField>
+            <@cField label='#i18n{module.mylutece.database.xpage.view_account.firstName}' for='first_name'>
+                <@cInput type='text' name='first_name' id='first_name' value='${user.firstName}' params='readonly="readonly" maxlength="100"' />
+            </@cField>
+            <@cBlock class='form-row d-flex mt-3'>
+                <@cBtn class='primary' id='button-subscribe' type='submit' label='' params='name="changePasswordBtn"'>
+                    <@cInline class='ti ti-edit' /> #i18n{module.mylutece.database.xpage.view_account.btnChangePassword}
+                </@cBtn>
+                <@cBtn class='secondary ms-2' id='button-return' type='button' label='' params='name="back" onclick="javascript:history.go(-1)"'>
+                    <@cInline class='ti ti-circle-x' /> #i18n{module.mylutece.database.xpage.account.btnBack}
+                </@cBtn>
+                <@cBtn href='jsp/site/Portal.jsp?page=mylutecedatabase&action=delete' class='danger ms-auto' id='button-delete' label='' params='name="delete"'>
+                    <@cInline class='ti ti-trash' /> #i18n{module.mylutece.database.xpage.view_account.btnDeleteAccount}
+                </@cBtn>
+            </@cBlock>
+        </@cForm>
+    </@cCol>
+</@cRow>
 </@cTpl>
