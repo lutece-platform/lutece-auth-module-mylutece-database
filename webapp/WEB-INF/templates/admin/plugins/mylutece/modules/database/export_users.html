@@ -8,14 +8,7 @@
 					<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ImportUsersFromFile.jsp' title='#i18n{module.mylutece.database.import_users_from_file.labelImportUsers}' />
 				</@tabList>
 				<@tabContent>
-					<@fieldSet legend='#i18n{module.mylutece.database.export_users.pageTitle}'> 
-						<@formGroup labelFor='xsl_export_id' labelKey='#i18n{module.mylutece.database.export_users.labelXslt}'>
-							<@select id='xsl_export_id' name='xsl_export_id'>
-								<#list refListXsl as xsl>
-									<option value="${xsl.code}" >${xsl.name}</option>
-								</#list>
-							</@select>
-						</@formGroup>
+					<@fieldSet legend='#i18n{module.mylutece.database.export_users.pageTitle}'>
 						<@formGroup helpKey='#i18n{module.mylutece.database.export_users.labelHelpExportAttributes}'>
 							<@checkBox labelFor='export_attributes' labelKey='#i18n{module.mylutece.database.export_users.labelExportAttributes}' id='export_attributes' name='export_attributes' checked=true />
 						</@formGroup>
