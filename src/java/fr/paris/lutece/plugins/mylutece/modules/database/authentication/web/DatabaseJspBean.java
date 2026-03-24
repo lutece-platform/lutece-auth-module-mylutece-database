@@ -42,6 +42,7 @@ import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserField;
 import fr.paris.lutece.plugins.mylutece.business.attribute.MyLuteceUserFieldHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUser;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserWrapper;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFilter;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.Group;
@@ -63,8 +64,6 @@ import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.business.role.Role;
 import fr.paris.lutece.portal.business.role.RoleHome;
 import fr.paris.lutece.portal.business.user.AdminUser;
-import fr.paris.lutece.portal.business.xsl.XslExport;
-import fr.paris.lutece.portal.business.xsl.XslExportHome;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.csv.CSVMessageDescriptor;
@@ -80,7 +79,6 @@ import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.workgroup.AdminWorkgroupService;
-import fr.paris.lutece.portal.service.xsl.XslExportService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.constants.Parameters;
@@ -88,7 +86,6 @@ import fr.paris.lutece.portal.web.pluginaction.DefaultPluginActionResult;
 import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.util.ReferenceItem;
-import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.filesystem.FileSystemUtil;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -96,7 +93,6 @@ import fr.paris.lutece.util.html.ItemNavigator;
 import fr.paris.lutece.util.sort.AttributeComparator;
 import fr.paris.lutece.util.string.StringUtil;
 import fr.paris.lutece.util.url.UrlItem;
-import fr.paris.lutece.util.xml.XmlUtil;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -239,7 +235,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_IMPORT_USERS_FILE = "import_file";
     private static final String PARAMETER_SKIP_FIRST_LINE = "ignore_first_line";
     private static final String PARAMETER_UPDATE_USERS = "update_existing_users";
-    private static final String PARAMETER_XSL_EXPORT_ID = "xsl_export_id";
     private static final String PARAMETER_EXPORT_ATTRIBUTES = "export_attributes";
     private static final String PARAMETER_EXPORT_ROLES = "export_roles";
     private static final String PARAMETER_EXPORT_WORKGROUPS = "export_workgroups";
@@ -270,7 +265,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String MARK_CSV_SEPARATOR = "csv_separator";
     private static final String MARK_CSV_ESCAPE = "csv_escape";
     private static final String MARK_ATTRIBUTES_SEPARATOR = "attributes_separator";
-    private static final String MARK_LIST_XSL_EXPORT = "refListXsl";
+    private static final String MARK_EXPORT_USERS = "users";
 
     // Templates
     private static final String TEMPLATE_CREATE_USER = "admin/plugins/mylutece/modules/database/create_user.html";
@@ -284,7 +279,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String TEMPLATE_IMPORT_USERS_FROM_FILE = "admin/plugins/mylutece/modules/database/import_users_from_file.html";
     private static final String TEMPLATE_EXPORT_USERS_FROM_FILE = "admin/plugins/mylutece/modules/database/export_users.html";
     private static final String FIELD_IMPORT_USERS_FILE = "module.mylutece.database.import_users_from_file.labelImportFile";
-    private static final String FIELD_XSL_EXPORT = "module.mylutece.database.export_users.labelXslt";
+
+    private static final String TEMPLATE_EXPORT_USERS = "admin/plugins/mylutece/modules/database/export/export_csv.ftl";
 
     // Properties
     private static final String PROPERTY_USERS_PER_PAGE = "paginator.users.itemsPerPage";
@@ -298,17 +294,13 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String CONSTANT_EMAIL_PASSWORD_EXPIRED = "password_expired";
     private static final String CONSTANT_EMAIL_TYPE_LOST_PASSWORD = "lost_password";
     private static final String CONSTANT_EXTENSION_CSV_FILE = ".csv";
-    private static final String CONSTANT_EXTENSION_XML_FILE = ".xml";
     private static final String CONSTANT_MIME_TYPE_CSV = "application/csv";
-    private static final String CONSTANT_MIME_TYPE_XML = "application/xml";
     private static final String CONSTANT_MIME_TYPE_TEXT_CSV = "text/csv";
     private static final String CONSTANT_MIME_TYPE_OCTETSTREAM = "application/octet-stream";
     private static final String CONSTANT_EXPORT_USERS_FILE_NAME = "users";
-    private static final String CONSTANT_POINT = ".";
     private static final String CONSTANT_QUOTE = "\"";
     private static final String CONSTANT_ATTACHEMENT_FILE_NAME = "attachement; filename=\"";
     private static final String CONSTANT_ATTACHEMENT_DISPOSITION = "Content-Disposition";
-    private static final String CONSTANT_XML_USERS = "users";
 
     // Variables
     private int _nItemsPerPage;
@@ -1529,7 +1521,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             boolean bSkipFirstLine = StringUtils.isNotEmpty( strSkipFirstLine );
             String strUpdateUsers = multipartRequest.getParameter( PARAMETER_UPDATE_USERS );
             boolean bUpdateUsers = StringUtils.isNotEmpty( strUpdateUsers );
-            
+
             ImportDatabaseUserService importDatabaseUserService = new ImportDatabaseUserService( );
             importDatabaseUserService.setUpdateExistingUsers( bUpdateUsers );
 
@@ -1571,10 +1563,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         Map<String, Object> model = new HashMap<>( );
 
-        ReferenceList refListXsl = XslExportHome.getRefListByPlugin( getPlugin( ) );
-
-        model.put( MARK_LIST_XSL_EXPORT, refListXsl );
-
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EXPORT_USERS_FROM_FILE, AdminUserService.getLocale( request ), model );
 
         return getAdminPage( template.getHtml( ) );
@@ -1605,7 +1593,6 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             return result;
         }
 
-        String strXslExportId = request.getParameter( PARAMETER_XSL_EXPORT_ID );
         String strExportAttributes = request.getParameter( PARAMETER_EXPORT_ATTRIBUTES );
         String strExportRoles = request.getParameter( PARAMETER_EXPORT_ROLES );
         String strExportWorkgroups = request.getParameter( PARAMETER_EXPORT_WORKGROUPS );
@@ -1613,59 +1600,32 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         boolean bExportRoles = StringUtils.isNotEmpty( strExportRoles );
         boolean bExportWorkgroups = StringUtils.isNotEmpty( strExportWorkgroups );
 
-        if ( StringUtils.isBlank( strXslExportId ) )
-        {
-            Object [ ] tabRequiredFields = {
-                    I18nService.getLocalizedString( FIELD_XSL_EXPORT, getLocale( ) )
-            };
-            result.setRedirect( AdminMessageService.getMessageUrl( request, MESSAGE_MANDATORY_FIELD, tabRequiredFields, AdminMessage.TYPE_STOP ) );
-
-            return result;
-        }
-
-        int nIdXslExport = Integer.parseInt( strXslExportId );
-
-        XslExport xslExport = XslExportHome.findByPrimaryKey( nIdXslExport );
-
         Collection<DatabaseUser> listUsers = DatabaseUserHome.findDatabaseUsersList( plugin );
 
-        StringBuffer sbXml = new StringBuffer( XmlUtil.getXmlHeader( ) );
-        XmlUtil.beginElement( sbXml, CONSTANT_XML_USERS );
-
         List<IAttribute> listAttributes = AttributeHome.findAll( getLocale( ), PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME ) );
+
+        List<DatabaseUserWrapper> listUserExport = new ArrayList<>();
 
         for ( DatabaseUser user : listUsers )
         {
             if ( user.getStatus( ) != DatabaseUser.STATUS_ANONYMIZED )
             {
-                sbXml.append( _databaseService.getXmlFromUser( user, bExportRoles, bExportWorkgroups, bExportAttributes, listAttributes, getLocale( ) ) );
+                listUserExport.add( _databaseService.getExportUser( user, bExportRoles, bExportWorkgroups, bExportAttributes, listAttributes ) );
             }
         }
 
-        XmlUtil.endElement( sbXml, CONSTANT_XML_USERS );
+        Map<String, Object> model = new HashMap<>( );
+        model.put(MARK_EXPORT_USERS, listUserExport);
 
-        String strXml = StringUtil.replaceAccent( sbXml.toString( ) );
-        String strExportedUsers = XslExportService.exportXMLWithXSL( nIdXslExport, strXml );
-
-        if ( CONSTANT_MIME_TYPE_CSV.contains( xslExport.getExtension( ) ) )
-        {
-            response.setContentType( CONSTANT_MIME_TYPE_CSV );
-        }
-        else
-            if ( CONSTANT_EXTENSION_XML_FILE.contains( xslExport.getExtension( ) ) )
-            {
-                response.setContentType( CONSTANT_MIME_TYPE_XML );
-            }
-            else
-            {
-                response.setContentType( CONSTANT_MIME_TYPE_OCTETSTREAM );
-            }
-
-        String strFileName = CONSTANT_EXPORT_USERS_FILE_NAME + CONSTANT_POINT + xslExport.getExtension( );
+        String strFileName = CONSTANT_EXPORT_USERS_FILE_NAME + CONSTANT_EXTENSION_CSV_FILE;
         response.setHeader( CONSTANT_ATTACHEMENT_DISPOSITION, CONSTANT_ATTACHEMENT_FILE_NAME + strFileName + CONSTANT_QUOTE );
 
+        HtmlTemplate template = AppTemplateService.getTemplate(TEMPLATE_EXPORT_USERS, getLocale(), model);
+        String strExportedUsers = template.getHtml();
+        response.setContentType( CONSTANT_MIME_TYPE_CSV );
+
         PrintWriter out = response.getWriter( );
-        out.write( strExportedUsers );
+        out.write( StringUtils.trim(strExportedUsers) );
         out.flush( );
         out.close( );
 
