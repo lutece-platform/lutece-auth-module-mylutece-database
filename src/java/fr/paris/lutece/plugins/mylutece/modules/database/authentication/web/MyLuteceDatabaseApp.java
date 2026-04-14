@@ -207,9 +207,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String PROPERTY_MYLUTECE_LOGIN_PAGE_URL = "mylutece.url.login.page";
     private static final String PROPERTY_MYLUTECE_REINIT_PASSWORD_URL = "mylutece-database.url.reinitPassword.page";
     private static final String PROPERTY_PORTAL_NAME = "lutece.name";
-    private static final String PROPERTY_NOREPLY_EMAIL = "mail.noreply.email";
     private static final String PROPERTY_MAIL_HOST = "mail.server";
-    private static final String PROPERTY_NO_REPLY_EMAIL = "mail.noreply.email";
     private static final String PROPERTY_ACCOUNT_REF_ENCRYPT_ALGO = "mylutece-database.account_life_time.refEncryptionAlgorythm";
     private static final String PROPERTY_DATABASE_MAIL_LOST_PASSWORD = "mylutece_database_mailLostPassword";
 
@@ -845,7 +843,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                 DatabaseUserKey userKey = _userKeyService.create( databaseUser.getUserId( ) );
 
                 String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
-                String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
+                String strSender = MailService.getNoReplyEmail( );
                 String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_VALIDATION_OBJECT, _locale );
 
                 // Send validation email
@@ -1442,7 +1440,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
                         String strSubject = ( referenceItem == null ) ? StringUtils.EMPTY : referenceItem.getName( );
 
-                        MailService.sendMailHtml( strEmail, PROPERTY_NO_REPLY_EMAIL, strSender, strSubject, template.getHtml( ) );
+                        MailService.sendMailHtml( strEmail, strSender, MailService.getNoReplyEmail( ), strSubject, template.getHtml( ) );
                     }
                 }
             }
@@ -1509,11 +1507,12 @@ public class MyLuteceDatabaseApp implements XPageApplication
                 if ( user.isActive( ) )
                 {
                     String strHost = AppPropertiesService.getProperty( PROPERTY_MAIL_HOST );
-                    String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
+                    String strSenderName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
+                    String strSenderEmail = MailService.getNoReplyEmail( );
                     String strObject = I18nService.getLocalizedString( PROPERTY_EMAIL_OBJECT_LOST_LOGIN, _locale );
 
                     if ( StringUtils.isBlank( strError )
-                            && ( StringUtils.isBlank( strHost ) || StringUtils.isBlank( strSender ) || StringUtils.isBlank( strObject ) ) )
+                            && ( StringUtils.isBlank( strHost ) || StringUtils.isBlank( strSenderEmail ) || StringUtils.isBlank( strObject ) ) )
                     {
                         strError = ERROR_SENDING_EMAIL;
                     }
@@ -1525,7 +1524,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
                         model.put( MARK_LOGIN_URL, AppPathService.getBaseUrl( request ) + JSP_URL_MYLUTECE_LOGIN );
 
                         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_LOST_LOGIN, _locale, model );
-                        MailService.sendMailHtml( strEmail, strSender, strSender, strObject, template.getHtml( ) );
+                        MailService.sendMailHtml( strEmail, strSenderName, strSenderEmail, strObject, template.getHtml( ) );
                     }
                 }
             }
@@ -1629,7 +1628,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
     {
         boolean bIsCorrect = false;
         String strName = AppPropertiesService.getProperty( PROPERTY_PORTAL_NAME );
-        String strSender = AppPropertiesService.getProperty( PROPERTY_NOREPLY_EMAIL );
+        String strSender = MailService.getNoReplyEmail( );
         String strObject = I18nService.getLocalizedString( strPropertyObject, _locale );
 
         if ( StringUtils.isNotBlank( strName ) && StringUtils.isNotBlank( strSender ) && StringUtils.isNotBlank( strObject ) )
