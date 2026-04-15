@@ -37,6 +37,9 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.BaseUser;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseHome;
@@ -55,19 +58,33 @@ import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.test.mocks.MockHttpServletRequest;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.password.IPassword;
+import jakarta.inject.Inject;
 
 public class MyLuteceDatabaseAppTest extends LuteceTestCase
 {
 
-    Plugin plugin;
+    private Plugin plugin;
 
-    @Override
+    @Inject
+    private MyLuteceDatabaseApp app;
+
+    /**
+     * Initializes the plugin used by the tests.
+     *
+     * @throws Exception
+     *             if the test case setup fails
+     */
+    @BeforeEach
     protected void setUp( ) throws Exception
     {
         super.setUp( );
         plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
     }
 
+    /**
+     * Tests that {@link MyLuteceDatabaseApp#doCreateAccount(jakarta.servlet.http.HttpServletRequest)} creates a user in the database.
+     */
+    @Test
     public void testDoCreateAccount( )
     {
         MockHttpServletRequest request = new MockHttpServletRequest( );
@@ -80,8 +97,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
         request.addParameter( "first_name", strLogin );
         request.addParameter( "last_name", strLogin );
 
-        MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
-
         String url = app.doCreateAccount( request );
         assertNotNull( url );
         int userId = DatabaseUserHome.findDatabaseUserIdFromLogin( strLogin, plugin );
@@ -89,6 +104,11 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
         DatabaseUserHome.remove( DatabaseUserHome.findByPrimaryKey( userId, plugin ), plugin );
     }
 
+    /**
+     * Generates a random login name used to avoid collisions across test runs.
+     *
+     * @return the generated login
+     */
     private String getRandomName( )
     {
         Random random = new Random( );
@@ -96,6 +116,10 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
         return "junit" + bigInt.toString( 36 );
     }
 
+    /**
+     * Tests that {@link MyLuteceDatabaseApp#doReinitPassword(jakarta.servlet.http.HttpServletRequest)} succeeds when the password history is empty.
+     */
+    @Test
     public void testDoReinitPassword_checkPasswordHistory_emptyHistory( )
     {
         DatabaseUser user = null;
@@ -114,7 +138,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             userKey.setKey( getRandomName( ) );
             userKey.setUserId( user.getUserId( ) );
             DatabaseUserKeyHome.create( userKey );
-            // activate password history checks
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 1 ) );
             userParam.setCode( "password_history_size" );
@@ -125,8 +148,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             request.addParameter( "plugin_name", plugin.getName( ) );
             request.addParameter( "password", strNewPassword );
             request.addParameter( "confirmation_password", strNewPassword );
-
-            MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
             String url = app.doReinitPassword( request );
             assertNotNull( url );
@@ -158,7 +179,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
                 }
                 catch( Exception e )
                 {
-                    // ignore
                 }
             }
             if ( userKey != null )
@@ -169,13 +189,16 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
                 }
                 catch( Exception e )
                 {
-                    // ignore
                 }
             }
             restorePasswordHistorySize( nOrigPasswordHistorySize );
         }
     }
 
+    /**
+     * Tests that {@link MyLuteceDatabaseApp#doReinitPassword(jakarta.servlet.http.HttpServletRequest)} rejects a password already present in the history.
+     */
+    @Test
     public void testDoReinitPassword_checkPasswordHistory_passwordInHistory( )
     {
         DatabaseUser user = null;
@@ -194,7 +217,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             userKey.setKey( getRandomName( ) );
             userKey.setUserId( user.getUserId( ) );
             DatabaseUserKeyHome.create( userKey );
-            // activate password history checks
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 10 ) );
             userParam.setCode( "password_history_size" );
@@ -207,8 +229,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             request.addParameter( "key", userKey.getKey( ) );
             request.addParameter( "password", strNewPassword );
             request.addParameter( "confirmation_password", strNewPassword );
-
-            MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
             String url = app.doReinitPassword( request );
             assertNotNull( url );
@@ -228,7 +248,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
                 }
                 catch( Exception e )
                 {
-                    // ignore
                 }
             }
             if ( userKey != null )
@@ -239,13 +258,16 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
                 }
                 catch( Exception e )
                 {
-                    // ignore
                 }
             }
             restorePasswordHistorySize( nOrigPasswordHistorySize );
         }
     }
 
+    /**
+     * Tests that {@link MyLuteceDatabaseApp#doChangePassword(jakarta.servlet.http.HttpServletRequest)} succeeds when the password history is empty.
+     */
+    @Test
     public void testDoChangePassword_checkPasswordHistory_emptyHistory( )
     {
         DatabaseUser user = null;
@@ -259,7 +281,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             user.setLastName( strLogin );
             String strPassword = "junitjunit";
             DatabaseService.getService( ).doCreateUser( user, strPassword, plugin );
-            // activate password history checks
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 10 ) );
             userParam.setCode( "password_history_size" );
@@ -272,8 +293,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             request.addParameter( "old_password", strPassword );
             request.addParameter( "new_password", strNewPassword );
             request.addParameter( "confirmation_password", strNewPassword );
-
-            MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
             String url = app.doChangePassword( request );
 
@@ -304,13 +323,16 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
                 }
                 catch( Exception e )
                 {
-                    // ignore
                 }
             }
             restorePasswordHistorySize( nOrigPasswordHistorySize );
         }
     }
 
+    /**
+     * Tests that {@link MyLuteceDatabaseApp#doChangePassword(jakarta.servlet.http.HttpServletRequest)} rejects a password already present in the history.
+     */
+    @Test
     public void testDoChangePassword_checkPasswordHistory_passwordInHistory( )
     {
         DatabaseUser user = null;
@@ -324,7 +346,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             user.setLastName( strLogin );
             String strPassword = "junitjunit";
             DatabaseService.getService( ).doCreateUser( user, strPassword, plugin );
-            // activate password history checks
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 10 ) );
             userParam.setCode( "password_history_size" );
@@ -339,8 +360,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             request.addParameter( "old_password", strPassword );
             request.addParameter( "new_password", strNewPassword );
             request.addParameter( "confirmation_password", strNewPassword );
-
-            MyLuteceDatabaseApp app = new MyLuteceDatabaseApp( );
 
             String url = app.doChangePassword( request );
 
@@ -359,13 +378,18 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
                 }
                 catch( Exception e )
                 {
-                    // ignore
                 }
             }
             restorePasswordHistorySize( nOrigPasswordHistorySize );
         }
     }
 
+    /**
+     * Restores the {@code password_history_size} plugin parameter to its original value after a test has finished.
+     *
+     * @param nOrigPasswordHistorySize
+     *            the original password history size to restore
+     */
     private void restorePasswordHistorySize( int nOrigPasswordHistorySize )
     {
         try
@@ -377,7 +401,6 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
         }
         catch( Exception e )
         {
-            // ignore
         }
     }
 
