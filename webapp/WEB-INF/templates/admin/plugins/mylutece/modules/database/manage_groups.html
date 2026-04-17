@@ -1,36 +1,31 @@
 <@pageContainer>
     <@pageColumn>
 		<@pageHeader title='#i18n{module.mylutece.database.manage_groups.boxTitle}'>
-			<@button type='button' title='#i18n{module.mylutece.database.group_filter.buttonSearch}' buttonIcon='search'  hideTitle=['xs','sm','md'] style='card-control collapse' buttonTargetId='#search_groups' size='' />
-			<!-- <@button type='submit' title='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' buttonIcon='plus' hideTitle=['xs','sm','md'] size='' /> -->
-			<!-- <@offcanvas targetUrl='jsp/admin/plugins/mylutece/modules/database/CreateGroup.jsp' targetElement='#create_group' redirectForm=false id='group-create' title='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnTitle='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnIcon='plus' position='end' /> -->
-			<@offcanvas targetUrl='jsp/admin/plugins/mylutece/modules/database/CreateGroup.jsp' targetElement='#create_group' redirectForm=false id='group-create' title='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnTitle='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnIcon='plus' position='end' />
+			<@offcanvas id='offcanvasSearchGroup' title='#i18n{module.mylutece.database.group_filter.buttonSearch}' btnTitle='#i18n{module.mylutece.database.group_filter.buttonSearch}' btnIcon='search' btnClass='me-1' position='end' size='sm'>
+				<@tform method='post' name='search_groups' id='search_groups' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp'>
+					<@formGroup labelFor='key' labelKey='#i18n{module.mylutece.database.group_filter.labelKey}'>
+						<@input type='text' id='key' name='search_key' value='${search_group_filter.key}' maxlength=50 />
+					</@formGroup>
+					<@formGroup labelFor='description' labelKey='#i18n{module.mylutece.database.group_filter.labelDescription}'>
+						<@input type='text' id='description' name='search_description' value='${search_group_filter.description}' maxlength=250 />
+					</@formGroup>
+					<@formGroup>
+						<@button type='submit' name='search_is_search' title='#i18n{module.mylutece.database.group_filter.buttonSearch}' buttonIcon='search' />
+					</@formGroup>
+				</@tform>
+			</@offcanvas>
+			<@offcanvas id='group-create' targetUrl='jsp/admin/plugins/mylutece/modules/database/CreateGroup.jsp' useIframe=true title='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnTitle='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnIcon='plus' btnColor='primary' position='end' size='half' />
 		</@pageHeader>
-		<@div id='search_groups'>
-			<@tform method='post' name='search_groups' id='search_groups' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp' boxed=true>
-				<@formGroup labelFor='key' labelKey='#i18n{module.mylutece.database.group_filter.labelKey}'>
-					<@input type='text' id='key' name='search_key' value='${search_group_filter.key}' maxlength=50 />
-				</@formGroup>
-				<@formGroup labelFor='description' labelKey='#i18n{module.mylutece.database.group_filter.labelDescription}'>
-					<@input type='text' id='description' name='search_description' value='${search_group_filter.description}' maxlength=250 />
-				</@formGroup>
-				<@formGroup>
-					<@button type='submit' name='search_is_search' title='#i18n{module.mylutece.database.group_filter.buttonSearch}' buttonIcon='search' />
-				</@formGroup>
-			</@tform>
-		</@div>
 		<#if groups_list?size gt 0>
 			<@manageFeature>
 				<#list groups_list as group >
 					<@manageFeatureItem>
 						<@manageFeatureItemColumn auto=true>${group.groupKey} - ${group.groupDescription}</@manageFeatureItemColumn>
 						<@manageFeatureItemColumn align='end'>
-							<@btnGroup>
-								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}' title='#i18n{portal.util.labelModify}' buttonIcon='edit' hideTitle=['xs','sm'] />
-								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp?group_key=${group.groupKey}' title='#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers}' hideTitle=['xs','sm'] buttonIcon='users' />
-								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageRolesGroup.jsp?group_key=${group.groupKey}' title='#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles}' hideTitle=['xs','sm'] buttonIcon='user-shield' />
-								<@aButton href='jsp/admin/plugins/mylutece/modules/database/RemoveGroup.jsp?group_key=${group.groupKey}' title='#i18n{module.mylutece.database.manage_groups.linkLabelRemove}' hideTitle=['all'] buttonIcon='trash' color='danger' />
-							</@btnGroup>
+							<@offcanvas id='offcanvasModifyGroup-${group.groupKey}' targetUrl='jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}' useIframe=true title='#i18n{portal.util.labelModify}' btnTitle='#i18n{portal.util.labelModify}' btnIcon='pencil' btnClass='me-1' hideTitle=['xs','sm','md'] position='end' size='half' />
+							<@offcanvas id='offcanvasUsersGroup-${group.groupKey}' targetUrl='jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp?group_key=${group.groupKey}' useIframe=true title='#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers}' btnTitle='#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers}' btnIcon='users'  btnClass='me-1' hideTitle=['xs','sm','md'] position='end' size='half' />
+							<@offcanvas id='offcanvasRolesGroup-${group.groupKey}' targetUrl='jsp/admin/plugins/mylutece/modules/database/ManageRolesGroup.jsp?group_key=${group.groupKey}' useIframe=true title='#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles}' btnTitle='#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles}' btnIcon='user-shield'  btnClass='me-1' hideTitle=['xs','sm','md'] position='end' size='half' />
+							<@aButton href='jsp/admin/plugins/mylutece/modules/database/RemoveGroup.jsp?group_key=${group.groupKey}' title='#i18n{module.mylutece.database.manage_groups.linkLabelRemove}' hideTitle=['all'] buttonIcon='trash' color='danger' />
 						</@manageFeatureItemColumn>
 					</@manageFeatureItem>
 				</#list>

@@ -13,7 +13,18 @@
 					<@input type='text' name='email' maxlength=100 value='' />
 				</@formGroup>
 				<@formGroup labelFor='first_password' labelKey='#i18n{module.mylutece.database.create_user.firstPassword}' mandatory=true>
-					<@input type='password' id='first_password' name='first_password' maxlength=100 value='' />
+					<@inputGroup class='control has-icons-left is-expanded is-flex'>
+						<@inputGroupItem type='text'>
+							<@icon style='lock' />
+						</@inputGroupItem>
+						<@input type='password' id='first_password' name='first_password' maxlength=100 value='' size='' />
+						<@inputGroupItem type='text'>
+							<@link href='' class='input-group-link' title='#i18n{portal.admin.admin_login.forgotLogin}' id='lutece-password-toggler' >
+								<@icon style='eye' />
+							</@link>
+						</@inputGroupItem>
+						<@button type='button' id='generate_password' title='#i18n{portal.users.create_user.buttonLabelGeneratePassword}' hideTitle=['all'] buttonIcon='cog' size='' color='secondary' />
+					</@inputGroup>
 				</@formGroup>
 				<@formGroup labelFor='second_password' labelKey='#i18n{module.mylutece.database.create_user.secondPassword}' mandatory=true>
 					<@input type='password' name='second_password' maxlength=100 value='' />
@@ -37,46 +48,26 @@
 			</#if>
 			<@formGroup>
 				<@button type='submit' title='#i18n{module.mylutece.database.create_user.btnCreate}' buttonIcon='check' />
-				<@button type='submit' name='cancel' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' cancel=true /> 
+				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='outline-secondary' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' target='_top' /> 
 			</@formGroup>
 		</@tform>
 	</@pageColumn>
 </@pageContainer>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-	const passwordInput = document.getElementById('first_password');
-	const progressBar = document.getElementById('progressbar');
-	const complexityText = document.getElementById('complexity');
-	
-	if (passwordInput && progressBar) {
-		passwordInput.addEventListener('input', function() {
-			const password = this.value;
-			const complexity = calculateComplexity(password);
-			const valid = complexity >= 50;
-			
-			progressBar.style.width = complexity + '%';
-			progressBar.classList.remove('bg-success', 'bg-danger');
-			progressBar.classList.add(valid ? 'bg-success' : 'bg-danger');
-			
-			if (complexityText) {
-				complexityText.textContent = Math.round(complexity) + '%';
-			}
-		});
-	}
-	
-	function calculateComplexity(password) {
-		if (!password) return 0;
-		let complexity = 0;
-		const length = password.length;
-		
-		complexity += Math.min(length * 4, 40);
-		if (/[a-z]/.test(password)) complexity += 10;
-		if (/[A-Z]/.test(password)) complexity += 10;
-		if (/[0-9]/.test(password)) complexity += 10;
-		if (/[^a-zA-Z0-9]/.test(password)) complexity += 15;
-		if (length >= 8) complexity += 15;
-		
-		return Math.min(complexity, 100);
-	}
+<script type="module">
+import { LutecePassword	} from './themes/shared/modules/lutecePassword.js';
+
+const password = new LutecePassword();
+const generator = document.getElementById('generate_password');
+const newPassword = document.getElementById('first_password');
+const newConfirmPassword = document.getElementById('second_password');
+
+generator.addEventListener('click', () => {
+ 	const newPassValue = password.generatePassword();
+    newPassword.value = newPassValue
+    newConfirmPassword.value = newPassValue
+    newPassword.dispatchEvent(new Event('input'));
+    newConfirmPassword.dispatchEvent(new Event('input'));
 });
+password.passwordInput = '#first_password,#second_password'
+password.initPassToggler( );
 </script>

@@ -1,38 +1,26 @@
 <@pageContainer>
     <@pageColumn>
 		<@pageHeader title='#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey} - #i18n{module.mylutece.database.manage_roles_group.boxTitle}' />
-	    <@tabs>
-			<@tabList>
-				<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp?group_key=${group.groupKey}'title='#i18n{module.mylutece.database.modify_group.boxTitle}' />
-				<@tabLink active=true href='#' title='#i18n{module.mylutece.database.modify_group.linkManageRoles}' />
-				<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp?group_key=${group.groupKey}' title='#i18n{module.mylutece.database.modify_group.linkLabelManageUsers}' />
-			</@tabList>
-			<@tabContent>
-				<@item_navigation item_navigator=item_navigator align='right' />
-				<@tform action='jsp/admin/plugins/mylutece/modules/database/DoAssignRoleGroup.jsp'>
-					<@input type='hidden' name='group_key' value='${group.groupKey}' />
-					<@fieldSet legend='#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey} - #i18n{module.mylutece.database.manage_roles_group.boxTitle}'>
-						<@manageFeature>
-							<#list role_list as role >
-							<#if role.role != "none">
-							<@manageFeatureItem>
-								<@manageFeatureItemColumn auto=true>${role.role} - ${role.roleDescription}</@manageFeatureItemColumn>
-								<@manageFeatureItemColumn align='end'>
-									<#assign checked = false />
-									<#list group_role_list as group_role ><#if group_role.role = role.role ><#assign checked = true /><#break></#if></#list>
-									<@checkBox orientation='switch' name='role_key' id=role.role?replace('\\s+','','r') value='${role.role}' checked=checked />
-								</@manageFeatureItemColumn>
-							</@manageFeatureItem>
-							</#if>
-							</#list>
-						</@manageFeature>
-						<@formGroup class='my-4'>
-							<@button type='submit' name='save' title='#i18n{module.mylutece.database.manage_roles_group.btnAssign}' buttonIcon='check' />
-							<@button type='button' params='onclick="javascript:window.history.back();"' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default' />
-						</@formGroup>
-					</@fieldSet>
-				</@tform>
-			</@tabContent>
-		</@tabs>
+		<@tform action='jsp/admin/plugins/mylutece/modules/database/DoAssignRoleGroup.jsp'>
+			<@input type='hidden' name='group_key' value='${group.groupKey}' />
+			<@manageFeature>
+				<#list role_list as role >
+				<#if role.role != "none">
+				<@manageFeatureItem>
+					<@manageFeatureItemColumn auto=true>${role.role} - ${role.roleDescription}</@manageFeatureItemColumn>
+					<@manageFeatureItemColumn align='end'>
+						<#assign checked = false />
+						<#list group_role_list as group_role ><#if group_role.role = role.role ><#assign checked = true /><#break></#if></#list>
+						<@checkBox orientation='switch' name='role_key' id=role.role?replace('\\s+','','r') value='${role.role}' checked=checked />
+					</@manageFeatureItemColumn>
+				</@manageFeatureItem>
+				</#if>
+				</#list>
+			</@manageFeature>
+			<@formGroup class='my-4'>
+				<@button type='submit' name='save' title='#i18n{module.mylutece.database.manage_roles_group.btnAssign}' buttonIcon='check' />
+				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?plugin_name=mylutece-database' color='outline-secondary' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' target='_top' /> 
+			</@formGroup>
+		</@tform>
 	</@pageColumn>
 </@pageContainer>
