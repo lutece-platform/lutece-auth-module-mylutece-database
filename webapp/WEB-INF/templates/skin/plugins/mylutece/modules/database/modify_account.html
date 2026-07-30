@@ -1,60 +1,63 @@
 <@cTpl>
-<@cRow>
-    <@cCol cols='12 col-md-6 offset-md-3'>
-        <#if error_code?has_content >
-            <#assign typeClass = " is-invalid" />
-            <#if error_code = "error_mandatory_fields">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.account.errorMandatoryFields}</@cAlert>
+<@cContainer>
+    <@cRow class='justify-content-center align-items-center'>
+		<@cCol class='12 col-sm-7'>
+          <#if error_code?has_content >
+            <#assign typeClass=' is-invalid' />
+            <#if error_code='error_mandatory_fields'>
+                <@cAlert class='danger'  title='#i18n{module.mylutece.database.message.account.errorMandatoryFields}' />
                 <#if !(user.lastName?has_content)><#assign classLastName = typeClass /></#if>
                 <#if !(user.firstName?has_content)><#assign classFirstName = typeClass /></#if>
                 <#if !(user.email?has_content)><#assign classEmail = typeClass /></#if>
             </#if>
-            <#if error_code = "error_syntax_email">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.account.errorBadEmail}</@cAlert>
+            <#if error_code='error_login_already_exists'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.modify_account.errorLogin}' />
+                <#assign classLogin = typeClass />
+            </#if>
+            <#if error_code='error_syntax_email'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.account.errorBadEmail}' />
                 <#assign classEmail = typeClass />
             </#if>
-            <#if error_code = "error_captcha">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.account.errorCaptcha}</@cAlert>
+            <#if error_code='error_captcha'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.modify_account.errorCaptcha}' />
             </#if>
         </#if>
         <#if action_successful?has_content>
-            <@cForm id='modifyAccount' action='${action_successful}' method='post' params='name="modifyAccount"'>
-                <@cTitle level=2>#i18n{module.mylutece.database.xpage.modify_account.pageTitle}</@cTitle>
-                <@cTitle level=3>#i18n{module.mylutece.database.message.modify_account.success}</@cTitle>
-                <@cBlock class='form-row'>
-                    <@cBtn class='primary' id='button-return' type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack"' />
-                </@cBlock>
+            <@cTitle level=2>#i18n{module.mylutece.database.xpage.modify_account.pageTitle}</@cTitle>
+            <@cAlert class='success' title='#i18n{module.mylutece.database.message.modify_account.success}'>
+            <@cForm name='modifyAccount' action=action_successful!>
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
             </@cForm>
+            </@cAlert>
         <#else>
-            <@cForm id='modifyAccount' action='jsp/site/plugins/mylutece/modules/database/DoModifyAccount.jsp' method='post' params='name="modifyAccount"'>
-                <@cTitle level=1 class='h3'>#i18n{module.mylutece.database.xpage.modify_account.pageTitle}</@cTitle>
-                <@cInput type='hidden' name='plugin_name' value='${plugin_name}' class='' />
-                <#if show_input_email>
-                <@cField label='#i18n{module.mylutece.database.xpage.modify_account.eMail} *' for='email'>
-                    <@cInput type='text' name='email' id='email' class='${classEmail?if_exists}' params='maxlength="100"' value='${(user.email)?if_exists}' />
-                </@cField>
-                </#if>
-                <@cField label='#i18n{module.mylutece.database.xpage.modify_account.lastName} *' for='last_name'>
-                    <@cInput type='text' name='last_name' id='last_name' class='${classLastName?if_exists}' params='maxlength="100"' value='${(user.lastName)?if_exists}' />
-                </@cField>
-                <@cField label='#i18n{module.mylutece.database.xpage.modify_account.firstName} *' for='first_name'>
-                    <@cInput type='text' name='first_name' id='first_name' class='${classFirstName?if_exists}' params='maxlength="100"' value='${(user.firstName)?if_exists}' />
-                </@cField>
-                <#if jcaptcha?exists>
-                <@cBlock class='form-floating'>
-                    ${jcaptcha}
-                </@cBlock>
-                </#if>
-                <@cBlock class='form-row'>
-                    <@cBtn class='primary' id='button-subscribe' type='submit' label='' params='name="modifyAccountBtn"'>
-                        <@cInline class='ti ti-check' /> #i18n{module.mylutece.database.xpage.modify_account.btnModifyAccount}
+            <@cTitle level=2>#i18n{module.mylutece.database.xpage.modify_account.pageTitle}</@cTitle>
+            <@cForm name='modifyAccount' action='jsp/site/plugins/mylutece/modules/database/DoModifyAccount.jsp'>
+            <@cInput type='hidden' name='plugin_name' value=plugin_name! />
+            <#if show_input_email>
+            <@cField label='#i18n{module.mylutece.database.xpage.modify_account.eMail}' for='email' required=true>
+                <@cInput class='form-control ${classEmail?if_exists}' type='email' name='email' maxlength=100 value=(user.email)?if_exists />
+            </@cField>
+            </#if>
+            <@cField label='#i18n{module.mylutece.database.xpage.modify_account.firstName}' for='first_name' required=true>
+                <@cInput class='form-control ${classFirstName?if_exists}' name='first_name' maxlength=100 value="${(user.firstName)?if_exists}" />
+            </@cField>
+            <@cField label='#i18n{module.mylutece.database.xpage.modify_account.lastName}' for='last_name' required=true>
+                <@cInput class='form-control ${classLastName?if_exists}' name='last_name' maxlength=100 value="${(user.lastName)?if_exists}" />
+            </@cField>
+            <#if jcaptcha?exists>${jcaptcha}</#if>
+            <@cRow>
+                <@cCol class='text-end'>
+                    <@cBtn class='btn btn-primary' label='' id='button-subscribe' type='submit' params='name="modifyAccountBtn"' >
+                        <@cIcon name='check' /> #i18n{module.mylutece.database.xpage.modify_account.btnModifyAccount}
                     </@cBtn>
-                    <@cBtn class='secondary' id='button-return' type='button' label='' params='name="back" onclick="javascript:history.go(-1)"'>
-                        <@cInline class='ti ti-circle-x' /> #i18n{module.mylutece.database.xpage.account.btnBack}
+                    <@cBtn class='btn btn-secondary' label='' id='button-return' type='button' name='back' params='onclick="javascript:history.go(-1)"' >
+                        <@cIcon name='arrow-right' /> #i18n{module.mylutece.database.xpage.account.btnBack}
                     </@cBtn>
-                </@cBlock>
-            </@cForm>
-        </#if>
+                </@cCol>
+            </@cRow>
+        </@cForm>
+    </#if>
     </@cCol>
 </@cRow>
+</@cContainer>
 </@cTpl>

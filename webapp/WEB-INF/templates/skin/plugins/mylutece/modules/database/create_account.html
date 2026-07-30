@@ -1,152 +1,119 @@
 <@cTpl>
-<@cRow>
-    <@cCol cols='12 col-md-4 offset-md-4'>
-        <#if error_code?has_content >
-            <#assign typeClass = " is-invalid" />
-            <#if error_code = "error_mandatory_fields">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.account.errorMandatoryFields}</@cAlert>
+<@cContainer>
+    <@cRow class='justify-content-center align-items-center'>
+		<@cCol class='12 col-sm-5'>
+          <#if error_code?has_content >
+            <#assign typeClass=' is-invalid' />
+            <#if error_code='error_mandatory_fields'>
+                <@cAlert class='danger'  title='#i18n{module.mylutece.database.message.account.errorMandatoryFields}' />
                 <#if !(user.login?has_content)>
-                <#assign classLogin = typeClass />
+                    <#assign classLogin = typeClass />
                 </#if>
                 <#if !(user.password?has_content)>
-                <#assign classPassword = typeClass />
+                    <#assign classPassword = typeClass />
                 </#if>
                 <#if !(user.confirmation?has_content)>
-                <#assign classConfirmation = typeClass />
+                    <#assign classConfirmation = typeClass />
                 </#if>
                 <#if !(user.lastName?has_content)>
-                <#assign classLastName = typeClass />
+                    <#assign classLastName = typeClass />
                 </#if>
                 <#if !(user.firstName?has_content)>
-                <#assign classFirstName = typeClass />
+                    <#assign classFirstName = typeClass />
                 </#if>
                 <#if !(user.email?has_content)>
-                <#assign classEmail = typeClass />
+                    <#assign classEmail=typeClass />
                 </#if>
             </#if>
-            <#if error_code = "error_confirmation_password">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.account.errorConfirmation}</@cAlert>
+            <#if error_code='error_confirmation_password'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.account.errorConfirmation}' />
                 <#assign classPassword = typeClass />
                 <#assign classConfirmation = typeClass />
             </#if>
-            <#if error_code = "error_login_already_exists">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.create_account.errorLogin}</@cAlert>
+            <#if error_code='error_login_already_exists'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.create_account.errorLogin}' />
                 <#assign classLogin = typeClass />
             </#if>
-            <#if error_code = "error_syntax_email">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.account.errorBadEmail}</@cAlert>
+            <#if error_code='error_syntax_email'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.account.errorBadEmail}' />
                 <#assign classEmail = typeClass />
             </#if>
-            <#if error_code = "error_sending_email">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.account.errorSendingEmail}</@cAlert>
+            <#if error_code='error_sending_email'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.account.errorSendingEmail}' />
             </#if>
-            <#if error_code = "error_captcha">
-                <@cAlert type='danger'>#i18n{module.mylutece.database.message.create_account.errorCaptcha}</@cAlert>
+            <#if error_code='error_captcha'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.create_account.errorCaptcha}' />
             </#if>
-            <#if error_code = "password_minimum_length">
-                <@cAlert type='danger'>${password_minimum_length!}</@cAlert>
+            <#if error_code='password_minimum_length'>
+                <@cAlert class='danger' title='${password_minimum_length!}' />
                 <#assign classPassword = typeClass />
                 <#assign classConfirmation = typeClass />
             </#if>
-            <#if error_code = "password_format">
-                <@cAlert type='danger'>${password_format_message!}</@cAlert>
+            <#if error_code='password_format'>
+                <@cAlert class='danger' title='${password_format_message!}' />
                 <#assign classPassword = typeClass />
                 <#assign classConfirmation = typeClass />
             </#if>
         </#if>
         <#if action_successful?has_content>
-            <@cTitle level=1 class='h3'>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
-            <@cForm id='createAccount' action='${action_successful}' method='post' params='name="createAccount"'>
-                <@cText class='fs-3'><@cIcon class='check text-success' /> #i18n{module.mylutece.database.message.create_account.success}</@cText>
-                <@cBtn class='primary' id='button-return' type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
+            <@cTitle level=2>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
+            <@cAlert class='success' title='#i18n{module.mylutece.database.message.create_account.validation.success}'>
+            <@cForm name='createAccount' action=action_successful!>
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
             </@cForm>
+            </@cAlert>
         <#elseif action_validation_email?has_content>
-            <@cTitle level=1 class='h3'>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
-            <@cForm id='createAccount' action='${action_validation_email}' method='post' params='name="createAccount"'>
-                <@cText class='fs-3'><@cIcon class='alert-circle' />#i18n{module.mylutece.database.message.create_account.validation.email}</@cText>
-                <@cBtn class='primary' id='button-return' type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
+            <@cTitle level=2>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
+            <@cAlert title='#i18n{module.mylutece.database.message.create_account.validation.email}'>
+            <@cForm name='createAccount' action=action_validation_email!>
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
             </@cForm>
+            </@cAlert>
         <#elseif action_validation_success?has_content>
-            <@cTitle level=1 class='h3'>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
-            <@cForm id='createAccount' action='${action_validation_success}' method='post' params='name="createAccount"'>
-                <@cText class='fs-3'><@cIcon class='check text-success' />#i18n{module.mylutece.database.message.create_account.validation.success}</@cText>
-                <@cBtn class='primary' id='button-return' type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
+            <@cTitle level=2>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
+            <@cAlert class='success' title='#i18n{module.mylutece.database.message.create_account.validation.success}'>
+            <@cForm name='createAccount' action=action_validation_success!>
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
             </@cForm>
+            </@cAlert>
         <#else>
-            <@cTitle level=1 class='h3'>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
-            <@cForm id='createAccount' action='jsp/site/plugins/mylutece/modules/database/DoCreateAccount.jsp' method='post' params='name="createAccount"'>
-                <@cInput type='hidden' name='plugin_name' value='${plugin_name}' class='' />
+            <@cTitle level=2>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
+                <@cForm name='createAccount' action='jsp/site/plugins/mylutece/modules/database/DoCreateAccount.jsp'>
+                <@cInput type='hidden' name='plugin_name' value=plugin_name! />
                 <#if show_input_login>
-                <@cField label='#i18n{module.mylutece.database.xpage.create_account.login}' required=true>
-                    <@cInput type='text' name='login' id='login' class='form-control ${classLogin?if_exists}' params='maxlength="100"' value='${(user.login)?if_exists}' />
+                <@cField label='#i18n{module.mylutece.database.xpage.create_account.login}' for='login' required=true>
+                    <@cInput class='form-control ${classLogin?if_exists}' name='login' maxlength=100 value=(user.login)?if_exists />
                 </@cField>
                 </#if>
-                <@cField label='#i18n{module.mylutece.database.xpage.create_account.eMail}' required=true>
-                    <@cInput type='text' name='email' id='email' class='form-control ${classEmail?if_exists}' params='maxlength="100"' value='${(user.email)?if_exists}' />
+                <@cField label='#i18n{module.mylutece.database.xpage.create_account.eMail}' for='email' required=true>
+                    <@cInput class='form-control ${classEmail?if_exists}' name='email' maxlength=100 value=(user.email)?if_exists />
                 </@cField>
-                <@cField label='#i18n{module.mylutece.database.xpage.create_account.password}' required=true>
-                    <@cInputGroup>
-                        <@cInput type='password' id='password' name='password' class='form-control ${classPassword?if_exists}' params='maxlength="100"' />
-                        <@cBtn href='#' class='secondary btn-sm p-2' id='lutece-password-toggler' label='' params='title="Afficher / masquer le mot de passe"'>
-                            <@cInline type='i' class='ti ti-eye' />
-                        </@cBtn>
-                        <@cBtn href='#' class='secondary btn-sm p-2' id='generate_password' label='' params='title="Générer un mot de passe"'>
-                            <@cInline type='i' class='ti ti-settings me-1' />
-                            <@cInline class='d-none'>Générer u  n mot de passe</@cInline>
-                        </@cBtn>
-                    </@cInputGroup>
+                <@cField label='#i18n{module.mylutece.database.xpage.create_account.password}' for='password' required=true>
+                    <@cInputPassword label='' class='form-control ${classPassword?if_exists}' name='password' passwordMeter=true pmConfirmFieldId='confirmation_password' />
                 </@cField>
-                <@cBlock class='py-3'>
-                    <@cProgress label='#i18n{portal.users.create_user.passwordComplexity}' progressId='progress_bar_first_password' color='danger' value=0 />
-                </@cBlock>
-                <@cField label='#i18n{module.mylutece.database.xpage.create_account.confirmation}' required=true>
-                    <@cInput type='password' id='confirmation' name='confirmation_password' class='form-control ${classConfirmation?if_exists}' params='maxlength="100"' />
+                <@cField label='#i18n{module.mylutece.database.xpage.create_account.confirmation}' for='confirmation_password' required=true>
+                    <@cInputPassword label='' class='form-control ${classConfirmation?if_exists}' id='confirmation_password' helpMsg='' name='confirmation_password' />
                 </@cField>
-                <@cField label='#i18n{module.mylutece.database.xpage.create_account.firstName}' required=true>
-                    <@cInput type='text' name='first_name' id='first_name' class='form-control ${classFirstName?if_exists}' params='maxlength="100"' value='${(user.firstName)?if_exists}' />
+                <@cField label='#i18n{module.mylutece.database.xpage.create_account.firstName}' for='first_name' required=true>
+                    <@cInput class='form-control ${classFirstName?if_exists}' name='first_name' maxlength=100 value="${(user.firstName)?if_exists}" />
                 </@cField>
-                <@cField label='#i18n{module.mylutece.database.xpage.create_account.lastName}' required=true>
-                    <@cInput type='text' name='last_name' id='last_name' class='form-control ${classLastName?if_exists}' params='maxlength="100"' value='${(user.lastName)?if_exists}' />
+                <@cField label='#i18n{module.mylutece.database.xpage.create_account.lastName}' for='last_name' required=true>
+                    <@cInput class='form-control ${classLastName?if_exists}' name='last_name' maxlength=100 value="${(user.lastName)?if_exists}" />
                 </@cField>
-                <#if jcaptcha?exists>
-                <@cRow>
-                    <@cCol>${jcaptcha}</@cCol>
-                </@cRow>
-                </#if>
+                <#if jcaptcha?exists>${jcaptcha}</#if>
                 <@cRow>
                     <@cCol>
-                        <@cBtn class='primary' id='button-subscribe' type='submit' label='' params='name="createAccountBtn"'>
-                            <@cIcon class='user-check' /> #i18n{module.mylutece.database.xpage.create_account.btnCreateAccount}
+                        <@cBtn class='btn btn-primary' label='' id='button-subscribe' type='submit' params='name="createAccountBtn"' >
+                            <@cIcon name='check' /> #i18n{module.mylutece.database.xpage.create_account.btnCreateAccount}
                         </@cBtn>
-                        <@cBtn class='secondary' id='button-return' type='button' label='' params='name="back" onclick="javascript:history.go(-1)"'>
-                            <@cIcon class='circle-x' /> #i18n{module.mylutece.database.xpage.account.btnBack}
+                        <@cBtn class='btn btn-secondary' label='' id='button-return' type='button' name='back' params='onclick="javascript:history.go(-1)"' >
+                            <@cIcon name='arrow-right' /> #i18n{module.mylutece.database.xpage.account.btnBack}
                         </@cBtn>
                     </@cCol>
                 </@cRow>
             </@cForm>
         </#if>
-    </@cCol>
-</@cRow>
-<script type="module">
-import { LutecePassword } from './themes/shared/modules/lutecePassword.js';
-const password = new LutecePassword();
-const generator = document.getElementById('generate_password');
-const newPassword = document.getElementById('password');
-const confirmNewPassword = document.getElementById('confirmation');
-const progressBar = document.getElementById('progress_bar_first_password');
-
-generator.addEventListener('click', (e) => {
-    e.preventDefault()
-    const newPassValue = password.generatePassword();
-    newPassword.value = newPassValue
-    confirmation.value = newPassValue
-    newPassword.dispatchEvent(new Event('input'));
-});
-
-password.passwordInput = '#password'
-password.progressBar = '#progress_bar_first_password'
-password.initPassToggler( );
-password.getComplexity( );
-
-</script>
+        </@cCol>
+    </@cRow>
+</@cContainer>
 </@cTpl>
