@@ -72,7 +72,7 @@ public final class GroupDAO implements IGroupDAO
      *            Plugin
      */
     @Override
-    public synchronized void insert( Group group, Plugin plugin )
+    public void insert( Group group, Plugin plugin )
     {
         int nParam = 0;
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )

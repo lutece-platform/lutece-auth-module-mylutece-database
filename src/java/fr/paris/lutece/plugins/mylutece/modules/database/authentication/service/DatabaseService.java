@@ -166,7 +166,7 @@ public class DatabaseService
      * @return The instance of the singleton
      */
     @Deprecated
-    public static synchronized DatabaseService getService( )
+    public static DatabaseService getService( )
     {
         return CDI.current( ).select( DatabaseService.class ).get( );
     }
