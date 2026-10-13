@@ -63,9 +63,9 @@ public class DatabaseUserParameterService implements IDatabaseUserParameterServi
     private static final String PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL = "auto_login_after_validation_email";
 
     /**
-     * Private constructor
+     * Constructor (not private: the CDI container must be able to proxy the bean)
      */
-    private DatabaseUserParameterService( )
+    protected DatabaseUserParameterService( )
     {
     }
 
