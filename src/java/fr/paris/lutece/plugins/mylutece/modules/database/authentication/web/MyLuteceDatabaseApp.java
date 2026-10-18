@@ -280,6 +280,20 @@ public class MyLuteceDatabaseApp implements XPageApplication
     }
 
     /**
+     * Gets the plugin given in the request, or the plugin of the module if the request does not give an existing plugin
+     * 
+     * @param request
+     *            The HTTP request
+     * @return the plugin
+     */
+    private Plugin getRequestPlugin( HttpServletRequest request )
+    {
+        Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+
+        return ( plugin != null ) ? plugin : PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
+    }
+
+    /**
      * 
      * @param request
      *            The HTTP request
@@ -744,7 +758,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     public String doCreateAccount( HttpServletRequest request )
     {
-        Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+        Plugin plugin = getRequestPlugin( request );
         init( request, plugin );
 
         String strError = StringUtils.EMPTY;
@@ -883,7 +897,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
         {
             return getLoginPageUrl( );
         }
-        Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+        Plugin plugin = getRequestPlugin( request );
         init( request, plugin );
 
         String strError = StringUtils.EMPTY;
@@ -1013,16 +1027,21 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         LuteceUser luteceUser = SecurityService.getInstance( ).getRegisteredUser( request );
 
-        if ( key == null )
+        // Without a key in the request, only a logged in user can reinit his password
+        if ( ( key == null ) && ( luteceUser != null ) )
         {
             key = _userKeyService.findKeyByLogin( luteceUser.getName( ) );
-        }
 
-        // If the user is logged in, has no key and must change his password, we generate a new key
-        if ( ( key == null ) && _databaseService.mustUserChangePassword( luteceUser, _plugin ) )
-        {
-            DatabaseUser user = getRemoteUser( request );
-            key = _userKeyService.create( user.getUserId( ) );
+            // If the user is logged in, has no key and must change his password, we generate a new key
+            if ( ( key == null ) && _databaseService.mustUserChangePassword( luteceUser, _plugin ) )
+            {
+                DatabaseUser user = getRemoteUser( request );
+
+                if ( user != null )
+                {
+                    key = _userKeyService.create( user.getUserId( ) );
+                }
+            }
         }
 
         if ( key != null )
@@ -1265,7 +1284,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     public String doChangePassword( HttpServletRequest request )
     {
-        Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+        Plugin plugin = getRequestPlugin( request );
         init( request, plugin );
 
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getChangePasswordUrl( ) );
@@ -1358,7 +1377,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     public String doSendPassword( HttpServletRequest request )
     {
-        Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+        Plugin plugin = getRequestPlugin( request );
         init( request, plugin );
 
         String strError = null;
@@ -1464,7 +1483,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
      */
     public String doSendLogin( HttpServletRequest request )
     {
-        Plugin plugin = PluginService.getPlugin( request.getParameter( PARAMETER_PLUGIN_NAME ) );
+        Plugin plugin = getRequestPlugin( request );
         init( request, plugin );
 
         String strError = null;

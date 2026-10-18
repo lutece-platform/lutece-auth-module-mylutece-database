@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
@@ -53,9 +55,11 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.test.mocks.MockHttpServletRequest;
+import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.password.IPassword;
 import jakarta.inject.Inject;
@@ -404,4 +408,31 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
         }
     }
 
+
+    /**
+     * Tests that the reinit password page asked by an anonymous user without key gives a message, not a NullPointerException.
+     */
+    @Test
+    public void testGetReinitPasswordPage_anonymousWithoutKey( )
+    {
+        MockHttpServletRequest request = new MockHttpServletRequest( );
+
+        assertThrows( SiteMessageException.class, ( ) -> app.getReinitPasswordPage( new XPage( ), request ) );
+    }
+
+    /**
+     * Tests that {@link MyLuteceDatabaseApp#doSendPassword(jakarta.servlet.http.HttpServletRequest)} without plugin name uses the plugin of the
+     * module.
+     */
+    @Test
+    public void testDoSendPassword_withoutPluginName( )
+    {
+        MockHttpServletRequest request = new MockHttpServletRequest( );
+        request.addParameter( "email", getRandomName( ) + "@junit.fr" );
+
+        String strUrl = app.doSendPassword( request );
+
+        assertNotNull( strUrl );
+        assertTrue( strUrl.contains( "plugin_name=" + DatabasePlugin.PLUGIN_NAME ) );
+    }
 }
