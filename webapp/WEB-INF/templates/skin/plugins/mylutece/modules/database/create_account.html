@@ -59,21 +59,21 @@
             <@cTitle level=2>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
             <@cAlert class='success' title='#i18n{module.mylutece.database.message.create_account.validation.success}'>
             <@cForm name='createAccount' action=action_successful!>
-                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params={"name": "BtnBack", "value": "#i18n{module.mylutece.database.xpage.account.btnBack}"} />
             </@cForm>
             </@cAlert>
         <#elseif action_validation_email?has_content>
             <@cTitle level=2>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
             <@cAlert title='#i18n{module.mylutece.database.message.create_account.validation.email}'>
             <@cForm name='createAccount' action=action_validation_email!>
-                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params={"name": "BtnBack", "value": "#i18n{module.mylutece.database.xpage.account.btnBack}"} />
             </@cForm>
             </@cAlert>
         <#elseif action_validation_success?has_content>
             <@cTitle level=2>#i18n{module.mylutece.database.xpage.create_account.pageTitle}</@cTitle>
             <@cAlert class='success' title='#i18n{module.mylutece.database.message.create_account.validation.success}'>
             <@cForm name='createAccount' action=action_validation_success!>
-                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params={"name": "BtnBack", "value": "#i18n{module.mylutece.database.xpage.account.btnBack}"} />
             </@cForm>
             </@cAlert>
         <#else>
@@ -103,10 +103,10 @@
                 <#if jcaptcha?exists>${jcaptcha}</#if>
                 <@cRow>
                     <@cCol>
-                        <@cBtn class='btn btn-primary' label='' id='button-subscribe' type='submit' params='name="createAccountBtn"' >
+                        <@cBtn class='btn btn-primary' label='' id='button-subscribe' type='submit' params={"name": "createAccountBtn"} >
                             <@cIcon name='check' /> #i18n{module.mylutece.database.xpage.create_account.btnCreateAccount}
                         </@cBtn>
-                        <@cBtn class='btn btn-secondary' label='' id='button-return' type='button' name='back' params='onclick="javascript:history.go(-1)"' >
+                        <@cBtn class='btn btn-secondary' label='' id='button-return' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} >
                             <@cIcon name='arrow-right' /> #i18n{module.mylutece.database.xpage.account.btnBack}
                         </@cBtn>
                     </@cCol>

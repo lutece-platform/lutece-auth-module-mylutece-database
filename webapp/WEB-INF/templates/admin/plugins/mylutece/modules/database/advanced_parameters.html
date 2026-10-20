@@ -8,11 +8,11 @@
 	</@pageColumn>
 </@pageContainer>
 <#elseif .main_template_name = 'admin/plugins/mylutece/modules/database/database_admindashboard.html'>
-	<@MyLuteceDBAdvParamsFormActions params='style="text-align:right;"' />
+	<@MyLuteceDBAdvParamsFormActions class='text-end' />
 	<@MyLuteceDBAdvParamsMainForm />
 </#if>
-<#macro MyLuteceDBAdvParamsFormActions params=''>
-<@tform action='jsp/admin/plugins/mylutece/modules/database/GetChangeUseAdvancedSecurityParameters.jsp' params='${params!}'>
+<#macro MyLuteceDBAdvParamsFormActions class=''>
+<@tform action='jsp/admin/plugins/mylutece/modules/database/GetChangeUseAdvancedSecurityParameters.jsp' class=class>
 	<#if use_advanced_security_parameters>
 		<@button type='submit' title='#i18n{mylutece.manage_advanced_parameters.removeAdvancedSecurityParameters}' hideTitle=['xs','sm','md'] buttonIcon='times' color='danger' size='' />
 	<#else>

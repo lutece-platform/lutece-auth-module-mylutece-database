@@ -79,6 +79,7 @@ import fr.paris.lutece.portal.business.role.Role;
 import fr.paris.lutece.portal.business.role.RoleHome;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminAuthenticationService;
+import fr.paris.lutece.portal.service.portal.PortalService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -120,7 +121,8 @@ public class DatabaseService
     private static final String MARK_LOGIN_URL = "login_url";
     private static final String MARK_NEW_PASSWORD = "new_password";
     private static final String MARK_ENABLE_JCAPTCHA = "enable_jcaptcha";
-    private static final String MARK_SITE_LINK = "site_link";
+    private static final String MARK_SITE_NAME = "site_name";
+    private static final String MARK_SITE_URL = "site_url";
     private static final String MARK_BANNED_DOMAIN_NAMES = "banned_domain_names";
 
     // PARAMETERS
@@ -561,7 +563,8 @@ public class DatabaseService
                 Map<String, Object> model = new HashMap<>( );
                 model.put( MARK_NEW_PASSWORD, strPassword );
                 model.put( MARK_LOGIN_URL, strBaseURL + AdminAuthenticationService.getInstance( ).getLoginPageUrl( ) );
-                model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
+                model.put( MARK_SITE_NAME, PortalService.getSiteName( ) );
+                model.put( MARK_SITE_URL, MailService.getSiteUrl( strBaseURL, true ) );
 
                 String strTemplate = DatabaseTemplateService.getTemplateFromKey( PARAMETER_MAIL_PASSWORD_ENCRYPTION_CHANGED );
 

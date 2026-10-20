@@ -229,9 +229,9 @@
                                     <img src="${base_url!}/themes/skin/sharted/images/logo_header.png" width="150" alt="Paris" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #071F32;">
                                 </td>
                                 <td style="padding: 32px 0; width: 2px;"><span style="display:block;background-color: #071F32; width: 2px; height:50px"></span></td>
-                                <#if site_link?has_content>
+                                <#if site_url?has_content>
                                 <td style="padding: 32px 16px; text-align:left">
-                                    <strong style="margin: 0 0 10px 0; font-family: 'Montserrat', sans-serif; font-size: 18px; line-height: 30px; color: #071F32; font-weight: 700;">${site_link}</strong>
+                                    <strong style="margin: 0 0 10px 0; font-family: 'Montserrat', sans-serif; font-size: 18px; line-height: 30px; color: #071F32; font-weight: 700;"><a title="${site_name}" href="${site_url}">${site_name}</a></strong>
                                 </td>
                                 </#if>
                             </tr>
@@ -325,22 +325,4 @@
     </center>
 </body>
 </html>
-<#--
-****************
-<html>
-<head>
-<title>#i18n{module.mylutece.database.email_validation.object}</title>
-</head>
-<body>
-	<#if site_link?has_content>
-		<h2>${site_link}</h2>
-	</#if>
-	<p>
-		#i18n{module.mylutece.database.email_validation.content.text} : 
-		<a href="${validation_url}">#i18n{module.mylutece.database.email_validation.content.labelLink}</a>
-	</p>
-</body>
-</html>
-***********
-->
 </@cTpl>

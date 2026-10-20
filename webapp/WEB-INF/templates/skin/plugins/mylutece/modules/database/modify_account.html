@@ -11,7 +11,7 @@
                 <#if !(user.email?has_content)><#assign classEmail = typeClass /></#if>
             </#if>
             <#if error_code='error_login_already_exists'>
-                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.modify_account.errorLogin}' />
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.create_account.errorLogin}' />
                 <#assign classLogin = typeClass />
             </#if>
             <#if error_code='error_syntax_email'>
@@ -19,14 +19,14 @@
                 <#assign classEmail = typeClass />
             </#if>
             <#if error_code='error_captcha'>
-                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.modify_account.errorCaptcha}' />
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.create_account.errorCaptcha}' />
             </#if>
         </#if>
         <#if action_successful?has_content>
             <@cTitle level=2>#i18n{module.mylutece.database.xpage.modify_account.pageTitle}</@cTitle>
             <@cAlert class='success' title='#i18n{module.mylutece.database.message.modify_account.success}'>
             <@cForm name='modifyAccount' action=action_successful!>
-                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params='name="BtnBack" value="#i18n{module.mylutece.database.xpage.account.btnBack}"' />
+                <@cBtn type='submit' label='#i18n{module.mylutece.database.xpage.account.btnBack}' params={"name": "BtnBack", "value": "#i18n{module.mylutece.database.xpage.account.btnBack}"} />
             </@cForm>
             </@cAlert>
         <#else>
@@ -47,10 +47,10 @@
             <#if jcaptcha?exists>${jcaptcha}</#if>
             <@cRow>
                 <@cCol class='text-end'>
-                    <@cBtn class='btn btn-primary' label='' id='button-subscribe' type='submit' params='name="modifyAccountBtn"' >
+                    <@cBtn class='btn btn-primary' label='' id='button-subscribe' type='submit' params={"name": "modifyAccountBtn"} >
                         <@cIcon name='check' /> #i18n{module.mylutece.database.xpage.modify_account.btnModifyAccount}
                     </@cBtn>
-                    <@cBtn class='btn btn-secondary' label='' id='button-return' type='button' name='back' params='onclick="javascript:history.go(-1)"' >
+                    <@cBtn class='btn btn-secondary' label='' id='button-return' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} >
                         <@cIcon name='arrow-right' /> #i18n{module.mylutece.database.xpage.account.btnBack}
                     </@cBtn>
                 </@cCol>
