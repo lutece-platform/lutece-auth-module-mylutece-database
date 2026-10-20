@@ -87,7 +87,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     private static final String TEMPLATE_MAIL_USER_IMPORTED = "admin/plugins/mylutece/modules/database/mail_user_imported.html";
     private static final String MARK_SITE_NAME = "site_name";
     private static final String MARK_USER = "user";
-    private static final String MARK_SITE_LINK = "site_link";
+    private static final String MARK_SITE_URL = "site_url";
     private static final String MARK_PASSWORD = "password";
     private static final String CONSTANT_DEFAULT_IMPORT_EXPORT_USER_SEPARATOR = ":";
     private static final String CONSTANT_ROLE = "role";
@@ -414,7 +414,7 @@ public class ImportDatabaseUserService extends CSVReaderService
         Map<String, Object> model = new HashMap<>( );
         model.put( MARK_USER, user );
         model.put( MARK_SITE_NAME, strSiteName );
-        model.put( MARK_SITE_LINK, MailService.getSiteLink( strBaseURL, true ) );
+        model.put( MARK_SITE_URL, MailService.getSiteUrl( strBaseURL, true ) );
         model.put( MARK_PASSWORD, strPassword );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MAIL_USER_IMPORTED, locale, model );
