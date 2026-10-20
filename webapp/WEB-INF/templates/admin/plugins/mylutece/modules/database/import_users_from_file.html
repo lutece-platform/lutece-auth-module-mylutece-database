@@ -24,8 +24,8 @@
 						<@formGroup helpKey='#i18n{module.mylutece.database.import_users_from_file.labelHelpUpdateExistingUsers}'>
 							<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.import_users_from_file.labelUpdateExistingUsers}' id='update_existing_users' name='update_existing_users' />
 						</@formGroup>
-						<#if messages?? && messages?has_content>
-							<#list messages as message>
+						<#if import_messages?? && import_messages?has_content>
+							<#list import_messages as message>
 								<#if message.messageLevel?string == "ERROR"><#assign alertColor = 'danger' /><#else><#assign alertColor = 'info' /></#if>
 								<@alert color='${alertColor}'>
 									<#if 0 < message.lineNumber >#i18n{module.mylutece.database.import_users_from_file.lineNumber} ${message.lineNumber} - </#if>${message.messageContent}

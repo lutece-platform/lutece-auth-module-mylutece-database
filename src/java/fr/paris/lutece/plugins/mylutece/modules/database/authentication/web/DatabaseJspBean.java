@@ -261,7 +261,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String MARK_EMAIL_BODY = "email_body";
     private static final String MARK_EMAIL_LABEL = "emailLabel";
     private static final String MARK_WEBAPP_URL = "webapp_url";
-    private static final String MARK_LIST_MESSAGES = "messages";
+    private static final String MARK_LIST_MESSAGES = "import_messages";
     private static final String MARK_CSV_SEPARATOR = "csv_separator";
     private static final String MARK_CSV_ESCAPE = "csv_escape";
     private static final String MARK_ATTRIBUTES_SEPARATOR = "attributes_separator";
