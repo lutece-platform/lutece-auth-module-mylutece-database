@@ -69,6 +69,8 @@ import fr.paris.lutece.plugins.mylutece.service.attribute.MyLuteceUserFieldServi
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.service.captcha.ICaptchaService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.template.HtmlMarkup;
+import fr.paris.lutece.portal.service.portal.PortalService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.message.SiteMessage;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
@@ -127,7 +129,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
     private static final String MARK_PASSWORD_FORMAT_MESSAGE = "password_format_message";
     private static final String MARK_USER_ID = "user_id";
     private static final String MARK_REF = "ref";
-    private static final String MARK_SITE_LINK = "site_link";
+    private static final String MARK_SITE_NAME = "site_name";
+    private static final String MARK_SITE_URL = "site_url";
     private static final String MARK_LOGIN = "login";
     private static final String MARK_LOGIN_URL = "login_url";
     private static final String MARK_PASSWORD_HISTORY_SIZE = "password_history_size";
@@ -613,7 +616,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         if ( _userParamService.isJcaptchaEnable( _plugin ) )
         {
-            model.put( MARK_JCAPTCHA, _captchaService.get( ).getHtmlCode( ) );
+            model.put( MARK_JCAPTCHA, HtmlMarkup.of( _captchaService.get( ).getHtmlCode( ) ) );
         }
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_MODIFY_ACCOUNT_PAGE, _locale, model );
@@ -738,7 +741,7 @@ public class MyLuteceDatabaseApp implements XPageApplication
 
         if ( _userParamService.isJcaptchaEnable( _plugin ) )
         {
-            model.put( MARK_JCAPTCHA, _captchaService.get( ).getHtmlCode( ) );
+            model.put( MARK_JCAPTCHA, HtmlMarkup.of( _captchaService.get( ).getHtmlCode( ) ) );
         }
 
         HtmlTemplate t = AppTemplateService.getTemplate( TEMPLATE_CREATE_ACCOUNT_PAGE, _locale, model );
@@ -863,7 +866,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
                 // Send validation email
                 Map<String, Object> model = new HashMap<>( );
                 model.put( MARK_VALIDATION_URL, _userKeyService.getValidationUrl( userKey.getKey( ), request ) );
-                model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
+                model.put( MARK_SITE_NAME, PortalService.getSiteName( ) );
+                model.put( MARK_SITE_URL, MailService.getSiteUrl( AppPathService.getBaseUrl( request ), true ) );
 
                 HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_VALIDATION, _locale, model );
                 MailService.sendMailHtml( strEmail, strName, strSender, strObject, template.getHtml( ) );
@@ -1444,7 +1448,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
                     {
                         HashMap<String, Object> model = new HashMap<>( );
                         model.put( PARAMETER_NEW_PASSWORD, strPassword );
-                        model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
+                        model.put( MARK_SITE_NAME, PortalService.getSiteName( ) );
+                        model.put( MARK_SITE_URL, MailService.getSiteUrl( AppPathService.getBaseUrl( request ), true ) );
 
                         DatabaseUserKey key = _userKeyService.create( user.getUserId( ) );
                         model.put( MARK_REINIT_URL, _userKeyService.getReinitUrl( key.getKey( ), request ) );
@@ -1539,7 +1544,8 @@ public class MyLuteceDatabaseApp implements XPageApplication
                     {
                         HashMap<String, Object> model = new HashMap<>( );
                         model.put( MARK_LOGIN, user.getLogin( ) );
-                        model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
+                        model.put( MARK_SITE_NAME, PortalService.getSiteName( ) );
+                        model.put( MARK_SITE_URL, MailService.getSiteUrl( AppPathService.getBaseUrl( request ), true ) );
                         model.put( MARK_LOGIN_URL, AppPathService.getBaseUrl( request ) + JSP_URL_MYLUTECE_LOGIN );
 
                         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_LOST_LOGIN, _locale, model );

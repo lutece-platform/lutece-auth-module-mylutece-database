@@ -74,6 +74,7 @@ import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.business.role.RoleHome;
 import fr.paris.lutece.portal.business.template.DatabaseTemplateHome;
 import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.portal.PortalService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -123,7 +124,8 @@ public class BaseAuthentication extends PortalAuthentication
 
     // MARK
     private static final String MARK_URL = "url";
-    private static final String MARK_SITE_LINK = "site_link";
+    private static final String MARK_SITE_NAME = "site_name";
+    private static final String MARK_SITE_URL = "site_url";
 
     // Messages properties
     private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
@@ -633,7 +635,8 @@ public class BaseAuthentication extends PortalAuthentication
 
             Map<String, Object> model = new HashMap<>( );
             model.put( MARK_URL, strLink );
-            model.put( MARK_SITE_LINK, MailService.getSiteLink( AppPathService.getBaseUrl( request ), true ) );
+            model.put( MARK_SITE_NAME, PortalService.getSiteName( ) );
+            model.put( MARK_SITE_URL, MailService.getSiteUrl( AppPathService.getBaseUrl( request ), true ) );
 
             String strTemplate = DatabaseTemplateHome.getTemplateFromKey( PROPERTY_UNBLOCK_USER );
             HtmlTemplate template = AppTemplateService.getTemplateFromStringFtl( strTemplate, request.getLocale( ), model );

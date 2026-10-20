@@ -45,7 +45,7 @@
 								<@link class='dropdown-item portlet-type-ref' href='jsp/admin/plugins/mylutece/ManageExternalApplicationUser.jsp?mylutece_user_id=${user.login}' label='#i18n{module.mylutece.database.manage_users.linkManageExternalApplication}' />
 							</#if>
 							<#if user.status = 10>
-								<@link class='dropdown-item portlet-type-ref' href='javascript:return false;' label='#i18n{mylutece.anonymize_user.statusLabelAnonymize}' />
+								<@link class='dropdown-item portlet-type-ref disabled' href='#' params={'aria-disabled': 'true'} label='#i18n{mylutece.anonymize_user.statusLabelAnonymize}' />
 							<#else>
 								<#if user.isActive()>
 									<@link class='dropdown-item portlet-type-ref'  href='jsp/admin/plugins/mylutece/modules/database/DoDeactivateUser.jsp?plugin_name=${plugin_name}&mylutece_database_user_id=${user.userId}' label='#i18n{module.mylutece.database.manage_users.linkDeactivateUser}' />

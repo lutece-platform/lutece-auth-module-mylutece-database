@@ -1,7 +1,7 @@
 <@pageContainer>
     <@pageColumn>
 		<@pageHeader title='#i18n{module.mylutece.database.import_users_from_file.pageTitle}' />
-		<@tform params='enctype="multipart/form-data"' method='post' name='import_users_from_file' action='jsp/admin/plugins/mylutece/modules/database/DoImportUsersFromFile.jsp'>
+		<@tform enctype="multipart/form-data" method='post' name='import_users_from_file' action='jsp/admin/plugins/mylutece/modules/database/DoImportUsersFromFile.jsp'>
 			<@tabs>
 				<@tabList>
 					<@tabLink href='jsp/admin/plugins/mylutece/modules/database/ExportUsers.jsp' title='#i18n{module.mylutece.database.export_users.labelExportUsers}' />
