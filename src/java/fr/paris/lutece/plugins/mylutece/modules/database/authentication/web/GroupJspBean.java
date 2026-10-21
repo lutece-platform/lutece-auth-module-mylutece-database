@@ -66,6 +66,8 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -104,6 +106,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
     private static final String JSP_URL_MODIFY_GROUP = "jsp/admin/plugins/mylutece/modules/database/ModifyGroup.jsp";
     private static final String JSP_URL_MANAGE_ROLES_GROUP = "jsp/admin/plugins/mylutece/modules/database/ManageRolesGroup.jsp";
     private static final String JSP_URL_MANAGE_USERS_GROUP = "jsp/admin/plugins/mylutece/modules/database/ManageUsersGroup.jsp";
+    private static final String JSP_URL_CREATE_GROUP = "jsp/admin/plugins/mylutece/modules/database/CreateGroup.jsp";
     private static final String JSP_MODIFY_GROUP = "ModifyGroup.jsp";
     private static final String JSP_MANAGE_ROLES_GROUP = "ManageRolesGroup.jsp";
     private static final String JSP_MANAGE_GROUPS = "ManageGroups.jsp";
@@ -292,13 +295,15 @@ public class GroupJspBean extends PluginAdminPageJspBean
         // Mandatory field
         if ( strGroupKey.length( ) == 0 )
         {
-            return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+            return AdminMessageService.getMessageUrlReturningTo( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP,
+                    AppPathService.getBaseUrl( request ) + JSP_URL_CREATE_GROUP );
         }
 
         // check if group exist
         if ( GroupHome.findByPrimaryKey( strGroupKey, getPlugin( ) ) != null )
         {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_GROUP_EXIST, AdminMessage.TYPE_STOP );
+            return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_GROUP_EXIST, AdminMessage.TYPE_STOP,
+                    AppPathService.getBaseUrl( request ) + JSP_URL_CREATE_GROUP );
         }
 
         Group group = new Group( );
@@ -369,13 +374,16 @@ public class GroupJspBean extends PluginAdminPageJspBean
 
             if ( group == null )
             {
-                return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MODIFY, AdminMessage.TYPE_ERROR );
+                return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_MODIFY, AdminMessage.TYPE_ERROR, getHomeUrl( request ) );
             }
 
             // Mandatory field
             if ( strGroupKey.length( ) == 0 )
             {
-                return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+                UrlItem urlModify = new UrlItem( AppPathService.getBaseUrl( request ) + JSP_URL_MODIFY_GROUP );
+                urlModify.addParameter( PARAMETER_GROUP_KEY, URLEncoder.encode( group.getGroupKey( ), StandardCharsets.UTF_8 ) );
+
+                return AdminMessageService.getMessageUrlReturningTo( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP, urlModify.getUrl( ) );
             }
 
             group.setGroupKey( strGroupKey );
@@ -415,7 +423,7 @@ public class GroupJspBean extends PluginAdminPageJspBean
 
         if ( group == null )
         {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_REMOVE, AdminMessage.TYPE_ERROR );
+            return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_REMOVE, AdminMessage.TYPE_ERROR, getHomeUrl( request ) );
         }
 
         GroupHome.remove( group.getGroupKey( ), getPlugin( ) );
@@ -501,7 +509,8 @@ public class GroupJspBean extends PluginAdminPageJspBean
 
             if ( group == null )
             {
-                return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MANAGE_GROUPS, AdminMessage.TYPE_ERROR );
+                return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_MANAGE_GROUPS, AdminMessage.TYPE_ERROR,
+                        getHomeUrl( request ) );
             }
 
             String [ ] roleArray = request.getParameterValues( PARAMETER_ROLE_KEY );

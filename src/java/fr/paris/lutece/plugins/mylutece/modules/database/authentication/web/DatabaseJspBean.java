@@ -96,6 +96,7 @@ import fr.paris.lutece.util.url.UrlItem;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -152,6 +153,9 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
     private static final String JSP_URL_USE_ADVANCED_SECUR_PARAM = "jsp/admin/plugins/mylutece/modules/database/DoUseAdvancedSecurityParameters.jsp";
     private static final String JSP_URL_REMOVE_ADVANCED_SECUR_PARAM = "jsp/admin/plugins/mylutece/modules/database/DoRemoveAdvancedSecurityParameters.jsp";
     private static final String JSP_URL_ANONYMIZE_USER = "jsp/admin/plugins/mylutece/modules/database/DoAnonymizeUser.jsp";
+    private static final String JSP_URL_CREATE_USER = "jsp/admin/plugins/mylutece/modules/database/CreateUser.jsp";
+    private static final String JSP_URL_MANAGE_USERS = "jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp";
+    private static final String JSP_URL_IMPORT_USERS_FROM_FILE = "jsp/admin/plugins/mylutece/modules/database/ImportUsersFromFile.jsp";
 
     // Propety
     private static final String PROPERTY_PAGE_TITLE_MANAGE_USERS = "module.mylutece.database.manage_users.pageTitle";
@@ -444,6 +448,7 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         }
 
         String strError = StringUtils.EMPTY;
+        String strReturnUrl = getCreateUserReturnUrl( request );
         String strLogin;
         String strFirstPassword = request.getParameter( PARAMETER_FIRST_PASSWORD );
         String strSecondPassword = request.getParameter( PARAMETER_SECOND_PASSWORD );
@@ -463,33 +468,33 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strFirstPassword ) || StringUtils.isBlank( strLastName )
                 || StringUtils.isBlank( strFirstName ) || StringUtils.isBlank( strEmail ) )
         {
-            strError = AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+            strError = AdminMessageService.getMessageUrlReturningTo( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP, strReturnUrl );
         }
 
         if ( StringUtils.isBlank( strError )
                 && !StringUtil.checkEmailAndDomainName( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, getPlugin( ) ) ) )
         {
-            strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
+            strError = AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP, strReturnUrl );
         }
 
         if ( StringUtils.isBlank( strError ) && CollectionUtils.isNotEmpty( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, getPlugin( ) ) ) )
         {
-            strError = AdminMessageService.getMessageUrl( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP );
+            strError = AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP, strReturnUrl );
         }
 
         if ( StringUtils.isBlank( strError ) && !strFirstPassword.equals( strSecondPassword ) )
         {
-            strError = AdminMessageService.getMessageUrl( request, MESSAGE_DIFFERENT_PASSWORD, AdminMessage.TYPE_STOP );
+            strError = AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_DIFFERENT_PASSWORD, AdminMessage.TYPE_STOP, strReturnUrl );
         }
 
         if ( StringUtils.isBlank( strError ) )
         {
-            strError = SecurityUtils.checkPasswordForBackOffice( _userParamService, getPlugin( ), strFirstPassword, request );
+            strError = SecurityUtils.checkPasswordForBackOffice( _userParamService, getPlugin( ), strFirstPassword, request, strReturnUrl );
         }
 
         if ( StringUtils.isBlank( strError ) )
         {
-            strError = MyLuteceUserFieldService.checkUserFields( request, getLocale( ) );
+            strError = MyLuteceUserFieldService.checkUserFields( request, getLocale( ), strReturnUrl );
         }
 
         if ( StringUtils.isNotBlank( strError ) )
@@ -606,29 +611,34 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         if ( StringUtils.isBlank( strLogin ) || StringUtils.isBlank( strLastName ) || StringUtils.isBlank( strFirstName ) || StringUtils.isBlank( strEmail ) )
         {
-            return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+            return AdminMessageService.getMessageUrlReturningTo( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP,
+                    getModifyUserReturnUrl( request, NumberUtils.toInt( request.getParameter( PARAMETER_MYLUTECE_DATABASE_USER_ID ) ) ) );
         }
 
         DatabaseUser databaseUser = getDatabaseUserFromRequest( request );
 
         if ( databaseUser == null )
         {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MODIFY_USER, AdminMessage.TYPE_ERROR );
+            return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_MODIFY_USER, AdminMessage.TYPE_ERROR,
+                    getManageUsersReturnUrl( request ) );
         }
         else
             if ( !databaseUser.getLogin( ).equalsIgnoreCase( strLogin )
                     && CollectionUtils.isNotEmpty( DatabaseUserHome.findDatabaseUsersListForLogin( strLogin, getPlugin( ) ) ) )
             {
-                strError = AdminMessageService.getMessageUrl( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP );
+                strError = AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_USER_EXIST, AdminMessage.TYPE_STOP,
+                        getModifyUserReturnUrl( request, databaseUser.getUserId( ) ) );
             }
             else
                 if ( !StringUtil.checkEmailAndDomainName( strEmail, SecurityUtils.getBannedDomainNames( _userParamService, getPlugin( ) ) ) )
                 {
-                    strError = AdminMessageService.getMessageUrl( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP );
+                    strError = AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_EMAIL_INVALID, AdminMessage.TYPE_STOP,
+                            getModifyUserReturnUrl( request, databaseUser.getUserId( ) ) );
                 }
                 else
                 {
-                    strError = MyLuteceUserFieldService.checkUserFields( request, getLocale( ) );
+                    strError = MyLuteceUserFieldService.checkUserFields( request, getLocale( ),
+                            getModifyUserReturnUrl( request, databaseUser.getUserId( ) ) );
                 }
 
         if ( StringUtils.isNotBlank( strError ) )
@@ -677,7 +687,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         if ( user == null )
         {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_REMOVE_USER, AdminMessage.TYPE_ERROR );
+            return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_REMOVE_USER, AdminMessage.TYPE_ERROR,
+                    getManageUsersReturnUrl( request ) );
         }
 
         DatabaseUserHome.remove( user, getPlugin( ) );
@@ -769,7 +780,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
             if ( user == null )
             {
-                return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MANAGE_ROLES, AdminMessage.TYPE_ERROR );
+                return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_MANAGE_ROLES, AdminMessage.TYPE_ERROR,
+                        getManageUsersReturnUrl( request ) );
             }
 
             String [ ] roleArray = request.getParameterValues( PARAMETER_MYLUTECE_DATABASE_ROLE_ID );
@@ -894,7 +906,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
             if ( user == null )
             {
-                return AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_MANAGE_GROUPS, AdminMessage.TYPE_ERROR );
+                return AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_MANAGE_GROUPS, AdminMessage.TYPE_ERROR,
+                        getManageUsersReturnUrl( request ) );
             }
 
             String [ ] groupArray = request.getParameterValues( PARAMETER_MYLUTECE_DATABASE_GROUP_KEY );
@@ -934,6 +947,76 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
         int nUserId = Integer.parseInt( strUserId );
 
         return DatabaseUserHome.findByPrimaryKey( nUserId, getPlugin( ) );
+    }
+
+    /**
+     * Gets the url of a screen of the users opened by the button of an error message when there is no page to go back to
+     *
+     * @param request
+     *            The http request
+     * @param strJspUrl
+     *            The url of the JSP of the screen
+     * @return The url of the screen, for the plugin of this bean
+     */
+    private UrlItem getReturnUrl( HttpServletRequest request, String strJspUrl )
+    {
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + strJspUrl );
+        url.addParameter( PARAMETER_PLUGIN_NAME, getPlugin( ).getName( ) );
+
+        return url;
+    }
+
+    /**
+     * Gets the url of the form creating a user, opened by the button of an error message when there is no page to go back to
+     *
+     * @param request
+     *            The http request
+     * @return The url of the form
+     */
+    private String getCreateUserReturnUrl( HttpServletRequest request )
+    {
+        return getReturnUrl( request, JSP_URL_CREATE_USER ).getUrl( );
+    }
+
+    /**
+     * Gets the url of the form modifying a user, opened by the button of an error message when there is no page to go back to
+     *
+     * @param request
+     *            The http request
+     * @param nUserId
+     *            The id of the user
+     * @return The url of the form
+     */
+    private String getModifyUserReturnUrl( HttpServletRequest request, int nUserId )
+    {
+        UrlItem url = getReturnUrl( request, JSP_URL_MODIFY_USER );
+        url.addParameter( PARAMETER_MYLUTECE_DATABASE_USER_ID, nUserId );
+
+        return url.getUrl( );
+    }
+
+    /**
+     * Gets the url of the list of the users, opened by the button of an error message when there is no page to go back to
+     *
+     * @param request
+     *            The http request
+     * @return The url of the list
+     */
+    private String getManageUsersReturnUrl( HttpServletRequest request )
+    {
+        return getReturnUrl( request, JSP_URL_MANAGE_USERS ).getUrl( );
+    }
+
+    /**
+     * Gets the url of the form importing users, opened by the button of an error message when there is no page to go back to
+     *
+     * @param request
+     *            The http request
+     * @return The url of the form
+     */
+    private String getImportUsersReturnUrl( HttpServletRequest request )
+    {
+        return getReturnUrl( request, JSP_URL_IMPORT_USERS_FROM_FILE ).getUrl( );
     }
 
     /**
@@ -1247,7 +1330,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         if ( ( strUserId == null ) || strUserId.isEmpty( ) )
         {
-            return AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_NO_USER_SELECTED, AdminMessage.TYPE_STOP );
+            return AdminMessageService.getMessageUrlReturningTo( request, PROPERTY_MESSAGE_NO_USER_SELECTED, AdminMessage.TYPE_STOP,
+                    getManageUsersReturnUrl( request ) );
         }
 
         url.addParameter( PARAMETER_USER_ID, strUserId );
@@ -1268,7 +1352,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
 
         if ( ( strUserId == null ) || strUserId.isEmpty( ) )
         {
-            return AdminMessageService.getMessageUrl( request, PROPERTY_MESSAGE_NO_USER_SELECTED, AdminMessage.TYPE_STOP );
+            return AdminMessageService.getMessageUrlReturningTo( request, PROPERTY_MESSAGE_NO_USER_SELECTED, AdminMessage.TYPE_STOP,
+                    getManageUsersReturnUrl( request ) );
         }
 
         _anonymizationService.anonymizeUser( Integer.parseInt( strUserId ), getLocale( ) );
@@ -1504,7 +1589,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
                 Object [ ] tabRequiredFields = {
                         I18nService.getLocalizedString( FIELD_IMPORT_USERS_FILE, getLocale( ) )
                 };
-                result.setRedirect( AdminMessageService.getMessageUrl( request, MESSAGE_MANDATORY_FIELD, tabRequiredFields, AdminMessage.TYPE_STOP ) );
+                result.setRedirect( AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_MANDATORY_FIELD, tabRequiredFields,
+                        AdminMessage.TYPE_STOP, getImportUsersReturnUrl( request ) ) );
 
                 return result;
             }
@@ -1512,7 +1598,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             if ( ( !strMimeType.equals( CONSTANT_MIME_TYPE_CSV ) && !strMimeType.equals( CONSTANT_MIME_TYPE_OCTETSTREAM )
                     && !strMimeType.equals( CONSTANT_MIME_TYPE_TEXT_CSV ) ) || !fileItem.getName( ).toLowerCase( ).endsWith( CONSTANT_EXTENSION_CSV_FILE ) )
             {
-                result.setRedirect( AdminMessageService.getMessageUrl( request, MESSAGE_ERROR_CSV_FILE_IMPORT, AdminMessage.TYPE_STOP ) );
+                result.setRedirect( AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_ERROR_CSV_FILE_IMPORT, AdminMessage.TYPE_STOP,
+                        getImportUsersReturnUrl( request ) ) );
 
                 return result;
             }
@@ -1538,7 +1625,8 @@ public class DatabaseJspBean extends PluginAdminPageJspBean
             Object [ ] tabRequiredFields = {
                     I18nService.getLocalizedString( FIELD_IMPORT_USERS_FILE, getLocale( ) )
             };
-            result.setRedirect( AdminMessageService.getMessageUrl( request, MESSAGE_MANDATORY_FIELD, tabRequiredFields, AdminMessage.TYPE_STOP ) );
+            result.setRedirect( AdminMessageService.getMessageUrlReturningTo( request, MESSAGE_MANDATORY_FIELD, tabRequiredFields,
+                    AdminMessage.TYPE_STOP, getImportUsersReturnUrl( request ) ) );
         }
 
         return result;
