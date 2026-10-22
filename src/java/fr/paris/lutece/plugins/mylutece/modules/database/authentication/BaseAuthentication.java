@@ -129,7 +129,7 @@ public class BaseAuthentication extends PortalAuthentication
     private static final String PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE = "module.mylutece.database.message.userNotFoundDatabase";
 
     // constants
-    private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/database/mylutece-database.png";
+    private static final String CONSTANT_PATH_ICON = "themes/admin/shared/plugins/mylutece/mylutece-database.svg";
     private static final String BEAN_USER_ATTRIBUTES_SERVICE = "mylutece.myLuteceUserAttributesService";
 
     /**
