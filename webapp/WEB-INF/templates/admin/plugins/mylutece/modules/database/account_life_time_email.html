@@ -4,7 +4,7 @@
 		<@pageHeader title='#i18n{${emailLabel}}' />
 		<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/DoModifyAccountLifeTimeEmails.jsp'>
 			<@fieldSet legend='#i18n{${emailLabel}}' hideLegend=['all']>
-				<@input type='hidden' name='email_type' value='${email_type}' />
+				<@input type='hidden' name='email_type' value='${email_type!}' />
 				<@formGroup labelFor='email_sender' labelKey='#i18n{mylutece.accountLifeTime.labelSenderEmail}'>
 					<@input type='text' name='email_sender' value='${email_sender!}' />
 				</@formGroup>
@@ -16,6 +16,7 @@
 				</@formGroup>
 				<@p>#i18n{mylutece.accountLifeTime.labelParameters}</@p> 
 				<@ul>
+					<#if email_type??>
 					<#if email_type = "lost_password" || email_type = "password_encryption_changed">
 						<@li>${r"${new_password}"} : #i18n{mylutece.accountLifeTime.labelNewPassword}</@li>
 						<@li>${r"${reinit_url}"} : #i18n{mylutece.accountLifeTime.labelReinitUrl}</@li>
@@ -30,6 +31,7 @@
 								<@li>${r"${date_valid}"} : #i18n{mylutece.accountLifeTime.labelDateValid}</@li>
 							</#if>
 						</#if>
+					</#if>
 					</#if>
 				</@ul>
 				<@formGroup>
