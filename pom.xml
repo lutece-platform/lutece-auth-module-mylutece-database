@@ -12,7 +12,7 @@
     <artifactId>module-mylutece-database</artifactId>
     <packaging>lutece-plugin</packaging>
     
-    <version>7.0.1-beta-02</version>
+    <version>7.0.1-SNAPSHOT</version>
     <name>Lutece mylutece database module</name>
 
     <repositories>
