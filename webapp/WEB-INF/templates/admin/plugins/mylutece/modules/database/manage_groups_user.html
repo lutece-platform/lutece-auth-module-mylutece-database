@@ -28,13 +28,13 @@
 				</@manageFeatureItem>
 				</#list>
 			</@manageFeature>
-			<#else>
-				<@card><@empty title='#i18n{module.mylutece.database.manage_users.linkManageGroups}' iconName='users-minus' subtitle=' ' /></@card>
-			</#if>
 			<@formGroup rows=2 class='my-4'>
 				<@button type='submit' title='#i18n{module.mylutece.database.manage_groups_user.btnAssign}' buttonIcon='check' color='primary' />
 				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='x' />
 			</@formGroup>
+			<#else>
+				<@card><@empty title='#i18n{module.mylutece.database.manage_groups_user.noGroup}' iconName='users-minus' subtitle=' ' /></@card>
+			</#if>
 		</@tform>
 	</@pageColumn>
 </@pageContainer>

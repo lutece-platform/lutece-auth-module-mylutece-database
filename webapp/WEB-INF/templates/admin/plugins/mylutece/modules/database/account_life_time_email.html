@@ -1,7 +1,10 @@
 <#include "/admin/util/editor/editor.html" />
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='mail' /></span>#i18n{${emailLabel}}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{${emailLabel}}' />
+		<@pageHeader title=pageTitle>
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=manageAdvancedParameters' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
 		<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?action=modifyAccountLifeTimeEmails'>
 			<@fieldSet legend='#i18n{${emailLabel}}' hideLegend=['all']>
 				<@input type='hidden' name='email_type' value='${email_type!}' />
@@ -34,8 +37,9 @@
 					</#if>
 					</#if>
 				</@ul>
-				<@formGroup>
+				<@formGroup rows=2>
 					<@button type='submit' title='#i18n{portal.util.labelModify}' buttonIcon='device-floppy' />
+					<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=manageAdvancedParameters' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='x' />
 				</@formGroup>
 			</@fieldSet>
 		</@tform>

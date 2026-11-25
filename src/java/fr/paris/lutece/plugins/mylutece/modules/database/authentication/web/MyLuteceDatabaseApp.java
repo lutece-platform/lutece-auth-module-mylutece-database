@@ -1523,8 +1523,8 @@ public class MyLuteceDatabaseApp extends MVCApplication
 
         if ( StringUtils.isNotBlank( strActionSuccess ) )
         {
-            SiteMessageService.setMessage( request, MESSAGE_REINIT_PASSWORD_SUCCESS, SiteMessage.TYPE_INFO,
-                    AppPathService.getBaseUrl( request ) + strActionSuccess );
+            SiteMessageService.setMessage( request, MESSAGE_REINIT_PASSWORD_SUCCESS, null, SiteMessage.TYPE_INFO,
+                    AppPathService.getBaseUrl( request ) + strActionSuccess, PROPERTY_REINIT_PASSWORD_TITLE );
         }
 
         String strKey = request.getParameter( PARAMETER_KEY );

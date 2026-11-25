@@ -2,7 +2,7 @@
 <#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='settings' /></span>#i18n{module.mylutece.database.manage_advanced_parameters.pageTitle}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title=pageTitle>
+		<@pageHeader title=pageTitle class='col-md-auto'>
 			<@MyLuteceDBAdvParamsFormActions />
 			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
 		</@pageHeader>
@@ -14,7 +14,7 @@
 	<@MyLuteceDBAdvParamsFormActions class='text-end' />
 	<@MyLuteceDBAdvParamsMainForm />
 </#if>
-<#macro MyLuteceDBAdvParamsFormActions class=''>
+<#macro MyLuteceDBAdvParamsFormActions class='d-flex flex-wrap justify-content-end gap-2'>
 <@tform action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=confirmChangeUseAdvancedSecurityParameters' class=class>
 	<#if use_advanced_security_parameters>
 		<@button type='submit' title='#i18n{mylutece.manage_advanced_parameters.removeAdvancedSecurityParameters}' hideTitle=['xs','sm','md'] buttonIcon='times' color='danger' size='' />
