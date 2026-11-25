@@ -39,6 +39,7 @@ import java.util.List;
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
 import fr.paris.lutece.portal.service.captcha.ICaptchaService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.util.BeanUtils;
@@ -190,7 +191,7 @@ public class DatabaseUserParameterService implements IDatabaseUserParameterServi
         boolean bIsEnable = false;
         ReferenceItem userParam = findByKey( PARAMETER_ENABLE_JCAPTCHA, plugin );
 
-        if ( ( userParam != null ) && userParam.isChecked( ) && _captchaService.isResolvable( ) )
+        if ( ( userParam != null ) && userParam.isChecked( ) && DatabaseService.isCaptchaUsable( _captchaService ) )
         {
             bIsEnable = true;
         }

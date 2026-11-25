@@ -113,6 +113,7 @@ public class DatabaseService
 
     // CONSTANTS
     private static final String AMPERSAND = "&";
+    private static final String PLUGIN_CAPTCHA = "captcha";
     private static final String CONSTANT_ATTRIBUTE_SEPARATOR = ":";
 
     // MARKS
@@ -543,7 +544,28 @@ public class DatabaseService
      */
     public boolean isPluginJcaptchaEnable( )
     {
-        return _captchaService.isResolvable( );
+        return isCaptchaUsable( _captchaService );
+    }
+
+    /**
+     * Check if a captcha really works: the captcha service exists (plugin-captcha deployed), the plugin captcha is enabled
+     * and at least one captcha engine is installed. Without an engine, the captcha service renders an empty widget and
+     * accepts every answer.
+     * 
+     * @param captchaService
+     *            the captcha service bean
+     * @return true if the captcha can be used, false otherwise
+     */
+    public static boolean isCaptchaUsable( Instance<ICaptchaService> captchaService )
+    {
+        if ( ( captchaService == null ) || !captchaService.isResolvable( ) || !PluginService.isPluginEnable( PLUGIN_CAPTCHA ) )
+        {
+            return false;
+        }
+
+        List<String> listEngines = captchaService.get( ).getCaptchaEngineNameList( );
+
+        return ( listEngines != null ) && !listEngines.isEmpty( );
     }
 
     /**

@@ -239,7 +239,7 @@ public class BaseAuthentication extends PortalAuthentication
         int nIntervalMinutes = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_INTERVAL_MINUTES, plugin );
         boolean bEnableCaptcha = false;
 
-        if ( _captchaService.isResolvable( ) )
+        if ( DatabaseService.isCaptchaUsable( _captchaService ) )
         {
             nMaxFailedCaptcha = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_ACCESS_FAILED_CAPTCHA, plugin );
         }
