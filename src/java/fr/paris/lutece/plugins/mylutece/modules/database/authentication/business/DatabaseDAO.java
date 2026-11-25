@@ -69,6 +69,7 @@ public class DatabaseDAO implements IDatabaseDAO
     private static final String SQL_QUERY_FIND_GROUPS_FROM_LOGIN = "SELECT b.group_key FROM mylutece_database_user a, mylutece_database_user_group b"
             + " WHERE a.mylutece_database_user_id = b.mylutece_database_user_id AND a.login = ? ";
     private static final String SQL_QUERY_DELETE_GROUPS_FOR_USER = "DELETE FROM mylutece_database_user_group WHERE mylutece_database_user_id = ?";
+    private static final String SQL_QUERY_DELETE_GROUP_FOR_USER = "DELETE FROM mylutece_database_user_group WHERE mylutece_database_user_id = ? AND group_key = ?";
     private static final String SQL_QUERY_INSERT_GROUP_FOR_USER = "INSERT INTO mylutece_database_user_group ( mylutece_database_user_id, group_key ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_SELECTALL = " SELECT mylutece_database_user_id, login, name_family, name_given, email FROM mylutece_database_user ";
     private static final String SQL_QUERY_FIND_USERS_FROM_GROUP_KEY = "SELECT a.mylutece_database_user_id, a.login, a.name_family, a.name_given, a.email FROM mylutece_database_user a "
@@ -348,6 +349,28 @@ public class DatabaseDAO implements IDatabaseDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_GROUPS_FOR_USER, plugin ) )
         {
             daoUtil.setInt( 1, nIdUser );
+
+            daoUtil.executeUpdate( );
+        }
+    }
+
+    /**
+     * Delete one group of a user, the other groups of the user being kept
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strGroupKey
+     *            The key of the group
+     * @param plugin
+     *            The Plugin using this data access service
+     */
+    @Override
+    public void deleteGroupForUser( int nIdUser, String strGroupKey, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_GROUP_FOR_USER, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdUser );
+            daoUtil.setString( 2, strGroupKey );
 
             daoUtil.executeUpdate( );
         }

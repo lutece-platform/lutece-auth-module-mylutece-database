@@ -186,6 +186,21 @@ public final class DatabaseHome
     }
 
     /**
+     * Delete one group of a user, the other groups of the user being kept
+     * 
+     * @param nIdUser
+     *            The id of the user
+     * @param strGroupKey
+     *            The key of the group
+     * @param plugin
+     *            The Plugin using this data access service
+     */
+    public static void removeGroupForUser( int nIdUser, String strGroupKey, Plugin plugin )
+    {
+        _dao.deleteGroupForUser( nIdUser, strGroupKey, plugin );
+    }
+
+    /**
      * Assign a group to user
      * 
      * @param nIdUser

@@ -782,7 +782,7 @@ public class GroupJspBean extends MVCAdminJspBean
 
         if ( user != null )
         {
-            DatabaseHome.removeGroupsForUser( user.getUserId( ), getPlugin( ) );
+            DatabaseHome.removeGroupForUser( user.getUserId( ), selectedGroup.getGroupKey( ), getPlugin( ) );
         }
 
         UrlItem url = new UrlItem( getGroupViewUrl( VIEW_MANAGE_USERS_GROUP, selectedGroup.getGroupKey( ) ) );
