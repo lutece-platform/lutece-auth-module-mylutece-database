@@ -204,6 +204,7 @@ public class MyLuteceDatabaseApp extends MVCApplication
     private static final String ERROR_MANDATORY_FIELDS = "error_mandatory_fields";
     private static final String ERROR_LOGIN_ALREADY_EXISTS = "error_login_already_exists";
     private static final String ERROR_CAPTCHA = "error_captcha";
+    private static final String ERROR_VALIDATION_KEY = "error_validation_key";
     private static final String ERROR_PASSWORD_MINIMUM_LENGTH = "password_minimum_length";
     private static final String ERROR_PASSWORD_ALREADY_USED = "password_already_used";
 
@@ -1468,6 +1469,7 @@ public class MyLuteceDatabaseApp extends MVCApplication
         url.addParameter( PARAMETER_PLUGIN_NAME, _plugin.getName( ) );
 
         String strKey = request.getParameter( PARAMETER_KEY );
+        boolean bValidated = false;
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
@@ -1485,6 +1487,7 @@ public class MyLuteceDatabaseApp extends MVCApplication
                     _databaseService.doUpdateUser( databaseUser, _plugin );
                     _userKeyService.remove( strKey );
                     url.addParameter( PARAMETER_ACTION_VALIDATION_SUCCESS, getDefaultRedirectUrl( ) );
+                    bValidated = true;
 
                     if ( _userParamService.isAutoLoginAfterValidationEmail( plugin ) )
                     {
@@ -1492,6 +1495,12 @@ public class MyLuteceDatabaseApp extends MVCApplication
                     }
                 }
             }
+        }
+
+        // A missing, unknown or already used key is said to the visitor instead of showing the bare creation form
+        if ( !bValidated )
+        {
+            url.addParameter( PARAMETER_ERROR_CODE, ERROR_VALIDATION_KEY );
         }
 
         return url.getUrl( );

@@ -41,6 +41,9 @@
             <#if error_code='error_sending_email'>
                 <@cAlert class='danger' title='#i18n{module.mylutece.database.message.create_account.errorSendingEmail}' />
             </#if>
+            <#if error_code='error_validation_key'>
+                <@cAlert class='danger' title='#i18n{module.mylutece.database.message.create_account.errorValidationKey}' />
+            </#if>
             <#if error_code='error_captcha'>
                 <@cAlert class='danger' title='#i18n{module.mylutece.database.message.create_account.errorCaptcha}' />
             </#if>
