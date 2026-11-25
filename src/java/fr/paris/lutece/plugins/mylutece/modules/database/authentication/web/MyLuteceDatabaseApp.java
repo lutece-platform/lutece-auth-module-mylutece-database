@@ -466,12 +466,20 @@ public class MyLuteceDatabaseApp extends MVCApplication
      * @param request
      *            The HTTP request
      * @return The page
+     * @throws UserNotSignedException
+     *             if the user is not signed in
      * @throws SiteMessageException
      *             if the page cannot be displayed
      */
     @View( value = ACTION_CHANGE_PASSWORD, securityTokenAction = ACTION_DO_CHANGE_PASSWORD )
-    public XPage viewChangePassword( HttpServletRequest request ) throws SiteMessageException
+    public XPage viewChangePassword( HttpServletRequest request ) throws UserNotSignedException, SiteMessageException
     {
+        // A password is changed by its signed-in user only: a visitor is sent to the login page
+        if ( SecurityService.getInstance( ).getRegisteredUser( request ) == null )
+        {
+            throw new UserNotSignedException( );
+        }
+
         return checkPage( request, getChangePasswordPage( new XPage( ), request ) );
     }
 
