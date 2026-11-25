@@ -114,7 +114,7 @@ public class BaseAuthenticationLockTest extends LuteceTestCase
 
         try
         {
-            new BaseAuthentication( ).processLogin( _user.getLogin( ), PASSWORD, request );
+            CDI.current( ).select( BaseAuthentication.class ).get( ).processLogin( _user.getLogin( ), PASSWORD, request );
             fail( "the login is locked after 3 failures" );
         }
         catch( FailedLoginException e )
@@ -125,7 +125,7 @@ public class BaseAuthenticationLockTest extends LuteceTestCase
         // Another login from an address used by the failures is not locked: each address had 1 failure only
         MockHttpServletRequest otherRequest = new MockHttpServletRequest( );
         otherRequest.setRemoteAddr( strBase + "1" );
-        assertNotNull( new BaseAuthentication( ).processLogin( _otherUser.getLogin( ), PASSWORD, otherRequest ) );
+        assertNotNull( CDI.current( ).select( BaseAuthentication.class ).get( ).processLogin( _otherUser.getLogin( ), PASSWORD, otherRequest ) );
         assertNull( otherRequest.getAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED ) );
     }
 
