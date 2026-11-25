@@ -14,10 +14,10 @@
 					<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.create_user.eMail}' id='email' name='email' value='true' checked=(email?? && email) />
 				</@formGroup>
 				<@formGroup>
-					<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.create_user.lastName}' id='name_given' name='name_given' value='true' checked=(name_given?? && name_given) />
+					<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.create_user.firstName}' id='name_given' name='name_given' value='true' checked=(name_given?? && name_given) />
 				</@formGroup>
 				<@formGroup>
-					<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.create_user.firstName}' id='name_family' name='name_family' value='true' checked=(name_family?? && name_family) />
+					<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.create_user.lastName}' id='name_family' name='name_family' value='true' checked=(name_family?? && name_family) />
 				</@formGroup>
 			</@fieldSet>
 			<#if attributes_list?has_content>
@@ -30,8 +30,8 @@
 				</@fieldSet>
 			</#if>
 			<@formGroup rows=2>
-				<@button type='submit' name='save' title='#i18n{portal.users.actions.labelAnonymize}' buttonIcon='device-floppy' color='primary' />
-				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='x' />
+				<@button type='submit' name='save' title='#i18n{portal.util.labelModify}' buttonIcon='device-floppy' color='primary' />
+				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=manageAdvancedParameters' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='x' />
 			</@formGroup>
 		</@tform>
 	</@pageColumn>
