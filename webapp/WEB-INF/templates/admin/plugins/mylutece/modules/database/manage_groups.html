@@ -1,7 +1,14 @@
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='users-group' /></span>#i18n{module.mylutece.database.manage_groups.boxTitle}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{module.mylutece.database.manage_groups.boxTitle}'>
-			<@offcanvas id='offcanvasSearchGroup' title='#i18n{module.mylutece.database.group_filter.buttonSearch}' btnTitle='#i18n{module.mylutece.database.group_filter.buttonSearch}' btnIcon='search' btnClass='me-1' position='end' size='sm'>
+		<@pageHeader title=pageTitle>
+			<@button type='button' title='#i18n{module.mylutece.database.group_filter.buttonSearch}' buttonIcon='search' color='light' class='me-1' hideTitle=['xs','sm','md'] params={"data-bs-toggle": "modal", "data-bs-target": "#searchGroupsModal"} />
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=createGroup' title='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' buttonIcon='plus' color='primary' hideTitle=['xs','sm','md'] />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
+		<@modal id='searchGroupsModal'>
+			<@modalHeader modalTitle='#i18n{module.mylutece.database.group_filter.buttonSearch}' />
+			<@modalBody>
 				<@tform method='post' name='search_groups' id='search_groups' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp'>
 					<@formGroup labelFor='key' labelKey='#i18n{module.mylutece.database.group_filter.labelKey}'>
 						<@input type='text' id='key' name='search_key' value='${search_group_filter.key}' maxlength=50 />
@@ -13,23 +20,33 @@
 						<@button type='submit' name='search_is_search' title='#i18n{module.mylutece.database.group_filter.buttonSearch}' buttonIcon='search' />
 					</@formGroup>
 				</@tform>
-			</@offcanvas>
-			<@offcanvas id='group-create' targetUrl='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=createGroup' useIframe=true title='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnTitle='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' btnIcon='plus' btnColor='primary' position='end' size='half' />
-		</@pageHeader>
+			</@modalBody>
+		</@modal>
 		<#if groups_list?size gt 0>
-			<@manageFeature>
+			<@manageFeature layout='list' id='groups'>
 				<#list groups_list as group >
-					<@manageFeatureItem>
-						<@manageFeatureItemColumn auto=true>${group.groupKey} - ${group.groupDescription}</@manageFeatureItemColumn>
-						<@manageFeatureItemColumn align='end'>
-							<@offcanvas id='offcanvasModifyGroup-${group.groupKey}' targetUrl='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=modifyGroup&group_key=${group.groupKey}' useIframe=true title='#i18n{portal.util.labelModify}' btnTitle='#i18n{portal.util.labelModify}' btnIcon='pencil' btnClass='me-1' hideTitle=['xs','sm','md'] position='end' size='half' />
-							<@offcanvas id='offcanvasUsersGroup-${group.groupKey}' targetUrl='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=manageUsersGroup&group_key=${group.groupKey}' useIframe=true title='#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers}' btnTitle='#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers}' btnIcon='users'  btnClass='me-1' hideTitle=['xs','sm','md'] position='end' size='half' />
-							<@offcanvas id='offcanvasRolesGroup-${group.groupKey}' targetUrl='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=manageRolesGroup&group_key=${group.groupKey}' useIframe=true title='#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles}' btnTitle='#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles}' btnIcon='user-shield'  btnClass='me-1' hideTitle=['xs','sm','md'] position='end' size='half' />
-							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=confirmRemoveGroup&group_key=${group.groupKey}' title='#i18n{module.mylutece.database.manage_groups.linkLabelRemove}' hideTitle=['all'] buttonIcon='trash' color='danger' />
+					<#assign modifyUrl = 'jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=modifyGroup&group_key=${group.groupKey}' />
+					<#assign groupId = 'group_' + group.groupKey?replace('\\s+','','r') />
+					<@manageFeatureItem id=groupId>
+						<@manageFeatureItemColumn class='d-flex align-items-center gap-2 text-truncate'>
+							<span class="avatar avatar-sm bg-teal-lt" aria-hidden="true"><@icon style='users-group' /></span>
+							<@div class='text-truncate'>
+								<@link href=modifyUrl class='text-reset fw-semibold' title='#i18n{portal.util.labelModify} ${group.groupKey}'>${group.groupKey}</@link>
+								<#if group.groupDescription?has_content><@div class='text-secondary small text-truncate'>${group.groupDescription}</@div></#if>
+							</@div>
+						</@manageFeatureItemColumn>
+						<@manageFeatureItemColumn auto=true align='end'>
+							<@div class='btn-actions'>
+								<@aButton href=modifyUrl style='btn-action' color='' buttonIcon='pencil' title='#i18n{portal.util.labelModify} ${group.groupKey}' hideTitle=['all'] />
+								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=manageUsersGroup&group_key=${group.groupKey}' style='btn-action' color='' buttonIcon='users' title='#i18n{module.mylutece.database.manage_groups.linkLabelManageUsers} ${group.groupKey}' hideTitle=['all'] />
+								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=manageRolesGroup&group_key=${group.groupKey}' style='btn-action' color='' buttonIcon='user-shield' title='#i18n{module.mylutece.database.manage_groups.linkLabelManageRoles} ${group.groupKey}' hideTitle=['all'] />
+								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=confirmRemoveGroup&group_key=${group.groupKey}' style='btn-action text-danger' color='' buttonIcon='trash' title='#i18n{module.mylutece.database.manage_groups.linkLabelRemove} ${group.groupKey}' hideTitle=['all'] />
+							</@div>
 						</@manageFeatureItemColumn>
 					</@manageFeatureItem>
 				</#list>
 			</@manageFeature>
+			<#if paginator?? && ( paginator.pagesCount gt 1 || paginator.itemsCount gt 10 )>
 			<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp'>
 				<@paginationAdmin paginator=paginator combo=1 form=0 />
 				<#if search_is_search >
@@ -38,8 +55,11 @@
 					<@input type='hidden' name='search_description' value='${search_group_filter.description}' />
 				</#if>
 			</@tform>
+			</#if>
 		<#else>
-			<@empty  />
+			<@card>
+				<@empty title='#i18n{module.mylutece.database.manage_groups.boxTitle}' iconName='users-minus' subtitle=' ' actionTitle='#i18n{module.mylutece.database.manage_groups.buttonLabelCreate}' actionUrl='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=createGroup' />
+			</@card>
 		</#if>
 	</@pageColumn>
 </@pageContainer>

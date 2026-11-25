@@ -40,7 +40,6 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.web.MyLu
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.url.UrlItem;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -62,18 +61,6 @@ public class DatabaseUserKeyService
 
     // JSP
     private static final String JSP_VALIDATE_ACCOUNT = "jsp/site/Portal.jsp?page=mylutecedatabase&view=validateAccount";
-
-    /**
-     * Get the instance of the service
-     * 
-     * @return the instance of the service
-     * @deprecated use CDI injection instead
-     */
-    @Deprecated
-    public static DatabaseUserKeyService getService( )
-    {
-        return CDI.current( ).select( DatabaseUserKeyService.class ).get( );
-    }
 
     // CRUD
 

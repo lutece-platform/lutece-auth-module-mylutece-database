@@ -42,6 +42,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.business.attribute.IAttribute;
@@ -95,6 +96,7 @@ public class ImportDatabaseUserService extends CSVReaderService
     private Character _strAttributesSeparator;
     private boolean _bUpdateExistingUsers;
     private IDatabaseUserParameterService _userParamService = CDI.current( ).select( IDatabaseUserParameterService.class ).get( );
+    private DatabaseService _databaseService = CDI.current( ).select( DatabaseService.class ).get( );
 
     /**
      * {@inheritDoc}
@@ -161,13 +163,13 @@ public class ImportDatabaseUserService extends CSVReaderService
         {
             user.setUserId( nUserId );
             // We update the user
-            DatabaseService.getService( ).doUpdateUser( user, databasePlugin );
+            _databaseService.doUpdateUser( user, databasePlugin );
         }
         else
         {
             // We create the user
             String strPassword = SecurityUtils.makePassword( _userParamService, databasePlugin );
-            DatabaseService.getService( ).doCreateUser( user, strPassword, databasePlugin );
+            _databaseService.doCreateUser( user, strPassword, databasePlugin );
             notifyUserAccountCreated( user, strPassword, locale, AppPathService.getProdUrl( strBaseUrl ) );
         }
 
@@ -192,12 +194,12 @@ public class ImportDatabaseUserService extends CSVReaderService
 
                 if ( StringUtils.isNotBlank( strLineId ) )
                 {
-                    if ( StringUtils.equalsIgnoreCase( strLineId, CONSTANT_ROLE ) )
+                    if ( Strings.CI.equals( strLineId, CONSTANT_ROLE ) )
                     {
                         listRoles.add( strValue.substring( nSeparatorIndex + 1 ) );
                     }
                     else
-                        if ( StringUtils.equalsIgnoreCase( strLineId, CONSTANT_GROUP ) )
+                        if ( Strings.CI.equals( strLineId, CONSTANT_GROUP ) )
                         {
                             listGroups.add( strValue.substring( nSeparatorIndex + 1 ) );
                         }
@@ -245,7 +247,7 @@ public class ImportDatabaseUserService extends CSVReaderService
             {
                 int nIdField = 0;
                 boolean bMyLuteceAttribute = ( attribute.getPlugin( ) == null )
-                        || StringUtils.equals( attribute.getPlugin( ).getName( ), MyLutecePlugin.PLUGIN_NAME );
+                        || Strings.CS.equals( attribute.getPlugin( ).getName( ), MyLutecePlugin.PLUGIN_NAME );
 
                 for ( String strValue : listValues )
                 {

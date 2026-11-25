@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
+import jakarta.enterprise.inject.spi.CDI;
 import fr.paris.lutece.plugins.mylutece.service.AbstractAnonymizationDaemon;
 import fr.paris.lutece.plugins.mylutece.service.IAnonymizationService;
 
@@ -59,7 +60,7 @@ public class DatabaseAnonymizationDaemon extends AbstractAnonymizationDaemon
     @Override
     public IAnonymizationService getAnonymizationService( )
     {
-        return DatabaseAnonymizationService.getService( );
+        return CDI.current( ).select( DatabaseAnonymizationService.class ).get( );
     }
 
     /**

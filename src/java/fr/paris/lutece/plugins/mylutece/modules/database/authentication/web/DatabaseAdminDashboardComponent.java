@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import jakarta.enterprise.inject.spi.CDI;
 import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseResourceIdService;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
@@ -72,7 +73,7 @@ public class DatabaseAdminDashboardComponent extends AdminDashboardComponent
         if ( RBACService.isAuthorized( DatabaseResourceIdService.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, DatabaseResourceIdService.PERMISSION_MANAGE,
                 (User) user ) )
         {
-            Map<String, Object> model = DatabaseService.getService( ).getManageAdvancedParameters( user );
+            Map<String, Object> model = CDI.current( ).select( DatabaseService.class ).get( ).getManageAdvancedParameters( user );
             // The form of the parameters posts the action of the users controller: it carries the token of this action
             ISecurityTokenService securityTokenService = CDI.current( ).select( ISecurityTokenService.class ).get( );
             model.put( SecurityTokenHandler.MARK_CSRF_TOKEN,

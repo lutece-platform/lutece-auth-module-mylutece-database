@@ -44,14 +44,4 @@ public class DatabasePlugin extends PluginDefaultImplementation
      * The plugin name
      */
     public static final String PLUGIN_NAME = "mylutece-database";
-
-    /**
-     * Initialize the module Database
-     */
-    @Override
-    public void init( )
-    {
-        // Initialize the Database service
-        DatabaseService.getService( ).init( );
-    }
 }

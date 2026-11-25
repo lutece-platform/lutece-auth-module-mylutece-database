@@ -1,9 +1,12 @@
 <#if .main_template_name = 'admin/plugins/mylutece/modules/database/manage_advanced_parameters.html'>
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='settings' /></span>#i18n{module.mylutece.database.manage_advanced_parameters.pageTitle}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{module.mylutece.database.manage_advanced_parameters.pageTitle}' class='col-md-4'>
+		<@pageHeader title=pageTitle>
 			<@MyLuteceDBAdvParamsFormActions />
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
 		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@MyLuteceDBAdvParamsMainForm />
 	</@pageColumn>
 </@pageContainer>
@@ -18,8 +21,8 @@
 	<#else>
 		<@button type='submit' title='#i18n{mylutece.manage_advanced_parameters.useAdvancedSecurityParameters}' hideTitle=['xs','sm','md'] buttonIcon='check' color='success' size='' />
 	</#if>
-	<@aButton href='jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp' title='#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}' hideTitle=['xs','sm','md'] buttonIcon='wrench' size='' />
-	<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=changeFieldAnonymizeUsers' title='#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}' hideTitle=['xs','sm','md'] buttonIcon='user-secret' size='' />
+	<@aButton href='jsp/admin/plugins/mylutece/attribute/ManageAttributes.jsp' title='#i18n{module.mylutece.database.manage_advanced_parameters.btnManageAttributes}' hideTitle=['xs','sm','md'] buttonIcon='wrench' color='light' size='' />
+	<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=changeFieldAnonymizeUsers' title='#i18n{mylutece.manage_advanced_parameters.buttonLabelAnonymizationOptions}' hideTitle=['xs','sm','md'] buttonIcon='user-secret' color='light' size='' />
 </@tform>
 </#macro>
 <#macro MyLuteceDBAdvParamsMainForm>
@@ -82,7 +85,7 @@
 			<@input type='text' name='access_failures_interval' value='${access_failures_interval!}' />
 		</@formGroup>
 		<@formGroup>
-			<@checkBox orientation='switch' labelFor='enable_unblock_ip' labelKey='#i18n{mylutece.manage_advanced_parameters.labelEnableUnblockIp}' name='enable_unblock_ip' id='enable_unblock_ip' value='true' checked=(enable_unblock_ip?? && enable_unblock_ip) />
+			<@checkBox orientation='switch' labelKey='#i18n{mylutece.manage_advanced_parameters.labelEnableUnblockIp}' name='enable_unblock_ip' id='enable_unblock_ip' value='true' checked=(enable_unblock_ip?? && enable_unblock_ip) />
 		</@formGroup>
 		<@formGroup labelFor='account_life_time' labelKey='#i18n{mylutece.manage_advanced_parameters.labelAccountLifeTime}'>
 			<@input type='text' name='account_life_time' value='${account_life_time!}' />
@@ -97,7 +100,7 @@
 			<@input type='text' name='time_between_alerts_account' value='${time_between_alerts_account!}' />
 		</@formGroup>
 		<@formGroup>
-			<@button type='submit' title='#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}' buttonIcon='check' />
+			<@button type='submit' title='#i18n{module.mylutece.database.manage_advanced_parameters.buttonModify}' buttonIcon='check' color='primary' />
 		</@formGroup>
 	</@fieldSet>
 </@tform>
@@ -116,7 +119,7 @@
 			</@select>
 		</@formGroup>
 		<@formGroup>
-			<@button type='submit' title='#i18n{mylutece.accountLifeTime.labelEditEmail}' buttonIcon='envelope' />
+			<@button type='submit' title='#i18n{mylutece.accountLifeTime.labelEditEmail}' buttonIcon='envelope' color='primary' />
 		</@formGroup>
 	</@fieldSet>
 </@tform>

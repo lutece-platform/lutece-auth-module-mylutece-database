@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication;
 
+import jakarta.enterprise.inject.spi.CDI;
 import java.security.SecureRandom;
 
 import javax.security.auth.login.FailedLoginException;
@@ -49,7 +50,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -137,7 +138,7 @@ public class BaseAuthenticationLockTest extends LuteceTestCase
         user.setLastName( strLogin );
         user.setEmail( strLogin + "@junit.fr" );
         user.setStatus( DatabaseUser.STATUS_ACTIVATED );
-        DatabaseService.getService( ).doCreateUser( user, PASSWORD, _plugin );
+        CDI.current( ).select( DatabaseService.class ).get( ).doCreateUser( user, PASSWORD, _plugin );
 
         return user;
     }
@@ -154,6 +155,6 @@ public class BaseAuthenticationLockTest extends LuteceTestCase
         ReferenceItem item = new ReferenceItem( );
         item.setCode( strKey );
         item.setName( strValue );
-        DatabaseUserParameterService.getService( ).update( item, _plugin );
+        CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).update( item, _plugin );
     }
 }

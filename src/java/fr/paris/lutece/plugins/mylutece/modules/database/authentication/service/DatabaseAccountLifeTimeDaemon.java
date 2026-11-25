@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import jakarta.enterprise.inject.spi.CDI;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.AbstractAccountLifeTimeDaemon;
 import fr.paris.lutece.plugins.mylutece.service.IAccountLifeTimeService;
@@ -45,7 +45,7 @@ import fr.paris.lutece.plugins.mylutece.service.IUserParameterService;
 public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
 {
     private static final String DAEMON_NAME = "DatabaseAccountLifeTimeDaemon";
-    private IDatabaseUserParameterService _parameterService = DatabaseUserParameterService.getService( );
+    private IDatabaseUserParameterService _parameterService = CDI.current( ).select( IDatabaseUserParameterService.class ).get( );
 
     /**
      * Default constructor
@@ -61,7 +61,7 @@ public class DatabaseAccountLifeTimeDaemon extends AbstractAccountLifeTimeDaemon
     @Override
     public IAccountLifeTimeService getAccountLifeTimeService( )
     {
-        return DatabaseAccountLifeTimeService.getService( );
+        return CDI.current( ).select( DatabaseAccountLifeTimeService.class ).get( );
     }
 
     /**

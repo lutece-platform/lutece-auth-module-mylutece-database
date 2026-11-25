@@ -1,13 +1,13 @@
 <@cTpl>
 <@cContainer>
 	<@cRow class='justify-content-center align-items-center'>
-		<@cCol class='12 col-sm-5'>
+		<@cCol cols='12 col-sm-5'>
             <@cTitle level=2>#i18n{module.mylutece.database.xpage.lost_login.pageTitle}</@cTitle>
             <#if success_url?has_content>
                 <@cAlert class='success' title='#i18n{module.mylutece.database.message.lost_login.success} : ${email}' >
                 <@cForm name='lostLogin' action=success_url! >
-                    <@cBtn type='submit' params={"name": "btnBack"} label='' class='btn btn-secondary' >
-                        <@cIcon name='check' /> #i18n{module.mylutece.database.xpage.account.btnBack}" />
+                    <@cBtn type='submit' params={"name": "btnBack"} label='' class='secondary' >
+                        <@cIcon name='check' /> #i18n{module.mylutece.database.xpage.account.btnBack}
                     </@cBtn>
                 </@cForm>
                 </@cAlert>
@@ -37,10 +37,10 @@
                 </@cField>
                 <@cRow>
                     <@cCol>
-                        <@cBtn class='btn btn-primary' type='submit' params={"name": "btnSend"} label='#i18n{module.mylutece.database.xpage.lost_login.btnSend}' >
+                        <@cBtn class='primary' type='submit' params={"name": "btnSend"} label='#i18n{module.mylutece.database.xpage.lost_login.btnSend}' >
                             <@cIcon name='check' />
                         </@cBtn>
-                        <@cBtn class='btn btn-secondary' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} label='#i18n{module.mylutece.database.xpage.account.btnBack}' >
+                        <@cBtn class='secondary' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} label='#i18n{module.mylutece.database.xpage.account.btnBack}' >
                             <@cIcon name='arrow-right' />
                         </@cBtn>
                     </@cCol>

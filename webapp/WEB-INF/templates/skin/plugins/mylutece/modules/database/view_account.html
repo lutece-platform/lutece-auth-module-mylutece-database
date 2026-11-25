@@ -1,7 +1,7 @@
 <@cTpl>
 <@cContainer>
     <@cRow class='justify-content-center align-items-center'>
-		<@cCol class='12 col-sm-8'>
+		<@cCol cols='12 col-sm-8'>
             <@cTitle level=2>#i18n{module.mylutece.database.xpage.view_account.pageTitle}</@cTitle>
             <@chList class='mt-m'>
                 <#if show_input_login><@chItem>#i18n{module.mylutece.database.xpage.view_account.login} ${user.login}</@chItem></#if>
@@ -12,7 +12,7 @@
             <@cRow class='mt-m'>
                 <@cCol>
                     <@cForm name='modifyAccount' action='jsp/site/Portal.jsp?page=mylutecedatabase&view=changePassword'>
-                        <@cBtn class='btn btn-primary' label='' type='submit' params={"name": "changePasswordBtn"} >
+                        <@cBtn class='primary' label='' type='submit' params={"name": "changePasswordBtn"} >
                             <@cIcon name='eye' /> #i18n{module.mylutece.database.xpage.view_account.btnChangePassword}
                         </@cBtn>
                     </@cForm>
@@ -28,7 +28,7 @@
                     </@cLink>
                 </@cCol>
                 <@cCol>
-                    <@cBtn class='btn btn-secondary' label='' id='button-return' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} >
+                    <@cBtn class='secondary' label='' id='button-return' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} >
                         <@cIcon name='arrow-right' /> #i18n{module.mylutece.database.xpage.account.btnBack}
                     </@cBtn>
                 </@cCol>
@@ -36,4 +36,4 @@
         </@cCol>
     </@cRow>
 </@cContainer>
-</@cTpl>
+</@cTpl>

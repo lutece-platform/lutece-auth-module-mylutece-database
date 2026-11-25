@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.service;
 
+import jakarta.enterprise.inject.spi.CDI;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -73,7 +74,7 @@ public class DatabaseServiceTest extends LuteceTestCase
     {
         super.setUp( );
         plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-//        service = DatabaseService.getService( );
+//        service = CDI.current( ).select( DatabaseService.class ).get( );
         strLogin = getRandomName( );
         user = new DatabaseUser( );
         user.setLogin( strLogin );
@@ -127,6 +128,7 @@ public class DatabaseServiceTest extends LuteceTestCase
         assertTrue( DatabaseUserHome.checkPassword( strLogin, strChangedPassword, plugin ) );
     }
 
+    @Test
     public void testCheckPassword( )
     {
         assertTrue( DatabaseUserHome.checkPassword( strLogin, strPassword, plugin ) );

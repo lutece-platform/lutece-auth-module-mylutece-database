@@ -1,12 +1,15 @@
 <@pageContainer>
     <@pageColumn>
-		<#assign pageHeaderTitle><#if user.status = 10>#i18n{module.mylutece.database.manage_roles_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}<#else>#i18n{module.mylutece.database.manage_roles_user.titleUser} ${user.lastName} ${user.firstName}</#if></#assign>
-		<@pageHeader title=pageHeaderTitle />
+		<#assign pageHeaderText><#if user.status = 10>#i18n{module.mylutece.database.manage_roles_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}<#else>#i18n{module.mylutece.database.manage_roles_user.titleUser} ${user.lastName} ${user.firstName}</#if></#assign>
+		<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='user-edit' /></span>${pageHeaderText}</#assign>
+		<@pageHeader title=pageTitle>
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<#if user.status = 10><@alert color='warning'>#i18n{module.mylutece.database.modify_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}</@alert><#else>
-		<@tform method='post' name='create_user' action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?action=modifyUser'>
+		<@tform method='post' name='create_user' action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?action=modifyUser' boxed=true>
 		<@input type='hidden' name='plugin_name' value='${plugin_name}' />
 		<@input type='hidden' name='mylutece_database_user_id' value='${user.userId}' />
-		<#assign userName><#if user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${user.lastName} ${user.firstName}</#if></#assign>
 		<#if show_input_login>
 		<@formGroup labelFor='login' labelKey='#i18n{module.mylutece.database.modify_user.login}' mandatory=true>
 			<@input type='text' name='login' maxlength=100 value='${user.login}' />
@@ -26,11 +29,11 @@
 			<#list attributes_list as attribute> <#assign idAttribute = "" + attribute.idAttribute> ${attribute.getHtmlFormAttribute( locale, map_list_attribute_default_values[idAttribute] )} </#list>
 			</@fieldSet>
 		</#if>
-		<@formGroup>
-			<@button type='submit' title='#i18n{module.mylutece.database.modify_user.btnModify}' buttonIcon='check' />
-			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='outline-secondary' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' target='_top' /> 
+		<@formGroup rows=2>
+			<@button type='submit' title='#i18n{module.mylutece.database.modify_user.btnModify}' buttonIcon='check' color='primary' />
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='times' />
 		</@formGroup>
 		</@tform>
 		</#if>
 	</@pageColumn>
-</@pageContainer>
+</@pageContainer>

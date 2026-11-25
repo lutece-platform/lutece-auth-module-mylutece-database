@@ -1,46 +1,51 @@
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='users-group' /></span>#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{module.mylutece.database.modify_group.titleGroup} : ${group.groupKey}' />
-			<@row>
-			<@columns>
-				<@tform name='search_users' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=manageUsersGroup' type='inline'>
+		<@pageHeader title=pageTitle>
+			<@button type='button' title='#i18n{module.mylutece.database.manage_users_group.labelButtonSearch}' buttonIcon='search' color='light' class='me-1' hideTitle=['xs','sm','md'] params={"data-bs-toggle": "modal", "data-bs-target": "#searchUsersGroupModal"} />
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
+		<@modal id='searchUsersGroupModal'>
+			<@modalHeader modalTitle='#i18n{module.mylutece.database.manage_users_group.labelButtonSearch}' />
+			<@modalBody>
+				<@tform name='search_users' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=manageUsersGroup'>
 					<@input type='hidden' name='group_key' value='${group.groupKey}' />
-					<@formGroup labelFor='login' labelKey='#i18n{module.mylutece.database.manage_users_group.labelLogin}' rows=2 formStyle='inline'>
-						<@input type='text' id='access_code' name='search_login' value='${search_user_filter.login}' /> 
+					<@formGroup labelFor='access_code' labelKey='#i18n{module.mylutece.database.manage_users_group.labelLogin}'>
+						<@input type='text' id='access_code' name='search_login' value='${search_user_filter.login}' />
 					</@formGroup>
-					<@formGroup labelFor='last_name' labelKey='#i18n{module.mylutece.database.manage_users_group.labelLastName}' rows=2 formStyle='inline'>
+					<@formGroup labelFor='last_name' labelKey='#i18n{module.mylutece.database.manage_users_group.labelLastName}'>
 						<@input type='text' id='last_name' name='search_last_name' value='${search_user_filter.lastName}' maxlength=100 />
 					</@formGroup>
-					<@formGroup labelFor='first_name' labelKey='#i18n{module.mylutece.database.manage_users_group.labelFirstName}' rows=2 formStyle='inline'>
+					<@formGroup labelFor='first_name' labelKey='#i18n{module.mylutece.database.manage_users_group.labelFirstName}'>
 						<@input type='text' id='first_name' name='search_first_name' value='${search_user_filter.firstName}' maxlength=100 />
 					</@formGroup>
-					<@formGroup labelFor='email' labelKey='#i18n{module.mylutece.database.manage_users_group.labelEmail}' rows=2 formStyle='inline'>
+					<@formGroup labelFor='email' labelKey='#i18n{module.mylutece.database.manage_users_group.labelEmail}'>
 						<@input type='text' id='email' name='search_email' value='${search_user_filter.email}' maxlength=100 />
 					</@formGroup>
-					<@formGroup rows=2 formStyle='inline'>
+					<@formGroup>
 						<@button type='submit' name='search_is_search' title='#i18n{module.mylutece.database.manage_users_group.labelButtonSearch}' buttonIcon='search' />
-						
 					</@formGroup>
 				</@tform>
-			</@columns>
-			</@row>
+			</@modalBody>
+		</@modal>
 			<@row>
 			<@columns>
 				<#if available_users?size gt 0 >
-					<@tform name='assignUser' method='post' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?action=assignUsersGroup'>
+					<@tform name='assignUser' method='post' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?action=assignUsersGroup' boxed=true>
 						<@input type='hidden' name='group_key' value='${group.groupKey}' />
 						<@fieldSet legend='#i18n{module.mylutece.database.manage_users_group.pageTitle}'>
 						<@formGroup labelFor='available_users' labelKey='#i18n{module.mylutece.database.manage_users_group.labelAvailableUser}'>
 							<@select name='available_users' default_value='' multiple=5 items=available_users />
 						</@formGroup>
-						<@formGroup>
-							<@button type='submit' name='save' title='#i18n{module.mylutece.database.manage_roles_group.btnAssign}' buttonIcon='check' />
-							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?plugin_name=mylutece-database' color='outline-secondary' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' target='_top' /> 
+						<@formGroup rows=2>
+							<@button type='submit' name='save' title='#i18n{module.mylutece.database.manage_roles_group.btnAssign}' buttonIcon='check' color='primary' />
+							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?plugin_name=mylutece-database' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='x' />
 						</@formGroup>
 						</@fieldSet>
 					</@tform>
 				<#else>
-					<@empty title='#i18n{module.mylutece.database.manage_users_group.noUserToAssign}' iconName='user-off' class='p-0 h-auto' />
+					<@card><@empty title='#i18n{module.mylutece.database.manage_users_group.noUserToAssign}' iconName='user-off' subtitle=' ' /></@card>
 				</#if>
 				<#if assigned_users?size gt 0 || search_is_search >
 					<@table>
@@ -70,20 +75,19 @@
 							<#assign anchor = assigned_user_index - 1 >
 						</#if>
 						<@tr id='anchor-${assigned_user_index}'>
-							<!-- TO FIX: STATUS always 0 -->
 							<@td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.login}</#if></@td>
 							<@td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.lastName}</#if></@td>
 							<@td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.firstName}</#if></@td>
 							<@td><#if assigned_user.status = 10>#i18n{module.mylutece.database.modify_user.titleUser}<#else>${assigned_user.email}</#if></@td>	                
 							<@td>
-								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=modifyUser&mylutece_database_user_id=${assigned_user.userId}' title='#i18n{module.mylutece.database.manage_users_group.actionModify}' hideTitle=['all'] buttonIcon='edit' size='sm' />
-								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=confirmUnassignUserGroup&mylutece_database_user_id=${assigned_user.userId}&group_key=${group.groupKey}&anchor=anchor-${anchor}' title='#i18n{module.mylutece.database.manage_users_group.actionUnassign}' hideTitle=['all'] buttonIcon='trash' size='sm' color='danger' />
+								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?view=modifyUser&mylutece_database_user_id=${assigned_user.userId}' title='#i18n{module.mylutece.database.manage_users_group.actionModify}' hideTitle=['all'] buttonIcon='pencil' size='sm' color='light' />
+								<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=confirmUnassignUserGroup&mylutece_database_user_id=${assigned_user.userId}&group_key=${group.groupKey}&anchor=anchor-${anchor}' title='#i18n{module.mylutece.database.manage_users_group.actionUnassign}' hideTitle=['all'] buttonIcon='trash' size='sm' color='light' class='text-danger' />
 							</@td>
 						</@tr>            
 						</#list>
 					</@table>
 					<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?view=manageUsersGroup'>
-						<@paginationAdmin paginator=paginator combo=1 form=0 />
+						<#if paginator?? && ( paginator.pagesCount gt 1 || paginator.itemsCount gt 10 )><@paginationAdmin paginator=paginator combo=1 form=0 /></#if>
 						<#if search_is_search >
 							<@input type='hidden' name='search_is_search' value='true' />
 							<@input type='hidden' name='search_login' value='${search_user_filter.login}' />
@@ -94,9 +98,9 @@
 						<@input type='hidden' name='group_key' value='${group.groupKey}' />
 					</@tform>
 				<#else>
-					<@empty title='#i18n{module.mylutece.database.manage_users_group.noAssignedList}' iconName='user-x' class='p-0 h-auto' />
+					<@card><@empty title='#i18n{module.mylutece.database.manage_users_group.noAssignedList}' iconName='user-x' subtitle=' ' /></@card>
 				</#if>
 			</@columns>
 		</@row>
 	</@pageColumn>
-</@pageContainer>
+</@pageContainer>

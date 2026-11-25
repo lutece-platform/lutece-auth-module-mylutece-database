@@ -49,7 +49,7 @@ import org.apache.commons.collections.CollectionUtils;
  */
 public class GroupRoleRemovalListener implements RemovalListener
 {
-    private static final String PROPERTY_ROLE_CANNOT_BE_REMOVED = "portal.group.message.roleCannotBeRemoved";
+    private static final String PROPERTY_ROLE_CANNOT_BE_REMOVED = "module.mylutece.database.message.groupRoleCannotBeRemoved";
 
     /**
      * Check if the object can be safely removed

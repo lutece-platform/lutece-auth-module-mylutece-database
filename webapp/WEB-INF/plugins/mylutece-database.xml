@@ -12,7 +12,7 @@
    <icon-url>themes/admin/shared/plugins/mylutece/mylutece-database.svg</icon-url>
    <copyright>Copyright 2001-2014 Mairie de Paris</copyright>
    <core-version-dependency>
-		<min-core-version>6.0.0</min-core-version>
+		<min-core-version>8.0.0</min-core-version>
 		<max-core-version/>
    </core-version-dependency>
 	
@@ -34,6 +34,8 @@
        <feature-description>module.mylutece.database.adminFeature.database_management_user.description</feature-description>
        <feature-level>3</feature-level>
        <feature-url>jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp</feature-url>
+       <feature-group>USERS</feature-group>
+       <icon-url>ti ti-user</icon-url>
      </admin-feature>
      <admin-feature>
        <feature-id>DATABASE_GROUPS_MANAGEMENT</feature-id>
@@ -41,6 +43,8 @@
        <feature-description>module.mylutece.database.adminFeature.groups_management.description</feature-description>
        <feature-level>3</feature-level>
        <feature-url>jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp</feature-url>
+       <feature-group>USERS</feature-group>
+       <icon-url>ti ti-users-group</icon-url>
      </admin-feature>
    </admin-features>
    

@@ -122,7 +122,7 @@ public class MyLuteceDatabaseApp extends MVCApplication
     private static final String MARK_ACTION_VALIDATION_EMAIL = "validation_email_url";
     private static final String MARK_ACTION_VALIDATION_SUCCESS = "validation_success_url";
     private static final String MARK_VALIDATION_URL = "validation_url";
-    private static final String MARK_JCAPTCHA = "jcaptcha";
+    private static final String MARK_JCAPTCHA = "captcha";
     private static final String MARK_SHOW_INPUT_LOGIN = "show_input_login";
     private static final String MARK_SHOW_INPUT_EMAIL = "show_input_email";
     private static final String MARK_REINIT_URL = "reinit_url";

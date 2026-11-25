@@ -42,11 +42,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserWrapper;
@@ -70,6 +72,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserFilter;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserRoleRemovalListener;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleRemovalListener;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.GroupRoleHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
@@ -80,16 +83,18 @@ import fr.paris.lutece.portal.business.role.RoleHome;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminAuthenticationService;
 import fr.paris.lutece.portal.service.portal.PortalService;
+import fr.paris.lutece.portal.service.captcha.ICaptchaService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
-import fr.paris.lutece.portal.service.role.RoleRemovalListenerService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.template.DatabaseTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.BeanUtils;
+import fr.paris.lutece.portal.service.util.RemovalListenerService;
 import fr.paris.lutece.portal.service.workgroup.AdminWorkgroupService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -108,7 +113,6 @@ public class DatabaseService
 
     // CONSTANTS
     private static final String AMPERSAND = "&";
-    private static final String PLUGIN_JCAPTCHA = "jcaptcha";
     private static final String CONSTANT_ATTRIBUTE_SEPARATOR = ":";
 
     // MARKS
@@ -145,15 +149,29 @@ public class DatabaseService
     private BaseAuthentication _baseAuthentication;
     @Inject
     private IPasswordFactory _passwordFactory;
+    @Inject
+    @Named( BeanUtils.BEAN_ROLE_REMOVAL_SERVICE )
+    private RemovalListenerService _roleRemovalService;
+    @Inject
+    @Named( BeanUtils.BEAN_CAPTCHA_SERVICE )
+    private Instance<ICaptchaService> _captchaService;
+    private boolean _bListenersRegistered;
 
     /**
-     * Initialize the Database service
+     * Registers the listeners and the authentication of the module when the application starts
      *
+     * @param context
+     *            the servlet context
      */
-    @PostConstruct
-    public void init( )
+    public synchronized void initializedService( @Observes @Initialized( ApplicationScoped.class ) ServletContext context )
     {
-        RoleRemovalListenerService.getService( ).registerListener( new DatabaseUserRoleRemovalListener( ) );
+        if ( _bListenersRegistered )
+        {
+            return;
+        }
+        _bListenersRegistered = true;
+        _roleRemovalService.registerListener( new DatabaseUserRoleRemovalListener( ) );
+        _roleRemovalService.registerListener( new GroupRoleRemovalListener( ) );
         DatabaseMyLuteceUserFieldListenerService.getService( ).registerListener( new DatabaseUserFieldListener( ) );
 
         if ( _baseAuthentication != null )
@@ -162,19 +180,8 @@ public class DatabaseService
         }
         else
         {
-            AppLogService.error( "BaseAuthentication not found, please check your database_context.xml configuration" );
+            AppLogService.error( "BaseAuthentication not found, please check the CDI bean mylutece-database.authentication" );
         }
-    }
-
-    /**
-     * Returns the instance of the singleton
-     * 
-     * @return The instance of the singleton
-     */
-    @Deprecated
-    public static DatabaseService getService( )
-    {
-        return CDI.current( ).select( DatabaseService.class ).get( );
     }
 
     /**
@@ -530,13 +537,13 @@ public class DatabaseService
     }
 
     /**
-     * Check if the plugin jcaptcha is activated or not
+     * Check if a captcha service is available or not
      * 
      * @return true if it is activated, false otherwise
      */
     public boolean isPluginJcaptchaEnable( )
     {
-        return PluginService.isPluginEnable( PLUGIN_JCAPTCHA );
+        return _captchaService.isResolvable( );
     }
 
     /**

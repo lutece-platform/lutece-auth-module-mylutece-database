@@ -1,6 +1,10 @@
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='database-export' /></span>#i18n{module.mylutece.database.export_users.pageTitle}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{module.mylutece.database.export_users.pageTitle}' />
+		<@pageHeader title=pageTitle>
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tform method='post' name='import_users_from_file' action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?action=exportUsers'>
 			<@tabs>
 				<@tabList>
@@ -9,17 +13,17 @@
 				</@tabList>
 				<@tabContent>
 					<@formGroup helpKey='#i18n{module.mylutece.database.export_users.labelHelpExportAttributes}'>
-						<@checkBox orientation='switch' labelFor='export_attributes' labelKey='#i18n{module.mylutece.database.export_users.labelExportAttributes}' id='export_attributes' name='export_attributes' checked=true />
+						<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.export_users.labelExportAttributes}' id='export_attributes' name='export_attributes' value='true' checked=true />
 					</@formGroup>
 					<@formGroup helpKey='#i18n{module.mylutece.database.export_users.labelHelpExportRoles}'>
-						<@checkBox orientation='switch' labelFor='export_roles' labelKey='#i18n{module.mylutece.database.export_users.labelExportRoles}' id='export_roles' name='export_roles' checked=true />
+						<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.export_users.labelExportRoles}' id='export_roles' name='export_roles' value='true' checked=true />
 					</@formGroup>
 					<@formGroup helpKey='#i18n{module.mylutece.database.export_users.labelHelpExportWorkgroups}'>
-						<@checkBox orientation='switch'	labelFor='export_workgroups' labelKey='#i18n{module.mylutece.database.export_users.labelExportWorkgroups}' id='export_workgroups' name='export_workgroups' checked=true />
+						<@checkBox orientation='switch' labelKey='#i18n{module.mylutece.database.export_users.labelExportWorkgroups}' id='export_workgroups' name='export_workgroups' value='true' checked=true />
 					</@formGroup>
-					<@formGroup>
-						<@button type='submit' title='#i18n{portal.util.labelValidate}' buttonIcon='check' />
-						<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='times' color='default' />
+					<@formGroup rows=2>
+						<@button type='submit' title='#i18n{portal.util.labelValidate}' buttonIcon='check' color='primary' />
+						<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelCancel}' buttonIcon='x' color='light' />
 					</@formGroup>
 				</@tabContent>
 			</@tabs>

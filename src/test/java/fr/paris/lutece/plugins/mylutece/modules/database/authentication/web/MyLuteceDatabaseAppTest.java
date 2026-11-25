@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import jakarta.enterprise.inject.spi.CDI;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
@@ -51,7 +52,7 @@ import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.key.DatabaseUserKeyHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -137,7 +138,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
             setParameter( "password_format_numero", "true" );
             assertEquals( strLengthHelp + " "
-                    + SecurityUtils.getMessageFrontPasswordFormat( request.getLocale( ), DatabaseUserParameterService.getService( ), plugin ) + ".",
+                    + SecurityUtils.getMessageFrontPasswordFormat( request.getLocale( ), CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), plugin ) + ".",
                     app.getPasswordHelp( ) );
 
             setParameter( "password_minimum_length", "0" );
@@ -155,7 +156,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
     private String getParameter( String strKey )
     {
-        ReferenceItem item = DatabaseUserParameterService.getService( ).findByKey( strKey, plugin );
+        ReferenceItem item = CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).findByKey( strKey, plugin );
 
         return ( item == null ) ? "" : item.getName( );
     }
@@ -165,7 +166,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
         ReferenceItem item = new ReferenceItem( );
         item.setCode( strKey );
         item.setName( strValue );
-        DatabaseUserParameterService.getService( ).update( item, plugin );
+        CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).update( item, plugin );
     }
 
     /**
@@ -188,7 +189,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
     {
         DatabaseUser user = null;
         DatabaseUserKey userKey = null;
-        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( DatabaseUserParameterService.getService( ), plugin, "password_history_size" );
+        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), plugin, "password_history_size" );
         try
         {
             user = new DatabaseUser( );
@@ -197,7 +198,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             user.setFirstName( strLogin );
             user.setLastName( strLogin );
             String strPassword = STRONG_PASSWORD;
-            DatabaseService.getService( ).doCreateUser( user, strPassword, plugin );
+            CDI.current( ).select( DatabaseService.class ).get( ).doCreateUser( user, strPassword, plugin );
             userKey = new DatabaseUserKey( );
             userKey.setKey( getRandomName( ) );
             userKey.setUserId( user.getUserId( ) );
@@ -205,7 +206,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 1 ) );
             userParam.setCode( "password_history_size" );
-            DatabaseUserParameterService.getService( ).update( userParam, plugin );
+            CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).update( userParam, plugin );
             MockHttpServletRequest request = new MockHttpServletRequest( );
             request.addParameter( "key", userKey.getKey( ) );
             String strNewPassword = STRONG_PASSWORD + getRandomName( );
@@ -216,7 +217,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             String url = app.doReinitPassword( request );
             assertNotNull( url );
             assertTrue( url.contains( "success_url" ) );
-            assertTrue( DatabaseService.getService( ).checkPassword( strLogin, strNewPassword, plugin ) );
+            assertTrue( CDI.current( ).select( DatabaseService.class ).get( ).checkPassword( strLogin, strNewPassword, plugin ) );
             List<IPassword> history = DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin );
             assertNotNull( history );
             assertFalse( history.isEmpty( ) );
@@ -267,7 +268,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
     {
         DatabaseUser user = null;
         DatabaseUserKey userKey = null;
-        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( DatabaseUserParameterService.getService( ), plugin, "password_history_size" );
+        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), plugin, "password_history_size" );
         try
         {
             user = new DatabaseUser( );
@@ -276,7 +277,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             user.setFirstName( strLogin );
             user.setLastName( strLogin );
             String strPassword = STRONG_PASSWORD;
-            DatabaseService.getService( ).doCreateUser( user, strPassword, plugin );
+            CDI.current( ).select( DatabaseService.class ).get( ).doCreateUser( user, strPassword, plugin );
             userKey = new DatabaseUserKey( );
             userKey.setKey( getRandomName( ) );
             userKey.setUserId( user.getUserId( ) );
@@ -284,9 +285,9 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 10 ) );
             userParam.setCode( "password_history_size" );
-            DatabaseUserParameterService.getService( ).update( userParam, plugin );
+            CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).update( userParam, plugin );
             String strNewPassword = STRONG_PASSWORD + getRandomName( );
-            DatabaseService.getService( ).doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
+            CDI.current( ).select( DatabaseService.class ).get( ).doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
             int previousPasswordHistorySize = DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin ).size( );
             MockHttpServletRequest request = new MockHttpServletRequest( );
             request.addParameter( "plugin_name", plugin.getName( ) );
@@ -297,7 +298,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             String url = app.doReinitPassword( request );
             assertNotNull( url );
             assertTrue( url.contains( "error_code" ) );
-            assertTrue( DatabaseService.getService( ).checkPassword( strLogin, strPassword, plugin ) );
+            assertTrue( CDI.current( ).select( DatabaseService.class ).get( ).checkPassword( strLogin, strPassword, plugin ) );
             assertEquals( previousPasswordHistorySize, DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin ).size( ) );
             userKey = DatabaseUserKeyHome.findByPrimaryKey( userKey.getKey( ) );
             assertNotNull( userKey );
@@ -335,7 +336,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
     public void testDoChangePassword_checkPasswordHistory_emptyHistory( )
     {
         DatabaseUser user = null;
-        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( DatabaseUserParameterService.getService( ), plugin, "password_history_size" );
+        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), plugin, "password_history_size" );
         try
         {
             user = new DatabaseUser( );
@@ -344,14 +345,14 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             user.setFirstName( strLogin );
             user.setLastName( strLogin );
             String strPassword = STRONG_PASSWORD;
-            DatabaseService.getService( ).doCreateUser( user, strPassword, plugin );
+            CDI.current( ).select( DatabaseService.class ).get( ).doCreateUser( user, strPassword, plugin );
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 10 ) );
             userParam.setCode( "password_history_size" );
-            DatabaseUserParameterService.getService( ).update( userParam, plugin );
+            CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).update( userParam, plugin );
             String strNewPassword = STRONG_PASSWORD + getRandomName( );
             MockHttpServletRequest request = new MockHttpServletRequest( );
-            BaseUser loggedInUser = DatabaseHome.findLuteceUserByLogin( strLogin, plugin, new BaseAuthentication( ) );
+            BaseUser loggedInUser = DatabaseHome.findLuteceUserByLogin( strLogin, plugin, CDI.current( ).select( BaseAuthentication.class ).get( ) );
             SecurityService.getInstance( ).registerUser( request, loggedInUser );
             request.addParameter( "plugin_name", plugin.getName( ) );
             request.addParameter( "old_password", strPassword );
@@ -362,7 +363,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
             assertNotNull( url );
             assertTrue( url.contains( "success_url" ) );
-            assertTrue( DatabaseService.getService( ).checkPassword( strLogin, strNewPassword, plugin ) );
+            assertTrue( CDI.current( ).select( DatabaseService.class ).get( ).checkPassword( strLogin, strNewPassword, plugin ) );
             List<IPassword> history = DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin );
             assertNotNull( history );
             assertFalse( history.isEmpty( ) );
@@ -400,7 +401,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
     public void testDoChangePassword_checkPasswordHistory_passwordInHistory( )
     {
         DatabaseUser user = null;
-        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( DatabaseUserParameterService.getService( ), plugin, "password_history_size" );
+        int nOrigPasswordHistorySize = SecurityUtils.getIntegerSecurityParameter( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), plugin, "password_history_size" );
         try
         {
             user = new DatabaseUser( );
@@ -409,16 +410,16 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             user.setFirstName( strLogin );
             user.setLastName( strLogin );
             String strPassword = STRONG_PASSWORD;
-            DatabaseService.getService( ).doCreateUser( user, strPassword, plugin );
+            CDI.current( ).select( DatabaseService.class ).get( ).doCreateUser( user, strPassword, plugin );
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( 10 ) );
             userParam.setCode( "password_history_size" );
-            DatabaseUserParameterService.getService( ).update( userParam, plugin );
+            CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).update( userParam, plugin );
             String strNewPassword = STRONG_PASSWORD + getRandomName( );
-            DatabaseService.getService( ).doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
+            CDI.current( ).select( DatabaseService.class ).get( ).doInsertNewPasswordInHistory( strNewPassword, user.getUserId( ), plugin );
             int previousPasswordHistorySize = DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin ).size( );
             MockHttpServletRequest request = new MockHttpServletRequest( );
-            BaseUser loggedInUser = DatabaseHome.findLuteceUserByLogin( strLogin, plugin, new BaseAuthentication( ) );
+            BaseUser loggedInUser = DatabaseHome.findLuteceUserByLogin( strLogin, plugin, CDI.current( ).select( BaseAuthentication.class ).get( ) );
             SecurityService.getInstance( ).registerUser( request, loggedInUser );
             request.addParameter( "plugin_name", plugin.getName( ) );
             request.addParameter( "old_password", strPassword );
@@ -429,7 +430,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
 
             assertNotNull( url );
             assertTrue( url.contains( "error_code" ) );
-            assertTrue( DatabaseService.getService( ).checkPassword( strLogin, strPassword, plugin ) );
+            assertTrue( CDI.current( ).select( DatabaseService.class ).get( ).checkPassword( strLogin, strPassword, plugin ) );
             assertEquals( previousPasswordHistorySize, DatabaseUserHome.selectUserPasswordHistory( user.getUserId( ), plugin ).size( ) );
         }
         finally
@@ -461,7 +462,7 @@ public class MyLuteceDatabaseAppTest extends LuteceTestCase
             ReferenceItem userParam = new ReferenceItem( );
             userParam.setName( Integer.toString( nOrigPasswordHistorySize ) );
             userParam.setCode( "password_history_size" );
-            DatabaseUserParameterService.getService( ).update( userParam, plugin );
+            CDI.current( ).select( IDatabaseUserParameterService.class ).get( ).update( userParam, plugin );
         }
         catch( Exception e )
         {

@@ -54,8 +54,6 @@
 
     <properties>
         <componentName>mylutece-database</componentName>
-        <jiraProjectName>MYLUTECEDATABASE</jiraProjectName>
-        <jiraComponentId>10177</jiraComponentId>
     </properties>
     <scm>
         <connection>scm:git:https://github.com/lutece-platform/lutece-auth-module-mylutece-database.git</connection>

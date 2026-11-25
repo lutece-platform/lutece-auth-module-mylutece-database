@@ -49,6 +49,7 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.authentication.logs.ConnectionLog;
@@ -78,6 +79,7 @@ import fr.paris.lutece.portal.service.portal.PortalService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.captcha.ICaptchaService;
 import fr.paris.lutece.portal.service.security.FailedLoginCaptchaException;
 import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
@@ -85,11 +87,13 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.util.BeanUtils;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.http.SecurityUtil;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -107,8 +111,6 @@ public class BaseAuthentication extends PortalAuthentication
 {
     // //////////////////////////////////////////////////////////////////////////////////////////////
     // Constants
-    private static final String AUTH_SERVICE_NAME = AppPropertiesService.getProperty( "mylutece-database.service.name" );
-    private static final String PLUGIN_JCAPTCHA = "jcaptcha";
 
     // PROPERTIES
     private static final String PROPERTY_MAX_ACCESS_FAILED = "access_failures_max";
@@ -134,6 +136,15 @@ public class BaseAuthentication extends PortalAuthentication
     private static final String CONSTANT_PATH_ICON = "themes/admin/shared/plugins/mylutece/mylutece-database.svg";
     private static final String BEAN_USER_ATTRIBUTES_SERVICE = "mylutece.myLuteceUserAttributesService";
 
+    @Inject
+    @ConfigProperty( name = "mylutece-database.service.name" )
+    private String _strAuthServiceName;
+    @Inject
+    @Named( BeanUtils.BEAN_CAPTCHA_SERVICE )
+    private Instance<ICaptchaService> _captchaService;
+    @Inject
+    private DatabaseService _databaseService;
+
     /**
      * Constructor
      *
@@ -151,7 +162,7 @@ public class BaseAuthentication extends PortalAuthentication
     @Override
     public String getAuthServiceName( )
     {
-        return AUTH_SERVICE_NAME;
+        return _strAuthServiceName;
     }
 
     /**
@@ -211,7 +222,7 @@ public class BaseAuthentication extends PortalAuthentication
     @Override
     public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException
     {
-        DatabaseService databaseService = DatabaseService.getService( );
+        DatabaseService databaseService = _databaseService;
 
         Plugin pluginMyLutece = PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME );
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
@@ -228,7 +239,7 @@ public class BaseAuthentication extends PortalAuthentication
         int nIntervalMinutes = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_INTERVAL_MINUTES, plugin );
         boolean bEnableCaptcha = false;
 
-        if ( PluginService.isPluginEnable( PLUGIN_JCAPTCHA ) )
+        if ( _captchaService.isResolvable( ) )
         {
             nMaxFailedCaptcha = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_ACCESS_FAILED_CAPTCHA, plugin );
         }
@@ -276,7 +287,7 @@ public class BaseAuthentication extends PortalAuthentication
         // Unable to find the user
         if ( ( user == null ) || !databaseService.isUserActive( strUserName, plugin ) )
         {
-            AppLogService.info( "Unable to find user in the database : " + strUserName );
+            AppLogService.info( "Unable to find user in the database : {}", strUserName );
 
             if ( bEnableCaptcha )
             {
@@ -291,7 +302,7 @@ public class BaseAuthentication extends PortalAuthentication
         // Check password
         if ( !databaseService.checkPassword( strUserName, strUserPassword, plugin ) )
         {
-            AppLogService.info( "User login : Incorrect login or password" + strUserName );
+            AppLogService.info( "User login : Incorrect login or password : {}", strUserName );
 
             // This failure locks the address: the user can be sent the link that unlocks it (sent once, as the refusals of the lock are not logged)
             if ( ( nMaxFailed > 0 ) && ( nIntervalMinutes > 0 ) && ( nNbFailedIp + 1 == nMaxFailed ) )
@@ -592,7 +603,7 @@ public class BaseAuthentication extends PortalAuthentication
     @Override
     public void updateDateLastLogin( LuteceUser user, HttpServletRequest request )
     {
-        DatabaseService databaseService = DatabaseService.getService( );
+        DatabaseService databaseService = _databaseService;
         Plugin plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
         databaseService.updateUserLastLoginDate( user.getName( ), plugin );
     }

@@ -1,16 +1,26 @@
-<#assign userName><#if user.status = 10>#i18n{module.mylutece.database.manage_groups_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}<#else>#i18n{module.mylutece.database.manage_groups_user.titleUser} ${user.lastName} ${user.firstName}</#if></#assign>
+<#assign userName0><#if user.status = 10>#i18n{module.mylutece.database.manage_groups_user.titleUser} #i18n{mylutece.anonymize_user.statusLabelAnonymize}<#else>#i18n{module.mylutece.database.manage_groups_user.titleUser} ${user.lastName} ${user.firstName}</#if></#assign>
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='users' /></span>${userName0}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title=userName! />
+		<@pageHeader title=pageTitle>
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?action=assignGroupsUser'>
 			<@input type='hidden' name='mylutece_database_user_id' value='${user.userId}' />
 			<@input type='hidden' name='plugin_name' value='${plugin_name}' />
-			<@manageFeature>
+			<#if group_list?has_content>
+			<@manageFeature layout='list' id='user-groups'>
 			<#list group_list as group >
 				<@manageFeatureItem>
-					<@manageFeatureItemColumn>${group.groupKey}</@manageFeatureItemColumn>
-					<@manageFeatureItemColumn>${group.groupDescription}</@manageFeatureItemColumn>
-					<@manageFeatureItemColumn align='end'>
+					<@manageFeatureItemColumn class='d-flex align-items-center gap-2 text-truncate'>
+						<span class="avatar avatar-sm bg-teal-lt" aria-hidden="true"><@icon style='users-group' /></span>
+						<@div class='text-truncate'>
+							<@span class='fw-semibold'>${group.groupKey}</@span>
+							<#if group.groupDescription?has_content><@div class='text-secondary small text-truncate'>${group.groupDescription}</@div></#if>
+						</@div>
+					</@manageFeatureItemColumn>
+					<@manageFeatureItemColumn auto=true align='end'>
 						<#assign checked = false /> 
 						<#list user_group_list as user_group ><#if user_group.groupKey = group.groupKey ><#assign checked = true /><#break></#if></#list>
 						<@checkBox orientation='switch' name='mylutece_database_group_key' id=group.groupKey?replace('\\s+','','r') value='${group.groupKey}' checked=checked />
@@ -18,9 +28,12 @@
 				</@manageFeatureItem>
 				</#list>
 			</@manageFeature>
-			<@formGroup class='my-4'>
-				<@button type='submit' title='#i18n{module.mylutece.database.manage_groups_user.btnAssign}' buttonIcon='check' />
-				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='outline-secondary' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' target='_top' /> 
+			<#else>
+				<@card><@empty title='#i18n{module.mylutece.database.manage_users.linkManageGroups}' iconName='users-minus' subtitle=' ' /></@card>
+			</#if>
+			<@formGroup rows=2 class='my-4'>
+				<@button type='submit' title='#i18n{module.mylutece.database.manage_groups_user.btnAssign}' buttonIcon='check' color='primary' />
+				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='x' />
 			</@formGroup>
 		</@tform>
 	</@pageColumn>

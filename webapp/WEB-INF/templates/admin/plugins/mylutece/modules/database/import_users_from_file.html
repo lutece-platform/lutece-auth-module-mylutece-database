@@ -1,6 +1,10 @@
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='database-import' /></span>#i18n{module.mylutece.database.import_users_from_file.pageTitle}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{module.mylutece.database.import_users_from_file.pageTitle}' />
+		<@pageHeader title=pageTitle>
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tform enctype="multipart/form-data" method='post' name='import_users_from_file' action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp'>
 			<@input type='hidden' name='action' value='importUsersFromFile' />
 			<@tabs>
@@ -33,9 +37,9 @@
 								</@alert>
 							</#list>
 						</#if>
-						<@formGroup>
-							<@button type='submit' title='#i18n{portal.util.labelValidate}' buttonIcon='check' />
-							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='times' color='default' target='_top' />
+						<@formGroup rows=2>
+							<@button type='submit' title='#i18n{portal.util.labelValidate}' buttonIcon='check' color='primary' />
+							<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelCancel}' buttonIcon='x' color='light' />
 						</@formGroup>
 					</@fieldSet>
 				</@tabContent>
@@ -43,4 +47,4 @@
 		</@tform>
 	</@pageColumn>
 </@pageContainer>
-		
+		

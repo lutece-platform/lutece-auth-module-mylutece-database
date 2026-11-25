@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.database.authentication.web;
 
+import jakarta.enterprise.inject.spi.CDI;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,7 @@ import org.junit.jupiter.api.Test;
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabasePlugin;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.DatabaseUserParameterService;
+import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.parameter.IDatabaseUserParameterService;
 import fr.paris.lutece.plugins.mylutece.util.SecurityUtils;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.business.user.AdminUserHome;
@@ -77,7 +78,7 @@ public class DatabasePasswordFormatRulesTest extends LuteceTestCase
     public void saveParameters( )
     {
         _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-        _bOrigAdvanced = SecurityUtils.isAdvancedSecurityParametersUsed( DatabaseUserParameterService.getService( ), _plugin );
+        _bOrigAdvanced = SecurityUtils.isAdvancedSecurityParametersUsed( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), _plugin );
         _mapOrigRules = _databaseService.getPasswordFormatRules( _plugin );
     }
 
@@ -86,11 +87,11 @@ public class DatabasePasswordFormatRulesTest extends LuteceTestCase
     {
         if ( _bOrigAdvanced )
         {
-            SecurityUtils.useAdvancedSecurityParameters( DatabaseUserParameterService.getService( ), _plugin );
+            SecurityUtils.useAdvancedSecurityParameters( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), _plugin );
         }
         else
         {
-            SecurityUtils.removeAdvancedSecurityParameters( DatabaseUserParameterService.getService( ), _plugin );
+            SecurityUtils.removeAdvancedSecurityParameters( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), _plugin );
         }
 
         _databaseService.updatePasswordFormatRules( _mapOrigRules, _plugin );
@@ -102,7 +103,7 @@ public class DatabasePasswordFormatRulesTest extends LuteceTestCase
     @Test
     public void testRemovingTheAdvancedParametersKeepsTheFormatRules( )
     {
-        SecurityUtils.useAdvancedSecurityParameters( DatabaseUserParameterService.getService( ), _plugin );
+        SecurityUtils.useAdvancedSecurityParameters( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), _plugin );
         Map<String, Boolean> mapRules = new HashMap<>( );
         mapRules.put( UPPER_LOWER, true );
         mapRules.put( NUMERO, false );
@@ -112,7 +113,7 @@ public class DatabasePasswordFormatRulesTest extends LuteceTestCase
         withResponse( _databaseJspBean );
         _databaseJspBean.doChangeUseAdvancedSecurityParameters( new MockHttpServletRequest( ) );
 
-        assertFalse( SecurityUtils.isAdvancedSecurityParametersUsed( DatabaseUserParameterService.getService( ), _plugin ) );
+        assertFalse( SecurityUtils.isAdvancedSecurityParametersUsed( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), _plugin ) );
         assertEquals( mapRules, _databaseService.getPasswordFormatRules( _plugin ) );
     }
 
@@ -122,7 +123,7 @@ public class DatabasePasswordFormatRulesTest extends LuteceTestCase
     @Test
     public void testTheScreenGetsTheFormatRulesWithoutTheAdvancedParameters( )
     {
-        SecurityUtils.removeAdvancedSecurityParameters( DatabaseUserParameterService.getService( ), _plugin );
+        SecurityUtils.removeAdvancedSecurityParameters( CDI.current( ).select( IDatabaseUserParameterService.class ).get( ), _plugin );
         Map<String, Boolean> mapRules = new HashMap<>( );
         mapRules.put( UPPER_LOWER, false );
         mapRules.put( NUMERO, true );

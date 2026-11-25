@@ -52,7 +52,6 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Named;
 
 /**
@@ -75,16 +74,6 @@ public class DatabaseAnonymizationService implements IAnonymizationService
     // CONSTANTS
     private static final String CONSTANT_DEFAULT_ENCRYPT_ALGO = "SHA-256";
     private Plugin _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-
-    /**
-     * Returns the instance of the singleton
-     * 
-     * @return The instance of the singleton
-     */
-    public static IAnonymizationService getService( )
-    {
-        return CDI.current( ).select( DatabaseAnonymizationService.class ).get( );
-    }
 
     /**
      * {@inheritDoc}

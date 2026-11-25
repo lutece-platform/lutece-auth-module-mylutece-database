@@ -39,12 +39,14 @@ import java.util.List;
 
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.DatabaseUserHome;
 import fr.paris.lutece.plugins.mylutece.modules.database.authentication.business.parameter.DatabaseUserParameterHome;
-import fr.paris.lutece.plugins.mylutece.modules.database.authentication.service.DatabaseService;
+import fr.paris.lutece.portal.service.captcha.ICaptchaService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.util.BeanUtils;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
@@ -62,22 +64,15 @@ public class DatabaseUserParameterService implements IDatabaseUserParameterServi
     private static final String PARAMETER_ENABLE_JCAPTCHA = "enable_jcaptcha";
     private static final String PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL = "auto_login_after_validation_email";
 
+    @Inject
+    @Named( BeanUtils.BEAN_CAPTCHA_SERVICE )
+    private Instance<ICaptchaService> _captchaService;
+
     /**
      * Constructor (not private: the CDI container must be able to proxy the bean)
      */
     protected DatabaseUserParameterService( )
     {
-    }
-
-    /**
-     * Get the instance of the service
-     * 
-     * @return the instance of the service
-     */
-    @Deprecated
-    public static IDatabaseUserParameterService getService( )
-    {
-        return CDI.current( ).select( IDatabaseUserParameterService.class ).get( );
     }
 
     /**
@@ -195,7 +190,7 @@ public class DatabaseUserParameterService implements IDatabaseUserParameterServi
         boolean bIsEnable = false;
         ReferenceItem userParam = findByKey( PARAMETER_ENABLE_JCAPTCHA, plugin );
 
-        if ( ( userParam != null ) && userParam.isChecked( ) && DatabaseService.getService( ).isPluginJcaptchaEnable( ) )
+        if ( ( userParam != null ) && userParam.isChecked( ) && _captchaService.isResolvable( ) )
         {
             bIsEnable = true;
         }

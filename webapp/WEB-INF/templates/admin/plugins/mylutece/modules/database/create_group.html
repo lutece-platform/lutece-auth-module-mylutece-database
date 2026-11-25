@@ -1,6 +1,10 @@
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='users-group' /></span>#i18n{module.mylutece.database.create_group.boxTitle}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{module.mylutece.database.create_group.boxTitle}' />
+		<@pageHeader title=pageTitle>
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tform method='post' action='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp?action=createGroup' name='create_group' boxed=true>
 		<@formGroup labelFor='group_key' labelKey='#i18n{module.mylutece.database.create_group.labelName}' mandatory=true>
 			<@input type='text' id='group_key' name='group_key' maxlength=100 />
@@ -8,10 +12,10 @@
 		<@formGroup labelFor='group_description' labelKey='#i18n{module.mylutece.database.create_group.labelDescription}' mandatory=true>
 			<@input type='text' id='group_description' name='group_description' maxlength=200 />
 		</@formGroup>
-		<@formGroup>
-			<@button type='submit' title='#i18n{module.mylutece.database.modify_group.buttonLabelValidate}' buttonIcon='check' />
-			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' color='default'  target='_top' />
+		<@formGroup rows=2>
+			<@button type='submit' title='#i18n{module.mylutece.database.modify_group.buttonLabelValidate}' buttonIcon='check' color='primary' />
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageGroups.jsp' title='#i18n{portal.util.labelCancel}' buttonIcon='times' color='light' />
 		</@formGroup>
 		</@tform>
 	</@pageColumn>
-</@pageContainer>
+</@pageContainer>

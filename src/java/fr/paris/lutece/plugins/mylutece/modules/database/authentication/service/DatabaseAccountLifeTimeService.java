@@ -43,7 +43,6 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.CryptoService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Named;
 
 import java.sql.Timestamp;
@@ -78,19 +77,6 @@ public class DatabaseAccountLifeTimeService implements IAccountLifeTimeService
     private static final String CONSTANT_AND = "&";
     private static final String CONSTANT_EQUAL = "=";
     private Plugin _plugin = PluginService.getPlugin( DatabasePlugin.PLUGIN_NAME );
-
-    /**
-     * Get an instance of the service
-     * 
-     * @return An instance of the service
-     * 
-     * @deprecated Use CDI inject
-     */
-    @Deprecated
-    public static DatabaseAccountLifeTimeService getService( )
-    {
-        return CDI.current( ).select( DatabaseAccountLifeTimeService.class ).get( );
-    }
 
     /**
      * {@inheritDoc}

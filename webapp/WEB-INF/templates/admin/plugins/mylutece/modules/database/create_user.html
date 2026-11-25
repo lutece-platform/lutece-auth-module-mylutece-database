@@ -1,6 +1,10 @@
+<#assign pageTitle><span class="avatar avatar-sm bg-teal-lt me-2" aria-hidden="true"><@icon style='user-plus' /></span>#i18n{module.mylutece.database.create_user.tableTitle}</#assign>
 <@pageContainer>
     <@pageColumn>
-		<@pageHeader title='#i18n{module.mylutece.database.create_user.tableTitle}' />
+		<@pageHeader title=pageTitle>
+			<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='arrow-left' color='light' />
+		</@pageHeader>
+		<@messages infos=infos![] errors=errors![] warnings=warnings![] />
 		<@tform method='post' name='create_user' action='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp?action=createUser' boxed=true>
 			<@input type='hidden' name='plugin_name' value='${plugin_name}' />
 			<@fieldSet legend='#i18n{module.mylutece.database.create_user.labelIdentity}'>
@@ -23,14 +27,14 @@
 								<@icon style='eye' />
 							</@link>
 						</@inputGroupItem>
-						<@button type='button' id='generate_password' title='#i18n{portal.users.create_user.buttonLabelGeneratePassword}' hideTitle=['all'] buttonIcon='cog' size='' color='secondary' />
+						<@button type='button' id='generate_password' title='#i18n{portal.users.create_user.buttonLabelGeneratePassword}' hideTitle=['all'] buttonIcon='cog' size='' color='light' />
 					</@inputGroup>
 				</@formGroup>
 				<@formGroup labelFor='second_password' labelKey='#i18n{module.mylutece.database.create_user.secondPassword}' mandatory=true>
 					<@input type='password' name='second_password' maxlength=100 value='' />
 				</@formGroup>
-				<@formGroup labelFor='first_password' labelKey='#i18n{portal.users.create_user.passwordComplexity}'>
-					<@progressBar id='first_password' />
+				<@formGroup labelFor='progress' labelKey='#i18n{portal.users.create_user.passwordComplexity}'>
+					<@progressBar id='progress' />
 				</@formGroup>
 				<@formGroup labelFor='last_name' labelKey='#i18n{module.mylutece.database.create_user.lastName}' mandatory=true>
 					<@input type='text' name='last_name' maxlength=100 value='' />
@@ -46,9 +50,9 @@
 				</#list>
 			</@fieldSet>
 			</#if>
-			<@formGroup>
-				<@button type='submit' title='#i18n{module.mylutece.database.create_user.btnCreate}' buttonIcon='check' />
-				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='outline-secondary' title='#i18n{portal.admin.message.buttonCancel}' buttonIcon='times' target='_top' /> 
+			<@formGroup rows=2>
+				<@button type='submit' title='#i18n{module.mylutece.database.create_user.btnCreate}' buttonIcon='check' color='primary' />
+				<@aButton href='jsp/admin/plugins/mylutece/modules/database/ManageUsers.jsp' color='light' title='#i18n{portal.util.labelCancel}' buttonIcon='times' />
 			</@formGroup>
 		</@tform>
 	</@pageColumn>

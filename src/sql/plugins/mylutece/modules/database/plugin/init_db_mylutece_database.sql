@@ -1,4 +1,5 @@
 -- liquibase formatted sql
+-- lutece runAfter:mylutece
 -- changeset mylutece-database:init_db_mylutece_database.sql
 -- preconditions onFail:MARK_RAN onError:WARN
 --
@@ -42,3 +43,11 @@ INSERT INTO mylutece_database_user_parameter VALUES ('mail_lost_password_sender'
 INSERT INTO mylutece_database_user_parameter VALUES ('mail_lost_password_subject', 'Votre mot de passe a été réinitialisé');
 INSERT INTO mylutece_database_user_parameter VALUES ('mail_password_encryption_changed_sender', 'LUTECE');
 INSERT INTO mylutece_database_user_parameter VALUES ('mail_password_encryption_changed_subject', 'Votre mot de passe a été réinitialisé');
+
+-- changeset mylutece-database:init_db_mylutece_database-rev1.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM mylutece_user_anonymize_field WHERE field_name IN ('login','name_given','name_family','email')
+INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('login', 1);
+INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('name_given', 1);
+INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('name_family', 1);
+INSERT INTO mylutece_user_anonymize_field (field_name, anonymize) VALUES ('email', 1);

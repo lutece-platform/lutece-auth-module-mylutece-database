@@ -1,7 +1,7 @@
 <@cTpl>
 <@cContainer>
     <@cRow class='justify-content-center align-items-center'>
-		<@cCol class='12 col-sm-5'>
+		<@cCol cols='12 col-sm-5'>
           <#if error_code?has_content >
             <#assign typeClass=' is-invalid' />
             <#if error_code='error_mandatory_fields'>
@@ -100,13 +100,13 @@
                 <@cField label='#i18n{module.mylutece.database.xpage.create_account.lastName}' for='last_name' required=true>
                     <@cInput class='form-control ${classLastName?if_exists}' name='last_name' maxlength=100 value="${(user.lastName)?if_exists}" />
                 </@cField>
-                <#if jcaptcha?exists>${jcaptcha}</#if>
+                <#if captcha??>${captcha}</#if>
                 <@cRow>
                     <@cCol>
-                        <@cBtn class='btn btn-primary' label='' id='button-subscribe' type='submit' params={"name": "createAccountBtn"} >
+                        <@cBtn class='primary' label='' id='button-subscribe' type='submit' params={"name": "createAccountBtn"} >
                             <@cIcon name='check' /> #i18n{module.mylutece.database.xpage.create_account.btnCreateAccount}
                         </@cBtn>
-                        <@cBtn class='btn btn-secondary' label='' id='button-return' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} >
+                        <@cBtn class='secondary' label='' id='button-return' href='jsp/site/Portal.jsp' params={'data-lutece-action': 'back'} >
                             <@cIcon name='arrow-right' /> #i18n{module.mylutece.database.xpage.account.btnBack}
                         </@cBtn>
                     </@cCol>
