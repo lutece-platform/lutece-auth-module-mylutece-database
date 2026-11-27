@@ -247,6 +247,7 @@ public class BaseAuthentication extends PortalAuthentication
         Locale locale = request.getLocale( );
 
         int nNbFailedIp = 0;
+        int nNbFailed = 0;
 
         if ( ( ( nMaxFailed > 0 ) || ( nMaxFailedCaptcha > 0 ) ) && ( nIntervalMinutes > 0 ) )
         {
@@ -254,7 +255,7 @@ public class BaseAuthentication extends PortalAuthentication
             // older than the interval
             nNbFailedIp = ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece );
             int nNbFailedLogin = StringUtils.isBlank( strUserName ) ? 0 : ConnectionLogHome.getLoginErrorsByLogin( connectionLog, nIntervalMinutes, pluginMyLutece );
-            int nNbFailed = Math.max( nNbFailedIp, nNbFailedLogin );
+            nNbFailed = Math.max( nNbFailedIp, nNbFailedLogin );
 
             if ( ( nMaxFailedCaptcha > 0 ) && ( nNbFailed >= nMaxFailedCaptcha ) )
             {
@@ -282,6 +283,9 @@ public class BaseAuthentication extends PortalAuthentication
             }
         }
 
+        // A refused attempt is itself a failure: the one that reaches the threshold already asks for the captcha on the next attempt
+        boolean bEnableCaptchaAfterFailure = bEnableCaptcha || ( ( nMaxFailedCaptcha > 0 ) && ( nIntervalMinutes > 0 ) && ( nNbFailed + 1 >= nMaxFailedCaptcha ) );
+
         BaseUser user = DatabaseHome.findLuteceUserByLogin( strUserName, plugin, this );
 
         // Unable to find the user
@@ -289,9 +293,9 @@ public class BaseAuthentication extends PortalAuthentication
         {
             AppLogService.info( "Unable to find user in the database : {}", strUserName );
 
-            if ( bEnableCaptcha )
+            if ( bEnableCaptchaAfterFailure )
             {
-                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
+                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptchaAfterFailure );
             }
             else
             {
@@ -315,9 +319,9 @@ public class BaseAuthentication extends PortalAuthentication
                 }
             }
 
-            if ( bEnableCaptcha )
+            if ( bEnableCaptchaAfterFailure )
             {
-                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptcha );
+                throw new FailedLoginCaptchaException( I18nService.getLocalizedString( PROPERTY_MESSAGE_USER_NOT_FOUND_DATABASE, locale ), bEnableCaptchaAfterFailure );
             }
             else
             {
