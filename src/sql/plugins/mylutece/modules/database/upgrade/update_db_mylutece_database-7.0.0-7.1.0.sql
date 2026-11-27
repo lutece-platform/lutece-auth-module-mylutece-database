@@ -16,3 +16,9 @@ UPDATE core_datastore SET entity_value = 'jsp/site/Portal.jsp?page=mylutecedatab
 UPDATE core_datastore SET entity_value = 'jsp/site/Portal.jsp?page=mylutecedatabase&view=lostPassword' WHERE entity_key = 'mylutece.security.public_url.mylutece-database.url.lostPassword.page';
 UPDATE core_datastore SET entity_value = 'jsp/site/Portal.jsp?page=mylutecedatabase&view=lostLogin' WHERE entity_key = 'mylutece.security.public_url.mylutece-database.url.lostLogin.page';
 UPDATE core_datastore SET entity_value = 'jsp/site/Portal.jsp?page=mylutecedatabase&view=reinitPassword' WHERE entity_key = 'mylutece.security.public_url.mylutece-database.url.reinitPassword.page';
+
+-- changeset mylutece-database:update_db_mylutece_database-7.0.0-7.1.0.sql-rev1.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM mylutece_database_user_parameter WHERE parameter_key = 'access_failures_max_ip'
+-- comment The failures of a login lock this login only; blocking an address after a number of failures on any logins is off by default (0), the administrator enables it
+INSERT INTO mylutece_database_user_parameter VALUES ('access_failures_max_ip', '0');

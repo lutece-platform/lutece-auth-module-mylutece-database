@@ -24,6 +24,7 @@ INSERT INTO mylutece_database_user_parameter VALUES ('nb_alert_account', '2');
 INSERT INTO mylutece_database_user_parameter VALUES ('time_between_alerts_account', '10');
 INSERT INTO mylutece_database_user_parameter VALUES ('access_failures_max', '3');
 INSERT INTO mylutece_database_user_parameter VALUES ('access_failures_interval', '10');
+INSERT INTO mylutece_database_user_parameter VALUES ('access_failures_max_ip', '0');
 INSERT INTO mylutece_database_user_parameter VALUES ('expired_alert_mail_sender', 'LUTECE');
 INSERT INTO mylutece_database_user_parameter VALUES ('expired_alert_mail_subject', 'Votre compte a expiré');
 INSERT INTO mylutece_database_user_parameter VALUES ('first_alert_mail_sender', 'LUTECE');

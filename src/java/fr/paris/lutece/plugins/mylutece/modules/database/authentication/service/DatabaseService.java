@@ -129,6 +129,7 @@ public class DatabaseService
     private static final String MARK_SITE_NAME = "site_name";
     private static final String MARK_SITE_URL = "site_url";
     private static final String MARK_BANNED_DOMAIN_NAMES = "banned_domain_names";
+    private static final String MARK_ACCESS_FAILURES_MAX_IP = "access_failures_max_ip";
 
     /** The password format rules: checked whenever they are on, so always shown and saved, whatever the advanced security parameters */
     public static final List<String> PASSWORD_FORMAT_RULES = List.of( "password_format_upper_lower_case", "password_format_numero",
@@ -214,6 +215,7 @@ public class DatabaseService
                     SecurityUtils.getBooleanSecurityParameter( _userParamService, plugin, PARAMETER_AUTO_LOGIN_AFTER_VALIDATION_EMAIL ) );
 
             model.put( MARK_BANNED_DOMAIN_NAMES, SecurityUtils.getLargeSecurityParameter( _userParamService, plugin, MARK_BANNED_DOMAIN_NAMES ) );
+            model.put( MARK_ACCESS_FAILURES_MAX_IP, SecurityUtils.getIntegerSecurityParameter( _userParamService, plugin, MARK_ACCESS_FAILURES_MAX_IP ) );
 
             model = SecurityUtils.checkSecurityParameters( _userParamService, model, plugin );
 

@@ -73,8 +73,11 @@
 				<@input type='text' name='tsw_size_password_change' value='${tsw_size_password_change!}' />
 			</@formGroup>
 		</#if>
-		<@formGroup labelFor='access_failures_max' labelKey='#i18n{mylutece.manage_advanced_parameters.labelAccesFailuresMax}'>
+		<@formGroup labelFor='access_failures_max' labelKey='#i18n{mylutece.manage_advanced_parameters.labelAccesFailuresMax}' helpKey='#i18n{module.mylutece.database.manage_advanced_parameters.labelAccessFailuresMaxHelp}'>
 			<@input type='text' name='access_failures_max' value='${access_failures_max!}' />
+		</@formGroup>
+		<@formGroup labelFor='access_failures_max_ip' labelKey='#i18n{module.mylutece.database.manage_advanced_parameters.labelAccessFailuresMaxIp}' helpKey='#i18n{module.mylutece.database.manage_advanced_parameters.labelAccessFailuresMaxIpHelp}'>
+			<@input type='text' name='access_failures_max_ip' id='access_failures_max_ip' value='${access_failures_max_ip!}' />
 		</@formGroup>
 		<#if is_plugin_jcatpcha_enable>
 			<@formGroup labelFor='access_failures_captcha'  labelKey='#i18n{mylutece.manage_advanced_parameters.labelAccesFailuresCaptcha}'>

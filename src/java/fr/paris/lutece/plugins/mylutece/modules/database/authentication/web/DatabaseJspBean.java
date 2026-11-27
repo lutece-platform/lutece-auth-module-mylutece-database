@@ -255,6 +255,7 @@ public class DatabaseJspBean extends MVCAdminJspBean
     private static final String PARAMETER_EXPIRATION_MAIL = "mylutece_database_expiration_mail";
     private static final String PARAMETER_ACCOUNT_REACTIVATED = "mylutece_database_account_reactivated_mail";
     private static final String PARAMETER_BANNED_DOMAIN_NAMES = "banned_domain_names";
+    private static final String PARAMETER_ACCESS_FAILURES_MAX_IP = "access_failures_max_ip";
     private static final String PARAMETER_UNBLOCK_USER_MAIL_SENDER = "unblock_user_mail_sender";
     private static final String PARAMETER_UNBLOCK_USER_MAIL_SUBJECT = "unblock_user_mail_subject";
     private static final String PARAMETER_UNBLOCK_USER = "mylutece_database_unblock_user";
@@ -1085,6 +1086,7 @@ public class DatabaseJspBean extends MVCAdminJspBean
         }
 
         SecurityUtils.updateSecurityParameters( _userParamService, request, getPlugin( ) );
+        SecurityUtils.updateParameterValue( _userParamService, getPlugin( ), PARAMETER_ACCESS_FAILURES_MAX_IP, request.getParameter( PARAMETER_ACCESS_FAILURES_MAX_IP ) );
 
         // The password format rules are shown and saved in both modes: an unchecked switch is not posted
         Map<String, Boolean> mapPasswordFormatRules = new HashMap<>( );

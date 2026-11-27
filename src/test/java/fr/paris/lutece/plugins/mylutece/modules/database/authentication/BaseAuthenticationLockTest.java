@@ -129,6 +129,122 @@ public class BaseAuthenticationLockTest extends LuteceTestCase
         assertNull( otherRequest.getAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED ) );
     }
 
+    /**
+     * Failures of a login from an address lock this login only: another login from the same address is not refused
+     *
+     * @throws LoginException
+     *             if the other login is refused
+     */
+    @Test
+    public void testFailuresOfALoginDoNotLockAnotherLoginFromTheSameAddress( ) throws LoginException
+    {
+        String strIp = "10." + new SecureRandom( ).nextInt( 200 ) + "." + new SecureRandom( ).nextInt( 200 ) + ".7";
+        addFailures( strIp, _user.getLogin( ), 3 );
+
+        MockHttpServletRequest request = new MockHttpServletRequest( );
+        request.setRemoteAddr( strIp );
+
+        try
+        {
+            CDI.current( ).select( BaseAuthentication.class ).get( ).processLogin( _user.getLogin( ), PASSWORD, request );
+            fail( "the login is locked after 3 failures, even with the right password" );
+        }
+        catch( FailedLoginException e )
+        {
+            assertEquals( Boolean.TRUE, request.getAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED ), "the refusal is marked as a lock" );
+        }
+
+        MockHttpServletRequest otherRequest = new MockHttpServletRequest( );
+        otherRequest.setRemoteAddr( strIp );
+        assertNotNull( CDI.current( ).select( BaseAuthentication.class ).get( ).processLogin( _otherUser.getLogin( ), PASSWORD, otherRequest ),
+                "another login from the same address signs in" );
+        assertNull( otherRequest.getAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED ) );
+    }
+
+    /**
+     * By default (address threshold 0) the address is never locked: many failures on different logins from one address do not refuse
+     * another login from it
+     *
+     * @throws LoginException
+     *             if the other login is refused
+     */
+    @Test
+    public void testAddressIsNotLockedByDefault( ) throws LoginException
+    {
+        String strOrigMaxIp = getParameter( "access_failures_max_ip" );
+        setParameter( "access_failures_max_ip", "0" );
+
+        try
+        {
+            String strIp = "10." + new SecureRandom( ).nextInt( 200 ) + "." + new SecureRandom( ).nextInt( 200 ) + ".9";
+
+            for ( int i = 0; i < 12; i++ )
+            {
+                addFailures( strIp, "junit_spray_" + i + "_" + Math.abs( new SecureRandom( ).nextLong( ) ), 1 );
+            }
+
+            MockHttpServletRequest request = new MockHttpServletRequest( );
+            request.setRemoteAddr( strIp );
+            assertNotNull( CDI.current( ).select( BaseAuthentication.class ).get( ).processLogin( _otherUser.getLogin( ), PASSWORD, request ),
+                    "the address is not locked when its threshold is 0" );
+            assertNull( request.getAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED ) );
+        }
+        finally
+        {
+            setParameter( "access_failures_max_ip", strOrigMaxIp );
+        }
+    }
+
+    /**
+     * Once enabled by the administrator, failures on many logins from one address (password spraying) lock the address at its threshold
+     */
+    @Test
+    public void testFailuresOnManyLoginsLockTheAddressAtItsThreshold( )
+    {
+        String strOrigMaxIp = getParameter( "access_failures_max_ip" );
+        setParameter( "access_failures_max_ip", "10" );
+
+        try
+        {
+            String strIp = "10." + new SecureRandom( ).nextInt( 200 ) + "." + new SecureRandom( ).nextInt( 200 ) + ".8";
+
+            for ( int i = 0; i < 10; i++ )
+            {
+                addFailures( strIp, "junit_spray_" + i + "_" + Math.abs( new SecureRandom( ).nextLong( ) ), 1 );
+            }
+
+            MockHttpServletRequest request = new MockHttpServletRequest( );
+            request.setRemoteAddr( strIp );
+
+            try
+            {
+                CDI.current( ).select( BaseAuthentication.class ).get( ).processLogin( _otherUser.getLogin( ), PASSWORD, request );
+                fail( "the address is locked after 10 failures on different logins" );
+            }
+            catch( LoginException e )
+            {
+                assertEquals( Boolean.TRUE, request.getAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED ), "the refusal is marked as a lock" );
+            }
+        }
+        finally
+        {
+            setParameter( "access_failures_max_ip", strOrigMaxIp );
+        }
+    }
+
+    private void addFailures( String strIp, String strLogin, int nCount )
+    {
+        for ( int i = 0; i < nCount; i++ )
+        {
+            ConnectionLog log = new ConnectionLog( );
+            log.setIpAddress( strIp );
+            log.setLogin( strLogin );
+            log.setDateLogin( new java.sql.Timestamp( System.currentTimeMillis( ) - 60000L ) );
+            log.setLoginStatus( ConnectionLog.LOGIN_DENIED );
+            ConnectionLogHome.addUserLog( log, PluginService.getPlugin( MyLutecePlugin.PLUGIN_NAME ) );
+        }
+    }
+
     private DatabaseUser createUser( )
     {
         DatabaseUser user = new DatabaseUser( );

@@ -114,6 +114,7 @@ public class BaseAuthentication extends PortalAuthentication
 
     // PROPERTIES
     private static final String PROPERTY_MAX_ACCESS_FAILED = "access_failures_max";
+    private static final String PROPERTY_MAX_ACCESS_FAILED_IP = "access_failures_max_ip";
     private static final String PROPERTY_ACCESS_FAILED_CAPTCHA = "access_failures_captcha";
     private static final String PROPERTY_INTERVAL_MINUTES = "access_failures_interval";
     private static final String PROPERTY_UNBLOCK_USER = "mylutece_database_unblock_user";
@@ -235,6 +236,7 @@ public class BaseAuthentication extends PortalAuthentication
 
         // Test the number of errors during an interval of minutes
         int nMaxFailed = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_MAX_ACCESS_FAILED, plugin );
+        int nMaxFailedIp = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_MAX_ACCESS_FAILED_IP, plugin );
         int nMaxFailedCaptcha = 0;
         int nIntervalMinutes = DatabaseUserParameterHome.getIntegerSecurityParameter( PROPERTY_INTERVAL_MINUTES, plugin );
         boolean bEnableCaptcha = false;
@@ -246,23 +248,22 @@ public class BaseAuthentication extends PortalAuthentication
 
         Locale locale = request.getLocale( );
 
-        int nNbFailedIp = 0;
         int nNbFailed = 0;
 
-        if ( ( ( nMaxFailed > 0 ) || ( nMaxFailedCaptcha > 0 ) ) && ( nIntervalMinutes > 0 ) )
+        if ( ( ( nMaxFailed > 0 ) || ( nMaxFailedIp > 0 ) || ( nMaxFailedCaptcha > 0 ) ) && ( nIntervalMinutes > 0 ) )
         {
-            // The failures are counted per address and per login: either one reaching the maximum locks the login, until the failures are
-            // older than the interval
-            nNbFailedIp = ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece );
-            int nNbFailedLogin = StringUtils.isBlank( strUserName ) ? 0 : ConnectionLogHome.getLoginErrorsByLogin( connectionLog, nIntervalMinutes, pluginMyLutece );
-            nNbFailed = Math.max( nNbFailedIp, nNbFailedLogin );
+            // The failures of a login lock this login only, whatever the address: the other accounts signing in from the same address
+            // (proxy, NAT) are not refused. A separate, higher threshold of failures from one address, whatever the logins, locks the
+            // address against password spraying. Both last until the failures are older than the interval.
+            nNbFailed = StringUtils.isBlank( strUserName ) ? 0 : ConnectionLogHome.getLoginErrorsByLogin( connectionLog, nIntervalMinutes, pluginMyLutece );
+            int nNbFailedIp = ( nMaxFailedIp > 0 ) ? ConnectionLogHome.getLoginErrors( connectionLog, nIntervalMinutes, pluginMyLutece ) : 0;
 
             if ( ( nMaxFailedCaptcha > 0 ) && ( nNbFailed >= nMaxFailedCaptcha ) )
             {
                 bEnableCaptcha = true;
             }
 
-            if ( ( nMaxFailed > 0 ) && ( nNbFailed >= nMaxFailed ) )
+            if ( ( ( nMaxFailed > 0 ) && ( nNbFailed >= nMaxFailed ) ) || ( ( nMaxFailedIp > 0 ) && ( nNbFailedIp >= nMaxFailedIp ) ) )
             {
                 // A refusal of the lock is not a new failure: MyLuteceApp does not log it, so that the lock is not extended
                 request.setAttribute( ConnectionLog.ATTRIBUTE_LOGIN_LOCKED, Boolean.TRUE );
@@ -308,8 +309,8 @@ public class BaseAuthentication extends PortalAuthentication
         {
             AppLogService.info( "User login : Incorrect login or password : {}", strUserName );
 
-            // This failure locks the address: the user can be sent the link that unlocks it (sent once, as the refusals of the lock are not logged)
-            if ( ( nMaxFailed > 0 ) && ( nIntervalMinutes > 0 ) && ( nNbFailedIp + 1 == nMaxFailed ) )
+            // This failure locks the login: the user can be sent the link that unlocks it (sent once, as the refusals of the lock are not logged)
+            if ( ( nMaxFailed > 0 ) && ( nIntervalMinutes > 0 ) && ( nNbFailed + 1 == nMaxFailed ) )
             {
                 ReferenceItem item = DatabaseUserParameterHome.findByKey( PARAMETER_ENABLE_UNBLOCK_IP, plugin );
 
